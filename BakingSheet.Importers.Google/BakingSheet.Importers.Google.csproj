@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.40.3.1671" />
+    <PackageReference Include="Google.Apis.Sheets.v4" Version="1.40.3.1679" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BakingSheet\BakingSheet.csproj" />
+  </ItemGroup>
+
+
+</Project>
