@@ -5,7 +5,7 @@ Easy datasheet management for C# and Unity
 Download from NuGet or download unitypackage
 
 ## Concept
-
+![Concept](Images/concept.png)
 
 BakingSheet's core concept is controlling datasheet schema from C# code, make things flexible while supporting multiple sources like .xlsx or Google sheets.
 Also, it helps to avoid having source datasheet files or parsing libraries for production applications. BakingSheet supports JSON serialization by default.
