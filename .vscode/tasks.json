@@ -1,0 +1,45 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "unity: publish",
+            "dependsOn": [ "unity: publish core", "unity: publish excel", "unity: publish google" ],
+            "group": "build",
+            "problemMatcher": [ "$tsc" ]
+        },
+        {
+            "label": "unity: publish core",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "publish", "-c", "Release",
+                "-o", "UnityProject/Assets/Plugins/BakingSheet",
+                "BakingSheet" ],
+            "problemMatcher": [ "$tsc" ],
+        },
+        {
+            "label": "unity: publish excel",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "publish", "-c", "Release",
+                "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/Excel",
+                "BakingSheet.Importers.Excel"
+            ],
+            "problemMatcher": [ "$tsc" ],
+        },
+        {
+            "label": "unity: publish google",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "publish", "-c", "Release",
+                "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/Google",
+                "BakingSheet.Importers.Google"
+            ],
+            "problemMatcher": [ "$tsc" ],
+        }
+    ]
+}

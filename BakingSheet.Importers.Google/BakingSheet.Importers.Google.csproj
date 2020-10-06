@@ -5,15 +5,26 @@
     <PackageId>BakingSheet.Importers.Google</PackageId>
     <PackageDescription>BakingSheet importer for Google Sheet</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.40.3.1671" />
     <PackageReference Include="Google.Apis.Sheets.v4" Version="1.40.3.1679" />
+
+    <!-- Assemblies already referenced by BakingSheet -->
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2">
+      <IncludeAssets>compile</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8">
+      <IncludeAssets>compile</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BakingSheet\BakingSheet.csproj" />
+    <ProjectReference Include="..\BakingSheet\BakingSheet.csproj">
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

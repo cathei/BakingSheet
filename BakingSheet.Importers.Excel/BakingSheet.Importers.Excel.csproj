@@ -5,15 +5,26 @@
     <PackageId>BakingSheet.Importers.Excel</PackageId>
     <PackageDescription>BakingSheet importer for Excel files</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+
+    <!-- Assemblies already referenced by BakingSheet -->
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2">
+      <IncludeAssets>compile</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8">
+      <IncludeAssets>compile</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BakingSheet\BakingSheet.csproj" />
+    <ProjectReference Include="..\BakingSheet\BakingSheet.csproj">
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

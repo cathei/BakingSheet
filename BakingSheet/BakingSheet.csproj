@@ -5,6 +5,7 @@
     <PackageId>BakingSheet</PackageId>
     <PackageDescription>BakingSheet helps easier datasheet management</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
 
   <ItemGroup>
