@@ -6,6 +6,7 @@
         {
             "label": "unity: publish",
             "dependsOn": [ "unity: publish core", "unity: publish excel", "unity: publish google" ],
+            "dependsOrder": "sequence",
             "group": "build",
             "problemMatcher": [ "$tsc" ]
         },
