@@ -11,10 +11,12 @@ namespace Cathei.BakingSheet.Editor
         [MenuItem("Tools/Generate Package")]
         public static void GeneratePackage()
         {
-            var version = Environment.GetEnvironmentVariable("PROJECT_VERSION");
+            var releaseTag = Environment.GetEnvironmentVariable("RELEASE_TAG");
 
-            if (version != null)
-                PlayerSettings.bundleVersion = version;
+            // RELEASE_TAG = v1.X.X
+            // remove 'v' from tag
+            if (releaseTag != null)
+                PlayerSettings.bundleVersion = releaseTag.Substring(1);
 
             AssetDatabase.ExportPackage(new string [] {
                 "Assets/Plugins/BakingSheet"

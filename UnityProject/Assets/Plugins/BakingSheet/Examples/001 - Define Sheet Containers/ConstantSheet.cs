@@ -8,6 +8,7 @@ namespace Cathei.BakingSheet.Examples
     {
         ServerAddress,
         InitialGold,
+        CriticalChance,
     }
 
     public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
