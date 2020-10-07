@@ -93,7 +93,7 @@ foreach (var value in sheetContainer.Items.Values)
 ```
 
 ## Using Non-String Column as Id
-Any type can be used value can be also used as `Id`. This is possible as passing type argument to generic class `SheetRow<TKey>` and `Sheet<TKey, TRow>. Below is example content of file `Contstants.xlsx`.
+Any type can be used value can be also used as `Id`. This is possible as passing type argument to generic class `SheetRow<TKey>` and `Sheet<TKey, TRow>`. Below is example content of file `Contstants.xlsx`.
 | Id             | Value                                 |
 |----------------|---------------------------------------|
 | ServerAddress  | https://github.com/cathei/BakingSheet |
