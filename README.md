@@ -55,26 +55,176 @@ BakingSheet supports two basic importers
 * `BakingSheet.Importers.Excel`
 * `BakingSheet.Importers.Google`
 
-Below sample shows how to convert .xlsx files from `ExcelPath` directory.
+Below code shows how to convert .xlsx files from `Excel/Files/Path` directory.
 ```csharp
 // pass logger to receive logs
 var sheetContainer = new SheetContainer(logger);
 
 // create excel importer from path
-var excelImporter = new ExcelSheetImporter("ExcelPath");
+var excelImporter = new ExcelSheetImporter("Excel/Files/Path");
 
 // bake sheets from excel importer
 await sheetContainer.Bake(excelImporter);
 ```
 
-## Using Non-String Id Column
+## Save and Load Converted Datasheet
+Below code shows how to save and load serialized json.
+
+```csharp
+// save as json
+await sheetContainer.Store("Save/Files/Path");
+
+// later, load from json
+await sheetContainer.Load("Save/Files/Path");
+```
+You can use `processor` parameter to customize serialization process.
+
+## Accessing Row
+Below code shows how to access specific `ItemSheet.Row`.
+```csharp
+var row = sheetContainer.Items["ITEM_LVUP003"];
+
+// Assassin's dagger
+logger.LogInformation(row.Name);
+
+// loop through all rows
+foreach (var value in sheetContainer.Items.Values)
+    logger.LogInformation(value.Name);
+```
+
+## Using Non-String Column as Id
+Any type can be used value can be also used as `Id`. This is possible as passing type argument to generic class `SheetRow<TKey>` and `Sheet<TKey, TRow>. Below is example content of file `Contstants.xlsx`.
+| Id             | Value                                 |
+|----------------|---------------------------------------|
+| ServerAddress  | https://github.com/cathei/BakingSheet |
+| InitialGold    | 1000                                  |
+| CriticalChance | 0.1                                   |
+
+Below code shows how to use enumeration type as Id.
+```csharp
+public enum GameConstant
+{
+    ServerAddress,
+    InitialGold,
+    CriticalChance,
+}
+
+public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
+{
+    public class Row : SheetRow<GameConstant>
+    {
+        public string Value { get; private set; }
+    }
+}
+```
 
 ## Using Post Load Hook
+You can override `PostLoad` method of `Sheet`, `SheetRow` or `SheetRowElem` to execute post load process.
+
+Below code shows how to convert loaded sheet value dynamically.
+```csharp
+public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
+{
+    public class Row : SheetRow<GameConstant>
+    {
+        public string Value { get; private set; }
+
+        private int valueInt;
+        public int ValueInt => valueInt;
+
+        private float valueFloat;
+        public float ValueFloat => valueFloat;
+
+        public override void PostLoad(SheetConvertingContext context)
+        {
+            base.PostLoad(context);
+
+            int.TryParse(Value, out valueInt);
+            float.TryParse(Value, out valueFloat);
+        }
+    }
+
+    public string GetString(GameConstant key)
+    {
+        return Find(key).Value;
+    }
+
+    public int GetInt(GameConstant key)
+    {
+        return Find(key).ValueInt;
+    }
+
+    public float GetFloat(GameConstant key)
+    {
+        return Find(key).ValueFloat;
+    }
+}
+```
+Note that properties without setter are not serialized. Alternatively you can use `[JsonIgnore]` attribute.
+
+## Using Row Array
+Row arrays are used for simple nested structure. Below is example content of file `Heroes.xlsx`.
+| Id      | Name     | Strength | Inteligence | Vitality | StatMultiplier | RequiredExp | RequiredItem |
+|---------|----------|----------|-------------|----------|----------------|-------------|--------------|
+| HERO001 | Warrior  | 100      | 80          | 140      | 1              | 0           |              |
+|         |          |          |             |          | 1.2            | 10          |              |
+|         |          |          |             |          | 1.4            | 20          |              |
+|         |          |          |             |          | 1.6            | 40          |              |
+|         |          |          |             |          | 2              | 100         | ITEM_LVUP001 |
+| HERO002 | Mage     | 60       | 160         | 80       | 1              | 0           |              |
+|         |          |          |             |          | 1.2            | 10          |              |
+|         |          |          |             |          | 1.4            | 20          |              |
+|         |          |          |             |          | 1.6            | 40          |              |
+|         |          |          |             |          | 2              | 100         | ITEM_LVUP002 |
+| HERO003 | Assassin | 140      | 100         | 80       | 1              | 0           |              |
+|         |          |          |             |          | 1.2            | 10          |              |
+|         |          |          |             |          | 1.4            | 20          |              |
+|         |          |          |             |          | 1.6            | 40          |              |
+|         |          |          |             |          | 2              | 100         | ITEM_LVUP003 |
+
+Rows without `Id` is considered as part of previous row. Below corresponding code shows how to define row arrays.
+
+```csharp
+public class HeroSheet : Sheet<HeroSheet.Row>
+{
+    public class Row : SheetRowArray<Elem>
+    {
+        public string Name { get; private set; }
+
+        public int Strength { get; private set; }
+        public int Inteligence { get; private set; }
+        public int Vitality { get; private set; }
+
+        public Elem GetLevel(int level)
+        {
+            return this[level - 1];
+        }
+    }
+
+    public class Elem : SheetRowElem
+    {
+        public float StatMultiplier { get; private set; }
+        public int RequiredExp { get; private set; }
+        public string RequiredItem { get; private set; }
+    }
+}
+```
+Note that `SheetRowArray<TElem>` is implementing `IEnumerable<TElem>` and indexer.
 
 ## Using Cross-Sheet Reference
+Below code shows how to replace `string RequiredItem` to `ItemSheet.Reference RequiredItem` to add extra reliablity. `Sheet<TKey, TRow>.Reference` type is serialized as `TKey`, and verifies that row with same id exists in the sheet.
+
+```csharp
+public class Elem : SheetRowElem
+{
+    public float StatMultiplier { get; private set; }
+    public int RequiredExp { get; private set; }
+    public ItemSheet.Reference RequiredItem { get; private set; }
+}
+```
+Note that both `ItemSheet` and `HeroSheet` have to be one of properties on same `SheetContainer` class.
 
 ## Custom Importers
-
 User can create and customize their own importer by implementing `ISheetImporter`.
 
 ## Custom Verifiers
