@@ -1,3 +1,5 @@
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/cathei/BakingSheet) ![GitHub](https://img.shields.io/github/license/cathei/BakingSheet)
+
 # BakingSheet
 Easy datasheet management for C# and Unity
 
