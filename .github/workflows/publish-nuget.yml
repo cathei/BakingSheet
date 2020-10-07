@@ -1,8 +1,9 @@
 name: Publish to NuGet
 
 on:
-  release:
-    types: [published, created, edited, prereleased]
+  push:
+    tags: # v1.0, v1.1, etc..
+      - v*
 
 jobs:
   publish:
@@ -13,16 +14,15 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.301
-          source-url: https://nuget.pkg.github.com/cathei/index.json
-        env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: dotnet restore
       - name: Generate packages
         run: |
-          $env:RELEASE_VERSION = $env:RELEASE_TAG.substring(1) # Remove 'v'
+          $env:RELEASE_VERSION = $env:GITHUB_REF.substring(11) # Remove 'refs/tags/v'
           dotnet pack -c Release -p:PackageVersion=$env:RELEASE_VERSION -o out --no-restore
+      - name: Setup NuGet Source
+        run: dotnet nuget add source https://nuget.pkg.github.com/cathei/index.json --name github --username cathei --password $env:NUGET_TOKEN
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
       - name: Publish packages
-        run: dotnet nuget push out\*.nupkg --skip-duplicate
+        run: dotnet nuget push out\*.nupkg -s github --skip-duplicate

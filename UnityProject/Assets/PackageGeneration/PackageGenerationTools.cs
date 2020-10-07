@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,16 +12,19 @@ namespace Cathei.BakingSheet.Editor
         [MenuItem("Tools/Generate Package")]
         public static void GeneratePackage()
         {
-            var releaseTag = Environment.GetEnvironmentVariable("RELEASE_TAG");
+            var githubRef = Environment.GetEnvironmentVariable("GITHUB_REF");
 
-            // RELEASE_TAG = v1.X.X
-            // remove 'v' from tag
-            if (releaseTag != null)
-                PlayerSettings.bundleVersion = releaseTag.Substring(1);
+            // GITHUB_REF = refs/heads/v1.X.X
+            if (githubRef != null)
+                PlayerSettings.bundleVersion = githubRef.Substring(11);
+            
+            var outputPath = Path.Combine(
+                Path.GetDirectoryName(Directory.GetCurrentDirectory()), "Build",
+                $"BakingSheet.{PlayerSettings.bundleVersion}.unitypackage");
 
             AssetDatabase.ExportPackage(new string [] {
                 "Assets/Plugins/BakingSheet"
-            }, $"BakingSheet.{PlayerSettings.bundleVersion}.unitypackage", ExportPackageOptions.Recurse);
+            }, outputPath, ExportPackageOptions.Recurse);
 
             Debug.Log("Generating Unity Package Completed");
         }

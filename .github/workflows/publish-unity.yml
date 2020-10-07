@@ -1,40 +1,34 @@
 name: Publish UnityPackage
 
 on:
-  release:
-    types: [published, created, edited, prereleased]
+  push:
+    tags: # v1.0, v1.1, etc..
+      - v*
 
 jobs:
   generate-pacakge:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        projectPath:
-          - UnityProject
-        unityVersion:
-          - 2020.1.5f1
-        targetPlatform:
-          - StandaloneLinux64
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v1.1.0
         with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}
-          restore-keys: |
-            Library-
+          path: UnityProject/Library
+          key: Library
       - name: Generate package
         uses: webbertakken/unity-builder@v1.4
-        with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          targetPlatform: ${{ matrix.targetPlatform }}
-          buildMethod: Cathei.BakingSheet.Editor.PackageGenerationTools.GeneratePackage
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          projectPath: UnityProject
+          unityVersion: 2020.1.5f1
+          targetPlatform: StandaloneLinux64
+          buildsPath: Build
+          versioning: None
+          buildMethod: Cathei.BakingSheet.Editor.PackageGenerationTools.GeneratePackage
       - name: Upload Unity package
         uses: actions/upload-artifact@v2
         with:
-          name: Unity package
-          path: BakingSheet.*.unitypackage
+          name: Unity Package
+          path: Build/*.unitypackage
