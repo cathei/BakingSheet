@@ -215,14 +215,33 @@ Note that `SheetRowArray<TElem>` is implementing `IEnumerable<TElem>` and indexe
 Below code shows how to replace `string RequiredItem` to `ItemSheet.Reference RequiredItem` to add extra reliablity. `Sheet<TKey, TRow>.Reference` type is serialized as `TKey`, and verifies that row with same id exists in the sheet.
 
 ```csharp
-public class Elem : SheetRowElem
+public class HeroSheet : Sheet<HeroSheet.Row>
 {
-    public float StatMultiplier { get; private set; }
-    public int RequiredExp { get; private set; }
-    public ItemSheet.Reference RequiredItem { get; private set; }
+    public class Row : SheetRowArray<Elem>
+    {
+        // ...
+    }
+
+    public class Elem : SheetRowElem
+    {
+        public float StatMultiplier { get; private set; }
+        public int RequiredExp { get; private set; }
+        public ItemSheet.Reference RequiredItem { get; private set; }
+    }
 }
 ```
-Note that both `ItemSheet` and `HeroSheet` have to be one of properties on same `SheetContainer` class.
+
+```csharp
+public class SheetContainer : SheetContainerBase
+{
+    // ...
+
+    // use name of each matching sheet name from source
+    public HeroSheet Heroes { get; private set; }
+    public ItemSheet Items { get; private set; }
+}
+```
+Note that both `ItemSheet` and `HeroSheet` have to be one of the properties on same `SheetContainer` class.
 
 ## Custom Importers
 User can create and customize their own importer by implementing `ISheetImporter`.
