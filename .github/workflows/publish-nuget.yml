@@ -20,9 +20,7 @@ jobs:
         run: |
           $env:RELEASE_VERSION = $env:GITHUB_REF.substring(11) # Remove 'refs/tags/v'
           dotnet pack -c Release -p:PackageVersion=$env:RELEASE_VERSION -o out --no-restore
-      - name: Setup NuGet Source
-        run: dotnet nuget add source https://nuget.pkg.github.com/cathei/index.json --name github --username cathei --password $env:NUGET_TOKEN
+      - name: Publish packages
+        run: dotnet nuget push out\*.nupkg -s https://api.nuget.org/v3/index.json -k $env:NUGET_TOKEN --skip-duplicate
         env:
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-      - name: Publish packages
-        run: dotnet nuget push out\*.nupkg -s github --skip-duplicate
