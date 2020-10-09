@@ -130,7 +130,9 @@ namespace Cathei.BakingSheet
 
                 if (member is PropertyInfo pi)
                 {
-                    var hasSetMethod = pi.SetMethod != null;
+                    var hasSetMethod = pi.GetSetMethod(true) != null;
+
+                    property.Writable = hasSetMethod;
                     property.ShouldSerialize = property.ShouldDeserialize = _ => hasSetMethod;
                 }
 

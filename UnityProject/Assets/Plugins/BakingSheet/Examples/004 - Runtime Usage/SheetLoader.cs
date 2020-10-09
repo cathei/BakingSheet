@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Cathei.BakingSheet.Examples
@@ -9,12 +10,14 @@ namespace Cathei.BakingSheet.Examples
     {
         public SheetContainer Sheet { get; private set; }
 
-        private void Start()
+        private async void Start()
         {
             Sheet = new SheetContainer(new UnityLogger());
-            Sheet.Load(Path.Combine(Application.streamingAssetsPath, "Excel"));
+            await Sheet.Load(Path.Combine(Application.streamingAssetsPath, "Excel"));
+
+            Debug.Log(Sheet.Constants.Count);
+            Debug.Log(Sheet.Heroes["HERO001"].Count);
+            Debug.Log(Sheet.Items["ITEM_POTION001"].Name);
         }
-
     }
-
 }

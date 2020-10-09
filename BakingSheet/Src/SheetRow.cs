@@ -7,7 +7,7 @@ namespace Cathei.BakingSheet
 {
     public abstract class SheetRow<TKey>
     {
-        public TKey Id { get; set; }
+        public TKey Id { get; internal set; }
 
         public virtual void ConvertFromRaw(SheetConvertingContext context, RawSheetRow row)
         {
@@ -31,7 +31,7 @@ namespace Cathei.BakingSheet
     public abstract class SheetRowElem
     {
         [JsonIgnore]
-        public int Index { get; set; } 
+        public int Index { get; internal set; } 
 
         public virtual void PostLoad(SheetConvertingContext context)
         {
@@ -51,7 +51,7 @@ namespace Cathei.BakingSheet
         where TElem : SheetRowElem, new()
     {
         [JsonProperty]
-        protected List<TElem> Arr { get; set; }
+        protected List<TElem> Arr { get; private set; }
 
         [JsonIgnore]
         public int Count => Arr.Count;
