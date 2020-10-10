@@ -144,13 +144,13 @@ namespace Cathei.BakingSheet
         {
             public override ISheetReference ReadJson(JsonReader reader, Type objectType, ISheetReference existingValue, bool hasExistingValue, JsonSerializer serializer)
             {
-                existingValue.Deserialize(reader.Value);
+                existingValue.ReadJson(reader, serializer);
                 return existingValue;
             }
 
             public override void WriteJson(JsonWriter writer, ISheetReference value, JsonSerializer serializer)
             {
-                writer.WriteValue(value.Serialize());
+                value.WriteJson(writer, serializer);
             }
         }
 

@@ -10,8 +10,8 @@ namespace Cathei.BakingSheet
     {
         void Map(SheetConvertingContext context);
 
-        object Serialize();
-        void Deserialize(object obj);
+        void ReadJson(JsonReader reader, JsonSerializer serializer);
+        void WriteJson(JsonWriter writer, JsonSerializer serializer);
     }
 
     public interface ISheetReference<T> : ISheetReference
@@ -48,14 +48,14 @@ namespace Cathei.BakingSheet
                 }
             }
 
-            object ISheetReference.Serialize()
+            void ISheetReference.ReadJson(JsonReader reader, JsonSerializer serializer)
             {
-                return Id;
+                Id = (TKey)serializer.Deserialize(reader, typeof(TKey));
             }
 
-            void ISheetReference.Deserialize(object obj)
+            void ISheetReference.WriteJson(JsonWriter writer, JsonSerializer serializer)
             {
-                Id = (TKey)obj;
+                serializer.Serialize(writer, Id);
             }
 
             public static implicit operator TKey(Reference origin)
