@@ -18,20 +18,22 @@ namespace Cathei.BakingSheet
     public abstract class SheetVerifier
     {
         public virtual Type TargetAttribute => typeof(SheetAssetAttribute);
+        public virtual Type TargetType => typeof(object);
 
-        public abstract string Verify(Attribute attribute);
+        public abstract string Verify(Attribute attribute, object value);
     }
 
-    public abstract class SheetVerifier<T> : SheetVerifier
-        where T : SheetAssetAttribute
+    public abstract class SheetVerifier<TAttr, TValue> : SheetVerifier
+        where TAttr : SheetAssetAttribute
     {
-        public sealed override Type TargetAttribute => typeof(T);
+        public sealed override Type TargetAttribute => typeof(TAttr);
+        public sealed override Type TargetType => typeof(TValue);
 
-        public sealed override string Verify(Attribute attribute)
+        public sealed override string Verify(Attribute attribute, object value)
         {
-            return Verify(attribute as T);
+            return Verify((TAttr)attribute, (TValue)value);
         }
 
-        public abstract string Verify(T attribute);
+        public abstract string Verify(TAttr attribute, TValue value);
     }
 }

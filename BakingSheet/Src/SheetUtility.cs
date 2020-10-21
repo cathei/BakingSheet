@@ -105,16 +105,19 @@ namespace Cathei.BakingSheet
                 .Where(p => p.GetCustomAttribute(typeof(SheetAssetAttribute)) != null);
 
             var parentTag = context.Tag;
-            
+
             foreach (var prop in assetProps)
             {
                 context.SetTag(parentTag, prop.Name);
 
                 foreach (var verifier in context.Verifiers)
                 {
+                    if (!verifier.TargetType.IsAssignableFrom(prop.PropertyType))
+                        continue;
+
                     foreach (var att in prop.GetCustomAttributes(verifier.TargetAttribute))
                     {
-                        var err = verifier.Verify(att);
+                        var err = verifier.Verify(att, prop.GetValue(obj));
                         if (err != null)
                             context.Logger.LogError($"[{context.Tag}] Verification: {err}");
                     }
