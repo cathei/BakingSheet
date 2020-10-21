@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NReco.Csv" Version="1.0.0" />
+
     <!-- Assemblies already referenced by BakingSheet -->
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3">
       <IncludeAssets>compile</IncludeAssets>
