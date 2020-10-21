@@ -66,7 +66,7 @@ namespace Cathei.BakingSheet
                 _grid = gsheet.Data.First();
             }
 
-            public string GetCell(int row, int col)
+            public string GetCell(int col, int row)
             {
                 if (row >= _grid.RowData.Count ||
                     col >= _grid.RowData[row].Values?.Count)
