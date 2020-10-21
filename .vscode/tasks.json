@@ -5,7 +5,7 @@
     "tasks": [
         {
             "label": "unity: publish",
-            "dependsOn": [ "unity: publish core", "unity: publish excel", "unity: publish google" ],
+            "dependsOn": [ "unity: publish core", "unity: publish excel", "unity: publish google", "unity: publish csv" ],
             "dependsOrder": "sequence",
             "group": "build",
             "problemMatcher": [ "$tsc" ]
@@ -39,6 +39,17 @@
                 "publish", "-c", "Release",
                 "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/Google",
                 "BakingSheet.Importers.Google"
+            ],
+            "problemMatcher": [ "$tsc" ],
+        },
+        {
+            "label": "unity: publish csv",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "publish", "-c", "Release",
+                "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/CSV",
+                "BakingSheet.Importers.Csv"
             ],
             "problemMatcher": [ "$tsc" ],
         }
