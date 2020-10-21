@@ -51,9 +51,10 @@ public class SheetContainer : SheetContainerBase
 Importers are simple implementation extracts records from datasheet sources. These come as separated library, as it's user's decision to select datasheet source.
 User can have converting process, to convert datasheet to serialized files ahead of time and not include importers in production applications.
 
-BakingSheet supports two basic importers
+BakingSheet supports three basic importers
 * `BakingSheet.Importers.Excel`
 * `BakingSheet.Importers.Google`
+* `BakingSheet.Importers.Csv`
 
 Below code shows how to convert .xlsx files from `Excel/Files/Path` directory.
 ```csharp
