@@ -100,7 +100,12 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public async Task Bake(ISheetImporter importer)
+        public Task Bake(ISheetImporter importer)
+        {
+            return Bake(importer, TimeZoneInfo.Utc);
+        }
+
+        public async Task Bake(ISheetImporter importer, TimeZoneInfo timeZoneInfo)
         {
             AllSheets.Clear();
 
@@ -108,6 +113,7 @@ namespace Cathei.BakingSheet
             {
                 Container = this,
                 Logger = _logger,
+                TimeZoneInfo = timeZoneInfo
             };
 
             var sheetProps = GetType()

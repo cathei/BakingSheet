@@ -30,7 +30,7 @@ namespace Cathei.BakingSheet
 
                 try
                 {
-                    object value = ConvertValue(prop.PropertyType, item.Value);
+                    object value = ConvertValue(context, prop.PropertyType, item.Value);
                     prop.SetValue(obj, value);
                 }
                 catch (Exception ex)
@@ -40,7 +40,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public static object ConvertValue(Type type, string value)
+        public static object ConvertValue(SheetConvertingContext context, Type type, string value)
         {
             if (type.IsEnum)
             {
@@ -54,13 +54,13 @@ namespace Cathei.BakingSheet
                     .Select(x => x.GetGenericArguments()[0])
                     .First();
 
-                return Activator.CreateInstance(type, ConvertValue(targetType, value));
+                return Activator.CreateInstance(type, ConvertValue(context, targetType, value));
             }
 
             if(typeof(DateTime).IsAssignableFrom(type))
             {
-                // TODO timezone support
-                return DateTime.Parse(value);
+                var local = DateTime.Parse(value);
+                return TimeZoneInfo.ConvertTimeToUtc(local, context.TimeZoneInfo);
             }
 
             if(typeof(TimeSpan).IsAssignableFrom(type))
@@ -74,7 +74,7 @@ namespace Cathei.BakingSheet
                     return null;
 
                 var underlyingType = Nullable.GetUnderlyingType(type);
-                return ConvertValue(underlyingType, value);
+                return ConvertValue(context, underlyingType, value);
             }
 
             return Convert.ChangeType(value, type);
