@@ -10,7 +10,7 @@ namespace Cathei.BakingSheet
     // Used for reflection
     public abstract class Sheet
     {
-        internal string Name { get; set; }
+        public string Name { get; internal set; }
 
         internal abstract void ConvertFromRaw(RawSheet gsheet, SheetConvertingContext context);
         public abstract void PostLoad(SheetConvertingContext context);

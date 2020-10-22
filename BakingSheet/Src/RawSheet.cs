@@ -31,7 +31,7 @@ namespace Cathei.BakingSheet
 
         private void Init(ISheetImporterData data)
         {
-            GetSize(data, out int numColumns, out int numRows);
+            data.GetSize(out int numColumns, out int numRows);
 
             RawSheetRow dataRow = null;
 
@@ -58,41 +58,6 @@ namespace Cathei.BakingSheet
 
                 dataRow.Add(dict);
             }
-        }
- 
-        private void GetSize(ISheetImporterData data, out int numColumns, out int numRows)
-        {
-            int col = 0, row = 0;
-
-            // First row is configuration variables
-            // First column is data keys
-            // Find number of configuration variables
-            while (true)
-            {
-                var value = data.GetCell(col, 0);
-                if (string.IsNullOrEmpty(value))
-                    break;
-
-                ++col;
-            }
-
-            numColumns = col;
-
-            // Find number of data keys
-            while (true)
-            {
-                bool isEmptyRow = Enumerable.Range(0, numColumns).All(i => {
-                    var value = data.GetCell(i, row + 1);
-                    return string.IsNullOrEmpty(value);
-                });
-
-                if (isEmptyRow)
-                    break;
-
-                ++row;
-            }
-
-            numRows = row;
         }
    }
 }
