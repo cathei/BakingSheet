@@ -17,7 +17,7 @@ jobs:
           path: UnityProject/Library
           key: Library
       - name: Generate package
-        uses: webbertakken/unity-builder@v1.4
+        uses: game-ci/unity-builder@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
