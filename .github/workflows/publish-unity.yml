@@ -22,7 +22,7 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           projectPath: UnityProject
-          unityVersion: 2020.1.5f1
+          unityVersion: 2020.3.4f1
           targetPlatform: StandaloneLinux64
           buildsPath: Build
           versioning: None
