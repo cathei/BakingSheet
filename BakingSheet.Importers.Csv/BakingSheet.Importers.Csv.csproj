@@ -12,7 +12,7 @@
     <PackageReference Include="NReco.Csv" Version="1.0.0" />
 
     <!-- Assemblies already referenced by BakingSheet -->
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1">
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3">
       <IncludeAssets>compile</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8">
