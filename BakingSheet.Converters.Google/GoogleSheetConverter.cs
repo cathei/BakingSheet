@@ -1,27 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Raw;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 using GSheet = Google.Apis.Sheets.v4.Data.Sheet;
 
 namespace Cathei.BakingSheet
 {
-    public class GoogleSheetImporter : ISheetImporter
+    public class GoogleSheetConverter : RawSheetImporter
     {
         private string _gsheetAddress;
         private ICredential _credential;
         private Spreadsheet _spreadsheet;
 
-        public GoogleSheetImporter(string gsheetAddress, string credential)
+        public GoogleSheetConverter(string gsheetAddress, string credential, TimeZoneInfo timeZoneInfo)
+            : base(timeZoneInfo)
         {
             _gsheetAddress = gsheetAddress;
             _credential = GoogleCredential.
@@ -44,7 +42,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public async Task<bool> Load()
+        protected override async Task<bool> LoadData()
         {
             using (var service = new SheetsService(new BaseClientService.Initializer() {
                 HttpClientInitializer = _credential
@@ -57,16 +55,16 @@ namespace Cathei.BakingSheet
             }
         }
 
-        private class Data : ISheetImporterData
+        private class Page : RawSheetImporterPage
         {
             private GridData _grid;
 
-            public Data(GSheet gsheet)
+            public Page(GSheet gsheet)
             {
                 _grid = gsheet.Data.First();
             }
 
-            public string GetCell(int col, int row)
+            public override string GetCell(int col, int row)
             {
                 if (row >= _grid.RowData.Count ||
                     col >= _grid.RowData[row].Values?.Count)
@@ -77,13 +75,13 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public ISheetImporterData GetData(string sheetName)
+        protected override RawSheetImporterPage GetPage(string sheetName)
         {
             var gsheet = _spreadsheet.Sheets.FirstOrDefault(x => x.Properties.Title == sheetName);
             if (gsheet == null)
                 return null;
 
-            return new Data(gsheet);
+            return new Page(gsheet);
         }
     }
 }

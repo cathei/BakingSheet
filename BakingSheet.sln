@@ -5,11 +5,13 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingSheet", "BakingSheet\BakingSheet.csproj", "{F7935898-25C6-4650-9045-029CDCD113C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingSheet.Importers.Excel", "BakingSheet.Importers.Excel\BakingSheet.Importers.Excel.csproj", "{13327ADC-CD9F-483B-8287-F29C34C431BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingSheet.Converters.Excel", "BakingSheet.Converters.Excel\BakingSheet.Converters.Excel.csproj", "{13327ADC-CD9F-483B-8287-F29C34C431BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingSheet.Importers.Google", "BakingSheet.Importers.Google\BakingSheet.Importers.Google.csproj", "{F88556DA-6BFD-4DBD-AAA6-EF9807791F94}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingSheet.Converters.Google", "BakingSheet.Converters.Google\BakingSheet.Converters.Google.csproj", "{F88556DA-6BFD-4DBD-AAA6-EF9807791F94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingSheet.Importers.Csv", "BakingSheet.Importers.Csv\BakingSheet.Importers.Csv.csproj", "{12E960E7-2742-4B2B-84D9-90076A248F6C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingSheet.Converters.Csv", "BakingSheet.Converters.Csv\BakingSheet.Converters.Csv.csproj", "{12E960E7-2742-4B2B-84D9-90076A248F6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingSheet.Converters.Json", "BakingSheet.Converters.Json\BakingSheet.Converters.Json.csproj", "{4E57EA7F-0378-4F3C-9F8C-1156917C160A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,5 +74,17 @@ Global
 		{12E960E7-2742-4B2B-84D9-90076A248F6C}.Release|x64.Build.0 = Release|Any CPU
 		{12E960E7-2742-4B2B-84D9-90076A248F6C}.Release|x86.ActiveCfg = Release|Any CPU
 		{12E960E7-2742-4B2B-84D9-90076A248F6C}.Release|x86.Build.0 = Release|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Debug|x64.Build.0 = Debug|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Debug|x86.Build.0 = Debug|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Release|x64.ActiveCfg = Release|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Release|x64.Build.0 = Release|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Release|x86.ActiveCfg = Release|Any CPU
+		{4E57EA7F-0378-4F3C-9F8C-1156917C160A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

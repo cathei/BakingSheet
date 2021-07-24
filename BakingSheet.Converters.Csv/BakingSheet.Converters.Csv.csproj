@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>BakingSheet.Importers.Csv</PackageId>
-    <PackageDescription>BakingSheet importer for CSV files</PackageDescription>
+    <PackageId>BakingSheet.Converters.Csv</PackageId>
+    <PackageDescription>BakingSheet converter for CSV files</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
@@ -12,9 +12,6 @@
     <PackageReference Include="NReco.Csv" Version="1.0.0" />
 
     <!-- Assemblies already referenced by BakingSheet -->
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3">
-      <IncludeAssets>compile</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8">
       <IncludeAssets>compile</IncludeAssets>
     </PackageReference>

@@ -2,37 +2,35 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Raw;
 using ExcelDataReader;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Cathei.BakingSheet
 {
-    public class ExcelSheetImporter : ISheetImporter
+    public class ExcelSheetConverter : RawSheetImporter
     {
         private string _loadPath;
         private string _searchPattern;
         private Dictionary<string, DataTable> _dataTables;
 
-        public ExcelSheetImporter(string loadPath, string searchPattern = "*.xlsx")
+        public ExcelSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string searchPattern = "*.xlsx")
+            : base(timeZoneInfo)
         {
             _loadPath = loadPath;
             _searchPattern = searchPattern;
         }
 
-        private class Data : ISheetImporterData
+        private class Page : RawSheetImporterPage
         {
             private DataTable _table;
 
-            public Data(DataTable table)
+            public Page(DataTable table)
             {
                 _table = table;
             }
 
-            public string GetCell(int col, int row)
+            public override string GetCell(int col, int row)
             {
                 if (col >= _table.Columns.Count || row >= _table.Rows.Count)
                     return null;
@@ -41,7 +39,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public Task<bool> Load()
+        protected override Task<bool> LoadData()
         {
             var files = Directory.GetFiles(_loadPath, _searchPattern);
 
@@ -71,10 +69,10 @@ namespace Cathei.BakingSheet
             return Task.FromResult(true);
         }
 
-        public ISheetImporterData GetData(string sheetName)
+        protected override RawSheetImporterPage GetPage(string sheetName)
         {
             if (_dataTables.TryGetValue(sheetName, out var table))
-                return new Data(table);
+                return new Page(table);
             return null;
         }
     }

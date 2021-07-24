@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Raw;
 using NReco.Csv;
 
 namespace Cathei.BakingSheet
 {
-    public class CsvSheetImporter : ISheetImporter
+    public class CsvSheetConverter : RawSheetImporter
     {
         private string _loadPath;
         private string _searchPattern;
@@ -23,22 +25,23 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public CsvSheetImporter(string loadPath, string searchPattern = "*.csv")
+        public CsvSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string searchPattern = "*.csv")
+            : base(timeZoneInfo)
         {
             _loadPath = loadPath;
             _searchPattern = searchPattern;
         }
 
-        private class Data : ISheetImporterData
+        private class Page : RawSheetImporterPage
         {
             private CsvTable _table;
 
-            public Data(CsvTable table)
+            public Page(CsvTable table)
             {
                 _table = table;
             }
 
-            public string GetCell(int col, int row)
+            public override string GetCell(int col, int row)
             {
                 if (row >= _table.Count)
                     return null;
@@ -50,7 +53,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public Task<bool> Load()
+        protected override Task<bool> LoadData()
         {
             var files = Directory.GetFiles(_loadPath, _searchPattern);
 
@@ -78,10 +81,10 @@ namespace Cathei.BakingSheet
             return Task.FromResult(true);
         }
 
-        public ISheetImporterData GetData(string sheetName)
+        protected override RawSheetImporterPage GetPage(string sheetName)
         {
             if (_dataTables.TryGetValue(sheetName, out var table))
-                return new Data(table);
+                return new Page(table);
             return null;
         }
     }

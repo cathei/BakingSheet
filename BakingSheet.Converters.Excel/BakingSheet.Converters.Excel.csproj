@@ -2,20 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>BakingSheet.Importers.Google</PackageId>
-    <PackageDescription>BakingSheet importer for Google Sheet</PackageDescription>
+    <PackageId>BakingSheet.Importers.Excel</PackageId>
+    <PackageDescription>BakingSheet importer for Excel files</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.49.0.2072" />
-    <PackageReference Include="Google.Apis.Sheets.v4" Version="1.49.0.2091" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
 
     <!-- Assemblies already referenced by BakingSheet -->
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3">
-      <IncludeAssets>compile</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8">
       <IncludeAssets>compile</IncludeAssets>
     </PackageReference>
