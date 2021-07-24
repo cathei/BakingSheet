@@ -7,17 +7,16 @@
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "BakingSheet.Importers.Excel/1.0.0": {
+      "BakingSheet.Converters.Excel/1.0.0": {
         "dependencies": {
           "BakingSheet": "1.0.0",
           "ExcelDataReader": "3.6.0",
           "ExcelDataReader.DataSet": "3.6.0",
           "Microsoft.Extensions.Logging.Abstractions": "3.1.8",
-          "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.3"
+          "NETStandard.Library": "2.0.3"
         },
         "runtime": {
-          "BakingSheet.Importers.Excel.dll": {}
+          "BakingSheet.Converters.Excel.dll": {}
         }
       },
       "ExcelDataReader/3.6.0": {
@@ -45,12 +44,11 @@
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
-      },
-      "Newtonsoft.Json/12.0.3": {}
+      }
     }
   },
   "libraries": {
-    "BakingSheet.Importers.Excel/1.0.0": {
+    "BakingSheet.Converters.Excel/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -89,13 +87,6 @@
       "sha512": "sha512-st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
       "path": "netstandard.library/2.0.3",
       "hashPath": "netstandard.library.2.0.3.nupkg.sha512"
-    },
-    "Newtonsoft.Json/12.0.3": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg==",
-      "path": "newtonsoft.json/12.0.3",
-      "hashPath": "newtonsoft.json.12.0.3.nupkg.sha512"
     }
   }
 }

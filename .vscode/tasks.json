@@ -5,7 +5,13 @@
     "tasks": [
         {
             "label": "unity: publish",
-            "dependsOn": [ "unity: publish core", "unity: publish excel", "unity: publish google", "unity: publish csv" ],
+            "dependsOn": [
+                "unity: publish core",
+                "unity: publish excel",
+                "unity: publish google",
+                "unity: publish csv",
+                "unity: publish json"
+            ],
             "dependsOrder": "sequence",
             "group": "build",
             "problemMatcher": [ "$tsc" ]
@@ -27,7 +33,7 @@
             "args": [
                 "publish", "-c", "Release",
                 "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/Excel",
-                "BakingSheet.Importers.Excel"
+                "BakingSheet.Converters.Excel"
             ],
             "problemMatcher": [ "$tsc" ],
         },
@@ -38,7 +44,7 @@
             "args": [
                 "publish", "-c", "Release",
                 "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/Google",
-                "BakingSheet.Importers.Google"
+                "BakingSheet.Converters.Google"
             ],
             "problemMatcher": [ "$tsc" ],
         },
@@ -49,7 +55,18 @@
             "args": [
                 "publish", "-c", "Release",
                 "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/CSV",
-                "BakingSheet.Importers.Csv"
+                "BakingSheet.Converters.Csv"
+            ],
+            "problemMatcher": [ "$tsc" ],
+        },
+        {
+            "label": "unity: publish json",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "publish", "-c", "Release",
+                "-o", "UnityProject/Assets/Plugins/BakingSheet/Json",
+                "BakingSheet.Converters.Json"
             ],
             "problemMatcher": [ "$tsc" ],
         }
