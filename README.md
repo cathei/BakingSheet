@@ -51,7 +51,7 @@ public class SheetContainer : SheetContainerBase
 Converters are simple implementation import/export records from datasheet sources. These come as separated library, as it's user's decision to select datasheet source.
 User can have converting process, to convert datasheet to other format ahead of time and not include heavy converters in production applications.
 
-BakingSheet supports three basic importers
+BakingSheet supports four basic converters. They're included in .unitypackage as well.
 | Package Name                  | Format                       | Supports Import | Supports Export |
 |-------------------------------|------------------------------|-----------------|-----------------|
 | [BakingSheet.Converters.Excel](https://www.nuget.org/packages/BakingSheet.Converters.Excel/)  | Microsoft Excel              | O               | X               |
