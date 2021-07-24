@@ -63,7 +63,7 @@ namespace Cathei.BakingSheet
                 using (var file = File.OpenText(path))
                     data = await file.ReadToEndAsync();
 
-                var sheet = Deserialize(data, prop.PropertyType, context.Logger) as Sheet;
+                var sheet = Deserialize(data, prop.PropertyType, context.Logger) as ISheet;
                 prop.SetValue(context.Container, sheet);
 
                 if (sheet != null)

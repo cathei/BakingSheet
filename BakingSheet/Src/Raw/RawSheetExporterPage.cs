@@ -23,11 +23,9 @@ namespace Cathei.BakingSheet.Raw
             return true;
         }
 
-        public static void Export(this IRawSheetExporterPage page, RawSheetConverter exporter, SheetConvertingContext context, Sheet sheet)
+        public static void Export(this IRawSheetExporterPage page, RawSheetConverter exporter, SheetConvertingContext context, ISheet sheet)
         {
-            var sheetDict = sheet as IDictionary;
-
-            if (sheetDict.Count == 0)
+            if (sheet.Count == 0)
                 return;
 
             var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty;
@@ -36,7 +34,7 @@ namespace Cathei.BakingSheet.Raw
 
             int pageRow = 1;
 
-            foreach (ISheetRow sheetRow in sheetDict.Values)
+            foreach (ISheetRow sheetRow in sheet.Values)
             {
                 if (sheetRowProperties == null)
                 {

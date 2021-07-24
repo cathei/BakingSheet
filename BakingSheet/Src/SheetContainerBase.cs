@@ -13,7 +13,7 @@ namespace Cathei.BakingSheet
     {
         public bool IsLoaded { get; private set; }
 
-        public List<Sheet> AllSheets = new List<Sheet>();
+        public List<ISheet> AllSheets = new List<ISheet>();
 
         private ILogger _logger;
 
@@ -26,7 +26,7 @@ namespace Cathei.BakingSheet
         {
             return GetType()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(p => p.PropertyType.IsSubclassOf(typeof(Sheet)));
+                .Where(p => typeof(ISheet).IsAssignableFrom(p.PropertyType));
         }
 
         public async Task<bool> Bake(ISheetImporter importer)

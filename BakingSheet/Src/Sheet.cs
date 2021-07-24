@@ -5,19 +5,22 @@ using System.Collections.Generic;
 namespace Cathei.BakingSheet
 {
     // Used for reflection
-    public abstract class Sheet
+    public interface ISheet : IDictionary
     {
-        public string Name { get; set; }
-        public abstract Type RowType { get; }
+        string Name { get; set; }
+        Type RowType { get; }
 
-        public abstract void PostLoad(SheetConvertingContext context);
-        public abstract void VerifyAssets(SheetConvertingContext context);
+        void PostLoad(SheetConvertingContext context);
+        void VerifyAssets(SheetConvertingContext context);
     }
 
-    public abstract partial class Sheet<TKey, TValue> : Sheet, IDictionary<TKey, TValue>, IDictionary
+    public abstract partial class Sheet<TKey, TValue> : ISheet, IDictionary<TKey, TValue>
         where TValue : SheetRow<TKey>, new()
     {
         private Dictionary<TKey, TValue> Data { get; } = new Dictionary<TKey, TValue>();
+
+        public string Name { get; set; }
+        public Type RowType => typeof(TValue);
 
         public ICollection<TKey> Keys => Data.Keys;
         public ICollection<TValue> Values => Data.Values;
@@ -33,9 +36,7 @@ namespace Cathei.BakingSheet
 
         public TValue this[TKey id] => Find(id);
 
-        public override Type RowType => typeof(TValue);
-
-        public override void PostLoad(SheetConvertingContext context)
+        public void PostLoad(SheetConvertingContext context)
         {
             foreach (var row in Values)
             {
@@ -44,7 +45,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public override void VerifyAssets(SheetConvertingContext context)
+        public void VerifyAssets(SheetConvertingContext context)
         {
             foreach (var row in Values)
             {
@@ -53,7 +54,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        #region IDictionary interface
+        #region IDictionary interface (needed for json serialization)
 
         object IDictionary.this[object key]
         {

@@ -29,7 +29,7 @@ namespace Cathei.BakingSheet.Raw
             return true;
         }
 
-        public static void Import(this IRawSheetImporterPage page, RawSheetImporter importer, SheetConvertingContext context, Sheet sheet)
+        public static void Import(this IRawSheetImporterPage page, RawSheetImporter importer, SheetConvertingContext context, ISheet sheet)
         {
             ISheetRow sheetRow = null;
 
@@ -47,7 +47,7 @@ namespace Cathei.BakingSheet.Raw
 
                     page.ImportToObject(importer, context, sheetRow, pageRow);
 
-                    (sheet as IDictionary).Add(sheetRow.Id, sheetRow);
+                    sheet.Add(sheetRow.Id, sheetRow);
                 }
 
                 if (sheetRow is ISheetRowArray sheetRowArray)

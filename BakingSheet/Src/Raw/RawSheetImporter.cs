@@ -37,7 +37,7 @@ namespace Cathei.BakingSheet.Raw
                     continue;
                 }
 
-                var sheet = Activator.CreateInstance(prop.PropertyType) as Sheet;
+                var sheet = Activator.CreateInstance(prop.PropertyType) as ISheet;
 
                 sheet.Name = prop.Name;
                 page.Import(this, context, sheet);
