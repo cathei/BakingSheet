@@ -41,13 +41,21 @@ namespace Cathei.BakingSheet.Raw
 
                 if (!string.IsNullOrEmpty(rowId))
                 {
-                    context.SetTag(parentTag, rowId);
-
                     sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
 
                     page.ImportToObject(importer, context, sheetRow, pageRow);
 
-                    sheet.Add(sheetRow.Id, sheetRow);
+                    context.SetTag(parentTag, sheetRow.Id);
+
+                    if (sheet.Contains(sheetRow.Id))
+                    {
+                        context.Logger.LogError($"[{context.Tag}] Already has row with id \"{sheetRow.Id}\"");
+                        sheetRow = null;
+                    }
+                    else
+                    {
+                        sheet.Add(sheetRow.Id, sheetRow);
+                    }
                 }
 
                 if (sheetRow is ISheetRowArray sheetRowArray)
