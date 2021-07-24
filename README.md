@@ -47,25 +47,28 @@ public class SheetContainer : SheetContainerBase
 }
 ```
 
-## Importers
-Importers are simple implementation extracts records from datasheet sources. These come as separated library, as it's user's decision to select datasheet source.
-User can have converting process, to convert datasheet to serialized files ahead of time and not include importers in production applications.
+## Converters
+Converters are simple implementation import/export records from datasheet sources. These come as separated library, as it's user's decision to select datasheet source.
+User can have converting process, to convert datasheet to other format ahead of time and not include heavy converters in production applications.
 
 BakingSheet supports three basic importers
-* `BakingSheet.Importers.Excel`
-* `BakingSheet.Importers.Google`
-* `BakingSheet.Importers.Csv`
+| Package Name                  | Format                       | Supports Import | Supports Export |
+|-------------------------------|------------------------------|-----------------|-----------------|
+| BakingSheet.Converters.Excel  | Microsoft Excel              | O               | X               |
+| BakingSheet.Converters.Google | Google Sheet                 | O               | X               |
+| BakingSheet.Converters.Csv    | Comma-Separated Values (CSV) | O               | O               |
+| BakingSheet.Converters.Json   | JSON                         | O               | O               |
 
 Below code shows how to convert .xlsx files from `Excel/Files/Path` directory.
 ```csharp
 // pass logger to receive logs
 var sheetContainer = new SheetContainer(logger);
 
-// create excel importer from path
-var excelImporter = new ExcelSheetImporter("Excel/Files/Path");
+// create excel converter from path
+var excelConverter = new ExcelSheetConverter("Excel/Files/Path");
 
-// bake sheets from excel importer
-await sheetContainer.Bake(excelImporter);
+// bake sheets from excel converter
+await sheetContainer.Bake(excelConverter);
 ```
 
 ## Save and Load Converted Datasheet
@@ -161,7 +164,7 @@ public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
     }
 }
 ```
-Note that properties without setter are not serialized. Alternatively you can use `[JsonIgnore]` attribute.
+Note that properties without setter are not serialized. Alternatively you can use `[NonSerialized]` attribute.
 
 ## Using Row Array
 Row arrays are used for simple nested structure. Below is example content of file `Heroes.xlsx`.
@@ -244,8 +247,8 @@ public class SheetContainer : SheetContainerBase
 ```
 Note that both `ItemSheet` and `HeroSheet` have to be one of the properties on same `SheetContainer` class.
 
-## Custom Importers
-User can create and customize their own importer by implementing `ISheetImporter`.
+## Custom Converters
+User can create and customize their own converter by implementing `ISheetImporter` and `ISheetExporter`.
 
 ## Custom Verifiers
 You can verify datasheet sanity with custom verifiers. For example, you can define `ResourceAttribute` to mark columns that should reference path inside of Unity's Resources folder.
