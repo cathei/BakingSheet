@@ -64,7 +64,7 @@ namespace Cathei.BakingSheet
                     data = await file.ReadToEndAsync();
 
                 var sheet = Deserialize(data, prop.PropertyType, context.Logger) as Sheet;
-                prop.SetValue(this, sheet);
+                prop.SetValue(context.Container, sheet);
 
                 if (sheet != null)
                 {
@@ -82,7 +82,7 @@ namespace Cathei.BakingSheet
 
             foreach (var prop in sheetProps)
             {
-                var sheet = prop.GetValue(this);
+                var sheet = prop.GetValue(context.Container);
                 var data = Serialize(sheet, prop.PropertyType, context.Logger);
 
                 var path = Path.Combine(BasePath, $"{prop.Name}.{Extension}");

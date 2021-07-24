@@ -40,10 +40,10 @@ namespace Cathei.BakingSheet.Raw
                 var rawSheet = new RawSheet(page);
                 var sheet = Activator.CreateInstance(prop.PropertyType) as Sheet;
 
+                sheet.Name = prop.Name;
                 rawSheet.WriteToSheet(this, context, sheet);
                 prop.SetValue(context.Container, sheet);
 
-                sheet.Name = prop.Name;
                 context.Container.AllSheets.Add(sheet);
             }
  
@@ -54,9 +54,9 @@ namespace Cathei.BakingSheet.Raw
         {
             if (type.IsEnum)
             {
-                return Enum.Parse(type, value);
+                return Enum.Parse(type, value, true);
             }
-            
+ 
             if (typeof(ISheetReference).IsAssignableFrom(type))
             {
                 var reference = Activator.CreateInstance(type) as ISheetReference;

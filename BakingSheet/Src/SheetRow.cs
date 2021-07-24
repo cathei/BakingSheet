@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 namespace Cathei.BakingSheet
 {
-    internal interface ISheetRow
+    public interface ISheetRow
     {
         object Id { get; }
     }
 
-    internal interface ISheetRowArray
+    public interface ISheetRowArray
     {
         IList Arr { get; }
         Type ElemType { get; }
@@ -52,11 +52,10 @@ namespace Cathei.BakingSheet
         }
     }
 
-    [Serializable]
     public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, IEnumerable<TElem>, ISheetRowArray
         where TElem : SheetRowElem, new()
     {
-        protected List<TElem> Arr { get; private set; }
+        protected List<TElem> Arr { get; private set; } = new List<TElem>();
 
         IList ISheetRowArray.Arr => Arr;
         public Type ElemType => typeof(TElem);

@@ -6,6 +6,17 @@ namespace Cathei.BakingSheet
 {
     internal class JsonSheetContractResolver : DefaultContractResolver
     {
+        protected override JsonContract CreateContract(System.Type objectType)
+        {
+            if (objectType.IsAssignableFrom(typeof(ISheetRow)) ||
+                objectType.IsAssignableFrom(typeof(Sheet)))
+            {
+                return CreateObjectContract(objectType);
+            }
+
+            return base.CreateContract(objectType);
+        }
+
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);

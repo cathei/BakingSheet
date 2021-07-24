@@ -20,7 +20,7 @@ namespace Cathei.BakingSheet.Raw
         {
             data.GetSize(out int numColumns, out int numRows);
 
-            RawSheetRow dataRow = null;
+            RawSheetRow rawRow = null;
 
             for (int row = 1; row < numRows + 1; ++row)
             {
@@ -28,8 +28,8 @@ namespace Cathei.BakingSheet.Raw
 
                 if (!string.IsNullOrEmpty(rowId))
                 {
-                    dataRow = new RawSheetRow();
-                    Rows.Add(dataRow);
+                    rawRow = new RawSheetRow();
+                    Rows.Add(rawRow);
                 }
 
                 var dict = new Dictionary<string, string>();
@@ -43,7 +43,7 @@ namespace Cathei.BakingSheet.Raw
                         dict.Add(columnName, valueStr);
                 }
 
-                dataRow.Add(dict);
+                rawRow.Add(dict);
             }
         }
 
@@ -51,17 +51,17 @@ namespace Cathei.BakingSheet.Raw
         {
             foreach (var rawRow in Rows)
             {
+                context.SetTag(sheet.Name);
+
                 try
                 {
-                    context.SetTag(sheet.Name);
-
                     var row = Activator.CreateInstance(sheet.RowType) as ISheetRow;
                     rawRow.WriteToSheetRow(importer, context, row);
                     (sheet as IDictionary).Add(row.Id, row);
                 }
                 catch (Exception ex)
                 {
-                    context.Logger.LogError(ex, ex.Message);
+                    context.Logger.LogError(ex, $"[{context.Tag}] {ex.Message}");
                 }
             }
         }

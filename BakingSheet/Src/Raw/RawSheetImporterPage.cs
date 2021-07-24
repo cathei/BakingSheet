@@ -10,9 +10,7 @@ namespace Cathei.BakingSheet.Raw
         {
             int col = 0, row = 0;
 
-            // First row is configuration variables
-            // First column is data keys
-            // Find number of configuration variables
+            // Find number of columns
             while (true)
             {
                 var value = GetCell(col, 0);
@@ -24,7 +22,7 @@ namespace Cathei.BakingSheet.Raw
 
             numColumns = col;
 
-            // Find number of data keys
+            // Find number of rows
             while (true)
             {
                 bool isEmptyRow = Enumerable.Range(0, numColumns).All(i => {

@@ -17,21 +17,19 @@ namespace Cathei.BakingSheet.Raw
             return string.Join(",", infos);
         }
 
-        internal void WriteToSheetRow(RawSheetImporter importer, SheetConvertingContext context, ISheetRow obj)
+        internal void WriteToSheetRow(RawSheetImporter importer, SheetConvertingContext context, ISheetRow row)
         {
             var parentTag = context.Tag;
 
-            context.SetTag(parentTag, obj.Id);
+            WriteToObject(importer, context, row, 0);
 
-            WriteToObject(importer, context, obj, 0);
-
-            if (obj is ISheetRowArray rowArr)
+            if (row is ISheetRowArray rowArr)
             {
                 var elemType = rowArr.ElemType;
 
                 for (int i = 0; i < Count; ++i)
                 {
-                    context.SetTag(parentTag, obj.Id, i);
+                    context.SetTag(parentTag, row.Id, i);
 
                     var elem = Activator.CreateInstance(elemType);
                     WriteToObject(importer, context, elem, i);
@@ -47,7 +45,7 @@ namespace Cathei.BakingSheet.Raw
 
             var parentTag = context.Tag;
 
-            foreach (var item in this[0])
+            foreach (var item in this[index])
             {
                 var prop = type.GetProperty(item.Key, bindingFlags);
                 if (prop == null)
@@ -62,7 +60,7 @@ namespace Cathei.BakingSheet.Raw
                 }
                 catch (Exception ex)
                 {
-                    context.Logger.LogError($"[{context.Tag}] Failed to convert value \"{item.Value}\" of type {prop.PropertyType}\n{ex}");
+                    context.Logger.LogError(ex, $"[{context.Tag}] Failed to convert value \"{item.Value}\" of type {prop.PropertyType}");
                 }
             }
         }
