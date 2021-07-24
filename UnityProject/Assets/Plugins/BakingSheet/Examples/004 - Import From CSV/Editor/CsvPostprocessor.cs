@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,18 +18,22 @@ namespace Cathei.BakingSheet.Examples
             if (csvAsset != null)
             {
                 var csvPath = Path.GetDirectoryName(csvAsset);
+                var jsonPath = Path.Combine(Application.streamingAssetsPath, "CSV");
 
                 var logger = new UnityLogger();
                 var sheetContainer = new SheetContainer(logger);
 
-                // create excel importer from path
-                var csvImporter = new CsvSheetImporter(csvPath);
+                // create csv converter from path
+                var csvConverter = new CsvSheetConverter(csvPath, TimeZoneInfo.Utc);
 
-                // bake sheets from excel importer
-                await sheetContainer.Bake(csvImporter);
+                // bake sheets from csv converter
+                await sheetContainer.Bake(csvConverter);
+
+                // create csv converter to path
+                var jsonConverter = new JsonSheetConverter(jsonPath);
 
                 // save datasheet to streaming assets
-                await sheetContainer.Store(Path.Combine(Application.streamingAssetsPath, "CSV"));
+                await sheetContainer.Store(jsonConverter);
 
                 AssetDatabase.Refresh();
 

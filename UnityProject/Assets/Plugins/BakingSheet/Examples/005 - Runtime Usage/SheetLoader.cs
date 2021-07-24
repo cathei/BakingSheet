@@ -12,8 +12,11 @@ namespace Cathei.BakingSheet.Examples
 
         private async void Start()
         {
+            var jsonPath = Path.Combine(Application.streamingAssetsPath, "Excel");
+            var jsonConverter = new JsonSheetConverter(jsonPath);
+
             Sheet = new SheetContainer(new UnityLogger());
-            await Sheet.Load(Path.Combine(Application.streamingAssetsPath, "Excel"));
+            await Sheet.Bake(jsonConverter);
 
             Debug.Log(Sheet.Constants.Count);
             Debug.Log(Sheet.Heroes["HERO001"].Count);

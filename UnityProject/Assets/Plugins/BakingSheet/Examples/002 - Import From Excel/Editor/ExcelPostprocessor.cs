@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,18 +18,22 @@ namespace Cathei.BakingSheet.Examples
             if (excelAsset != null)
             {
                 var excelPath = Path.GetDirectoryName(excelAsset);
+                var jsonPath = Path.Combine(Application.streamingAssetsPath, "Excel");
 
                 var logger = new UnityLogger();
                 var sheetContainer = new SheetContainer(logger);
 
-                // create excel importer from path
-                var excelImporter = new ExcelSheetImporter(excelPath);
+                // create excel converter from path
+                var excelConverter = new ExcelSheetConverter(excelPath, TimeZoneInfo.Utc);
 
-                // bake sheets from excel importer
-                await sheetContainer.Bake(excelImporter);
+                // bake sheets from excel converter
+                await sheetContainer.Bake(excelConverter);
+
+                // create json converter to path
+                var jsonConverter = new JsonSheetConverter(jsonPath);
 
                 // save datasheet to streaming assets
-                await sheetContainer.Store(Path.Combine(Application.streamingAssetsPath, "Excel"));
+                await sheetContainer.Store(jsonConverter);
 
                 AssetDatabase.Refresh();
 
