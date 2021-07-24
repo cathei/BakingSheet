@@ -7,7 +7,7 @@ namespace Cathei.BakingSheet
     // Used for reflection
     public abstract class Sheet
     {
-        public string Name { get; internal set; }
+        public string Name { get; set; }
         public abstract Type RowType { get; }
 
         public abstract void PostLoad(SheetConvertingContext context);

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>BakingSheet.Importers.Json</PackageId>
+    <PackageDescription>BakingSheet importer for Excel files</PackageDescription>
+    <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+
+    <!-- Assemblies already referenced by BakingSheet -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8">
+      <IncludeAssets>compile</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BakingSheet\BakingSheet.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>
