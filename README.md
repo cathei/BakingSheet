@@ -72,16 +72,19 @@ await sheetContainer.Bake(excelConverter);
 ```
 
 ## Save and Load Converted Datasheet
-Below code shows how to save and load serialized json.
+Below code shows how to save and load converted json.
 
 ```csharp
+// create json converter from path
+var jsonConverter = new JsonSheetConverter("Saved/Files/Path");
+
 // save as json
-await sheetContainer.Store("Save/Files/Path");
+await sheetContainer.Store(jsonConverter);
 
 // later, load from json
-await sheetContainer.Load("Save/Files/Path");
+await sheetContainer.Bake(jsonConverter);
 ```
-You can use `processor` parameter to customize serialization process.
+You can extend `JsonSheetConverter` to customize serialization process.
 
 ## Accessing Row
 Below code shows how to access specific `ItemSheet.Row`.
