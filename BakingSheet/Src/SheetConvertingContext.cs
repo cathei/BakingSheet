@@ -8,7 +8,6 @@ namespace Cathei.BakingSheet
         public SheetContainerBase Container { get; set; }
         public string Tag { get; set; }
         public ILogger Logger { get; set; }
-        public TimeZoneInfo TimeZoneInfo { get; set; }
         public SheetVerifier[] Verifiers { get; set; }
 
         public void SetTag(params object[] tags)

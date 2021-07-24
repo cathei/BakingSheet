@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Cathei.BakingSheet
 {
@@ -11,8 +8,8 @@ namespace Cathei.BakingSheet
     public abstract class Sheet
     {
         public string Name { get; internal set; }
+        public abstract Type RowType { get; }
 
-        internal abstract void ConvertFromRaw(RawSheet gsheet, SheetConvertingContext context);
         public abstract void PostLoad(SheetConvertingContext context);
         public abstract void VerifyAssets(SheetConvertingContext context);
     }
@@ -36,24 +33,7 @@ namespace Cathei.BakingSheet
 
         public TValue this[TKey id] => Find(id);
 
-        internal sealed override void ConvertFromRaw(RawSheet rawSheet, SheetConvertingContext context)
-        {
-            foreach (var rowData in rawSheet.Rows)
-            {
-                try
-                {
-                    context.SetTag(Name);
-
-                    var row = new TValue();
-                    row.ConvertFromRaw(context, rowData);
-                    Data.Add(row.Id, row);
-                }
-                catch (Exception ex)
-                {
-                    context.Logger.LogError(ex, ex.Message);
-                }
-            }
-        }
+        public override Type RowType => typeof(TValue);
 
         public override void PostLoad(SheetConvertingContext context)
         {

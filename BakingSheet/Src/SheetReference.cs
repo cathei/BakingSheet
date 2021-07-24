@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Cathei.BakingSheet
 {
@@ -10,27 +8,24 @@ namespace Cathei.BakingSheet
     {
         void Map(SheetConvertingContext context);
 
-        void ReadJson(JsonReader reader, JsonSerializer serializer);
-        void WriteJson(JsonWriter writer, JsonSerializer serializer);
-    }
-
-    public interface ISheetReference<T> : ISheetReference
-    {
-        T Id { get; }
+        object Id { get; set; }
+        Type IdType { get; }
     }
 
     public partial class Sheet<TKey, TValue>
     {
-        public struct Reference : ISheetReference<TKey>
+        public struct Reference : ISheetReference
         {
             public TKey Id { get; private set; }
             public TValue Ref { get; private set; }
 
-            public Reference(TKey id)
+            object ISheetReference.Id
             {
-                Id = id;
-                Ref = null;
+                get { return Id; }
+                set { Id = (TKey)value; }
             }
+
+            public Type IdType => typeof(TKey);
 
             void ISheetReference.Map(SheetConvertingContext context)
             {
@@ -46,16 +41,6 @@ namespace Cathei.BakingSheet
                 {
                     context.Logger.LogError($"[{context.Tag}] Failed to find reference \"{Id}\" on {sheet.Name}");
                 }
-            }
-
-            void ISheetReference.ReadJson(JsonReader reader, JsonSerializer serializer)
-            {
-                Id = (TKey)serializer.Deserialize(reader, typeof(TKey));
-            }
-
-            void ISheetReference.WriteJson(JsonWriter writer, JsonSerializer serializer)
-            {
-                serializer.Serialize(writer, Id);
             }
 
             public static implicit operator TKey(Reference origin)

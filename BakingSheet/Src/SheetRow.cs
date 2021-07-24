@@ -1,19 +1,25 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace Cathei.BakingSheet
 {
-    public abstract class SheetRow<TKey>
+    internal interface ISheetRow
+    {
+        object Id { get; }
+    }
+
+    internal interface ISheetRowArray
+    {
+        IList Arr { get; }
+        Type ElemType { get; }
+    }
+    
+    public abstract class SheetRow<TKey> : ISheetRow
     {
         public TKey Id { get; internal set; }
 
-        public virtual void ConvertFromRaw(SheetConvertingContext context, RawSheetRow row)
-        {
-            context.SetTag(context.Tag, Id);
-            SheetUtility.ConvertFromRaw(context, this, row[0]);
-        }
+        object ISheetRow.Id => Id;
 
         public virtual void PostLoad(SheetConvertingContext context)
         {
@@ -30,7 +36,7 @@ namespace Cathei.BakingSheet
 
     public abstract class SheetRowElem
     {
-        [JsonIgnore]
+        [NonSerialized]
         public int Index { get; internal set; } 
 
         public virtual void PostLoad(SheetConvertingContext context)
@@ -46,38 +52,20 @@ namespace Cathei.BakingSheet
         }
     }
 
-    [JsonObject]
-    public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, IEnumerable<TElem>
+    [Serializable]
+    public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, IEnumerable<TElem>, ISheetRowArray
         where TElem : SheetRowElem, new()
     {
-        [JsonProperty]
         protected List<TElem> Arr { get; private set; }
 
-        [JsonIgnore]
-        public int Count => Arr.Count;
+        IList ISheetRowArray.Arr => Arr;
+        public Type ElemType => typeof(TElem);
 
+        public int Count => Arr.Count;
         public TElem this[int idx] => Arr[idx];
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public IEnumerator<TElem> GetEnumerator() => Arr.GetEnumerator();
-
-        public override void ConvertFromRaw(SheetConvertingContext context, RawSheetRow row)
-        {
-            base.ConvertFromRaw(context, row);
-
-            Arr = new List<TElem>();
-
-            var parentTag = context.Tag;
-
-            foreach (var item in row)
-            {
-                context.SetTag(parentTag, Id, Arr.Count);
-
-                var elem = new TElem();
-                SheetUtility.ConvertFromRaw(context, elem, item);
-                Arr.Add(elem);
-            }
-        }
 
         public override void PostLoad(SheetConvertingContext context)
         {

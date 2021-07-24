@@ -1,35 +1,24 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Raw
 {
-    public class RawSheetRow : List<Dictionary<string, string>>
-    {
-        public override string ToString()
-        {
-            var infos = this.SelectMany(x => x)
-                .GroupBy(x => x.Key)
-                .Select(g => $"{g.Key}: {string.Join(",", g.Select(x => x.Value))}");
-
-            return string.Join(",", infos);
-        }
-    }
-
     public class RawSheet
     {
         public List<RawSheetRow> Rows { get; }
 
-        public RawSheet(ISheetImporterData data)
+        public RawSheet(RawSheetImporterPage data)
         {
             Rows = new List<RawSheetRow>();
 
             Init(data);
         }
 
-        private void Init(ISheetImporterData data)
+        private void Init(RawSheetImporterPage data)
         {
             data.GetSize(out int numColumns, out int numRows);
 
@@ -59,5 +48,24 @@ namespace Cathei.BakingSheet
                 dataRow.Add(dict);
             }
         }
-   }
+
+        internal void WriteToSheet(RawSheetImporter importer, SheetConvertingContext context, Sheet sheet)
+        {
+            foreach (var rawRow in Rows)
+            {
+                try
+                {
+                    context.SetTag(sheet.Name);
+
+                    var row = Activator.CreateInstance(sheet.RowType) as ISheetRow;
+                    rawRow.WriteToSheetRow(importer, context, row);
+                    (sheet as IDictionary).Add(row.Id, row);
+                }
+                catch (Exception ex)
+                {
+                    context.Logger.LogError(ex, ex.Message);
+                }
+            }
+        }
+    }
 }
