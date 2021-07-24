@@ -54,10 +54,10 @@ User can have converting process, to convert datasheet to other format ahead of 
 BakingSheet supports three basic importers
 | Package Name                  | Format                       | Supports Import | Supports Export |
 |-------------------------------|------------------------------|-----------------|-----------------|
-| BakingSheet.Converters.Excel  | Microsoft Excel              | O               | X               |
-| BakingSheet.Converters.Google | Google Sheet                 | O               | X               |
-| BakingSheet.Converters.Csv    | Comma-Separated Values (CSV) | O               | O               |
-| BakingSheet.Converters.Json   | JSON                         | O               | O               |
+| [BakingSheet.Converters.Excel](https://www.nuget.org/packages/BakingSheet.Converters.Excel/)  | Microsoft Excel              | O               | X               |
+| [BakingSheet.Converters.Google](https://www.nuget.org/packages/BakingSheet.Converters.Google/) | Google Sheet                 | O               | X               |
+| [BakingSheet.Converters.Csv](https://www.nuget.org/packages/BakingSheet.Converters.Csv/)    | Comma-Separated Values (CSV) | O               | O               |
+| [BakingSheet.Converters.Json](https://www.nuget.org/packages/BakingSheet.Converters.Json/)   | JSON                         | O               | O               |
 
 Below code shows how to convert .xlsx files from `Excel/Files/Path` directory.
 ```csharp
