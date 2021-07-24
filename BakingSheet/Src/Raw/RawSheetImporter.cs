@@ -7,7 +7,7 @@ namespace Cathei.BakingSheet.Raw
     public abstract class RawSheetImporter : ISheetImporter
     {
         protected abstract Task<bool> LoadData();
-        protected abstract RawSheetImporterPage GetPage(string sheetName);
+        protected abstract IRawSheetImporterPage GetPage(string sheetName);
 
         public TimeZoneInfo TimeZoneInfo { get; }
 
@@ -37,13 +37,12 @@ namespace Cathei.BakingSheet.Raw
                     continue;
                 }
 
-                var rawSheet = new RawSheet(page);
                 var sheet = Activator.CreateInstance(prop.PropertyType) as Sheet;
 
                 sheet.Name = prop.Name;
-                rawSheet.WriteToSheet(this, context, sheet);
-                prop.SetValue(context.Container, sheet);
+                page.Import(this, context, sheet);
 
+                prop.SetValue(context.Container, sheet);
                 context.Container.AllSheets.Add(sheet);
             }
  

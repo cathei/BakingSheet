@@ -9,11 +9,11 @@ using NReco.Csv;
 
 namespace Cathei.BakingSheet
 {
-    public class CsvSheetConverter : RawSheetImporter
+    public class CsvSheetConverter : RawSheetConverter
     {
         private string _loadPath;
-        private string _searchPattern;
-        private Dictionary<string, CsvTable> _dataTables;
+        private string _extension;
+        private Dictionary<string, CsvTable> _dataTables = new Dictionary<string, CsvTable>();
 
         private class CsvTable : List<List<string>>
         {
@@ -25,14 +25,14 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public CsvSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string searchPattern = "*.csv")
+        public CsvSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string extension = "csv")
             : base(timeZoneInfo)
         {
             _loadPath = loadPath;
-            _searchPattern = searchPattern;
+            _extension = extension;
         }
 
-        private class Page : RawSheetImporterPage
+        private class Page : IRawSheetImporterPage, IRawSheetExporterPage
         {
             private CsvTable _table;
 
@@ -41,7 +41,7 @@ namespace Cathei.BakingSheet
                 _table = table;
             }
 
-            public override string GetCell(int col, int row)
+            public string GetCell(int col, int row)
             {
                 if (row >= _table.Count)
                     return null;
@@ -51,13 +51,38 @@ namespace Cathei.BakingSheet
 
                 return _table[row][col];
             }
+
+            public void SetCell(int col, int row, string data)
+            {
+                for (int i = _table.Count; i < row; ++i)
+                    _table.AddRow();
+ 
+                for (int i = _table[row].Count; i < col; ++i)
+                    _table[row].Add(null);
+ 
+                _table[row][col] = data;
+            }
+        }
+
+        protected override IRawSheetImporterPage GetPage(string sheetName)
+        {
+            if (_dataTables.TryGetValue(sheetName, out var table))
+                return new Page(table);
+            return null;
+        }
+
+        protected override IRawSheetExporterPage CreatePage(string sheetName)
+        {
+            var table = new CsvTable();
+            _dataTables[sheetName] = table;
+            return new Page(table);
         }
 
         protected override Task<bool> LoadData()
         {
-            var files = Directory.GetFiles(_loadPath, _searchPattern);
+            var files = Directory.GetFiles(_loadPath, $"*.{_extension}");
 
-            _dataTables = new Dictionary<string, CsvTable>();
+            _dataTables.Clear();
 
             foreach (var file in files)
             {
@@ -81,11 +106,28 @@ namespace Cathei.BakingSheet
             return Task.FromResult(true);
         }
 
-        protected override RawSheetImporterPage GetPage(string sheetName)
+        protected override Task<bool> SaveData()
         {
-            if (_dataTables.TryGetValue(sheetName, out var table))
-                return new Page(table);
-            return null;
+            foreach (var tableItem in _dataTables)
+            {
+                var file = Path.Combine(_loadPath, $"{tableItem.Key}.{_extension}");
+
+                using (var stream = File.Open(file, FileMode.Create, FileAccess.Write, FileShare.Read))
+                using (var writer = new StreamWriter(stream))
+                {
+                    var csv = new CsvWriter(writer);
+                    var table = tableItem.Value;
+
+                    foreach (var row in table)
+                    {
+                        foreach (var cell in row)
+                            csv.WriteField(cell);
+                        csv.NextRecord();
+                    }
+                }
+            }
+
+            return Task.FromResult(true);
         }
     }
 }

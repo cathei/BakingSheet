@@ -21,7 +21,7 @@ namespace Cathei.BakingSheet
             _searchPattern = searchPattern;
         }
 
-        private class Page : RawSheetImporterPage
+        private class Page : IRawSheetImporterPage
         {
             private DataTable _table;
 
@@ -30,7 +30,7 @@ namespace Cathei.BakingSheet
                 _table = table;
             }
 
-            public override string GetCell(int col, int row)
+            public string GetCell(int col, int row)
             {
                 if (col >= _table.Columns.Count || row >= _table.Rows.Count)
                     return null;
@@ -69,7 +69,7 @@ namespace Cathei.BakingSheet
             return Task.FromResult(true);
         }
 
-        protected override RawSheetImporterPage GetPage(string sheetName)
+        protected override IRawSheetImporterPage GetPage(string sheetName)
         {
             if (_dataTables.TryGetValue(sheetName, out var table))
                 return new Page(table);

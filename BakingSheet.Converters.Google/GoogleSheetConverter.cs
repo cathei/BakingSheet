@@ -55,7 +55,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        private class Page : RawSheetImporterPage
+        private class Page : IRawSheetImporterPage
         {
             private GridData _grid;
 
@@ -64,7 +64,7 @@ namespace Cathei.BakingSheet
                 _grid = gsheet.Data.First();
             }
 
-            public override string GetCell(int col, int row)
+            public string GetCell(int col, int row)
             {
                 if (row >= _grid.RowData.Count ||
                     col >= _grid.RowData[row].Values?.Count)
@@ -75,7 +75,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        protected override RawSheetImporterPage GetPage(string sheetName)
+        protected override IRawSheetImporterPage GetPage(string sheetName)
         {
             var gsheet = _spreadsheet.Sheets.FirstOrDefault(x => x.Properties.Title == sheetName);
             if (gsheet == null)
