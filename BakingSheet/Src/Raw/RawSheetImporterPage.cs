@@ -13,16 +13,17 @@ namespace Cathei.BakingSheet.Raw
 
     public static class RawSheetImporterPageExtensions
     {
-        public static bool IsEmptyRow(this IRawSheetImporterPage page, int pageRow)
+        public static bool IsEmptyCell(this IRawSheetImporterPage page, int col, int row)
         {
-            int pageColumn = 0;
+            return string.IsNullOrEmpty(page.GetCell(col, row));
+        }
 
-            while (!string.IsNullOrEmpty(page.GetCell(pageColumn, 0)))
+        public static bool IsEmptyRow(this IRawSheetImporterPage page, int row)
+        {
+            for (int col = 0; !page.IsEmptyCell(col, 0); ++col)
             {
-                if (!string.IsNullOrEmpty(page.GetCell(pageColumn, pageRow)))
+                if (!page.IsEmptyCell(col, row))
                     return false;
-                
-                pageColumn += 1;
             }
 
             return true;
@@ -44,7 +45,7 @@ namespace Cathei.BakingSheet.Raw
 
                     sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
 
-                    page.ImportToObject(importer, context, sheet, pageRow);
+                    page.ImportToObject(importer, context, sheetRow, pageRow);
 
                     (sheet as IDictionary).Add(sheetRow.Id, sheetRow);
                 }
@@ -68,9 +69,8 @@ namespace Cathei.BakingSheet.Raw
             var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty;
 
             var parentTag = context.Tag;
-            var pageColumn = 0;
 
-            while (!string.IsNullOrEmpty(page.GetCell(pageColumn, 0)))
+            for (int pageColumn = 0; !page.IsEmptyCell(pageColumn, 0); ++pageColumn)
             {
                 var columnValue = page.GetCell(pageColumn, 0);
                 var cellValue = page.GetCell(pageColumn, pageRow);

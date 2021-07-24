@@ -23,11 +23,11 @@ namespace Cathei.BakingSheet
 
             if (member is PropertyInfo pi)
             {
-                // var shouldIgnore = pi.
-                var hasSetMethod = pi.GetSetMethod(true) != null;
+                var nonSerialize = pi.GetCustomAttribute<NonSerializedAttribute>() != null;
+                var hasSetMethod = pi.SetMethod != null;
 
-                property.Writable = hasSetMethod;
-                property.ShouldSerialize = property.ShouldDeserialize = _ => hasSetMethod;
+                property.Writable = !nonSerialize && hasSetMethod;
+                property.ShouldSerialize = property.ShouldDeserialize = _ => !nonSerialize && hasSetMethod;
             }
 
             return property;

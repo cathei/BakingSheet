@@ -11,14 +11,14 @@ namespace Cathei.BakingSheet
     public class ExcelSheetConverter : RawSheetImporter
     {
         private string _loadPath;
-        private string _searchPattern;
+        private string _extension;
         private Dictionary<string, DataTable> _dataTables;
 
-        public ExcelSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string searchPattern = "*.xlsx")
+        public ExcelSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string extension = "xlsx")
             : base(timeZoneInfo)
         {
             _loadPath = loadPath;
-            _searchPattern = searchPattern;
+            _extension = extension;
         }
 
         private class Page : IRawSheetImporterPage
@@ -41,7 +41,7 @@ namespace Cathei.BakingSheet
 
         protected override Task<bool> LoadData()
         {
-            var files = Directory.GetFiles(_loadPath, _searchPattern);
+            var files = Directory.GetFiles(_loadPath, $"*.{_extension}");
 
             _dataTables = new Dictionary<string, DataTable>();
 

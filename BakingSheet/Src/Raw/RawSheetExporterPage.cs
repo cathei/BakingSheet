@@ -12,6 +12,17 @@ namespace Cathei.BakingSheet.Raw
 
     public static class RawSheetExporterPageExtensions
     {
+        private static bool ShouldExport(PropertyInfo prop)
+        {
+            if (prop.GetCustomAttribute<NonSerializedAttribute>() != null)
+                return false;
+
+            if (prop.SetMethod == null)
+                return false;
+
+            return true;
+        }
+
         public static void Export(this IRawSheetExporterPage page, RawSheetConverter exporter, SheetConvertingContext context, Sheet sheet)
         {
             var sheetDict = sheet as IDictionary;
@@ -31,6 +42,7 @@ namespace Cathei.BakingSheet.Raw
                 {
                     sheetRowProperties = sheetRow.GetType()
                         .GetProperties(bindingFlags)
+                        .Where(ShouldExport)
                         .OrderBy(x => x.Name == nameof(ISheetRow.Id))
                         .ToArray();
                 }
@@ -51,7 +63,10 @@ namespace Cathei.BakingSheet.Raw
                     {
                         if (sheetElemProperties == null)
                         {
-                            sheetElemProperties = sheetElem.GetType().GetProperties(bindingFlags);
+                            sheetElemProperties = sheetElem.GetType()
+                                .GetProperties(bindingFlags)
+                                .Where(ShouldExport)
+                                .ToArray();
                         }
 
                         for (int i = 0; i < sheetElemProperties.Length; ++i)
