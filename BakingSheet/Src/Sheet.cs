@@ -36,7 +36,7 @@ namespace Cathei.BakingSheet
 
         public TValue this[TKey id] => Find(id);
 
-        public void PostLoad(SheetConvertingContext context)
+        public virtual void PostLoad(SheetConvertingContext context)
         {
             foreach (var row in Values)
             {
@@ -45,7 +45,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public void VerifyAssets(SheetConvertingContext context)
+        public virtual void VerifyAssets(SheetConvertingContext context)
         {
             foreach (var row in Values)
             {
