@@ -18,22 +18,22 @@ namespace Cathei.BakingSheet.Examples
             if (csvAsset != null)
             {
                 var csvPath = Path.GetDirectoryName(csvAsset);
-                var jsonPath = Path.Combine(Application.streamingAssetsPath, "CSV");
+                var resultPath = Path.Combine(Application.streamingAssetsPath, "CSV");
 
                 var logger = new UnityLogger();
                 var sheetContainer = new SheetContainer(logger);
 
                 // create csv converter from path
-                var csvConverter = new CsvSheetConverter(csvPath, TimeZoneInfo.Utc);
+                var csvImporter = new CsvSheetConverter(csvPath, TimeZoneInfo.Utc);
 
                 // bake sheets from csv converter
-                await sheetContainer.Bake(csvConverter);
+                await sheetContainer.Bake(csvImporter);
 
                 // create csv converter to path
-                var jsonConverter = new JsonSheetConverter(jsonPath);
+                var csvExporter = new CsvSheetConverter(resultPath, TimeZoneInfo.Utc);
 
                 // save datasheet to streaming assets
-                await sheetContainer.Store(jsonConverter);
+                await sheetContainer.Store(csvExporter);
 
                 AssetDatabase.Refresh();
 

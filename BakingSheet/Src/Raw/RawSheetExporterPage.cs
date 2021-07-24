@@ -36,7 +36,7 @@ namespace Cathei.BakingSheet.Raw
 
             int pageRow = 1;
 
-            foreach (ISheetRow sheetRow in (sheet as IDictionary))
+            foreach (ISheetRow sheetRow in sheetDict.Values)
             {
                 if (sheetRowProperties == null)
                 {
@@ -45,6 +45,12 @@ namespace Cathei.BakingSheet.Raw
                         .Where(ShouldExport)
                         .OrderBy(x => x.Name == nameof(ISheetRow.Id))
                         .ToArray();
+
+                    for (int i = 0; i < sheetRowProperties.Length; ++i)
+                    {
+                        var prop = sheetRowProperties[i];
+                        page.SetCell(i, 0, prop.Name);
+                    }
                 }
 
                 for (int i = 0; i < sheetRowProperties.Length; ++i)
@@ -54,7 +60,6 @@ namespace Cathei.BakingSheet.Raw
                     var cellValue = exporter.ValueToString(context, prop.PropertyType, value);
 
                     page.SetCell(i, pageRow, cellValue);
-
                 }
 
                 if (sheetRow is ISheetRowArray sheetRowArray)
@@ -67,6 +72,12 @@ namespace Cathei.BakingSheet.Raw
                                 .GetProperties(bindingFlags)
                                 .Where(ShouldExport)
                                 .ToArray();
+
+                            for (int i = 0; i < sheetElemProperties.Length; ++i)
+                            {
+                                var prop = sheetElemProperties[i];
+                                page.SetCell(sheetRowProperties.Length + i, 0, prop.Name);
+                            }
                         }
 
                         for (int i = 0; i < sheetElemProperties.Length; ++i)
@@ -81,8 +92,10 @@ namespace Cathei.BakingSheet.Raw
                         pageRow += 1;
                     }
                 }
-
-                pageRow += 1;
+                else
+                {
+                    pageRow += 1;
+                }
             }
         }
     }

@@ -54,10 +54,10 @@ namespace Cathei.BakingSheet
 
             public void SetCell(int col, int row, string data)
             {
-                for (int i = _table.Count; i < row; ++i)
+                for (int i = _table.Count; i <= row; ++i)
                     _table.AddRow();
  
-                for (int i = _table[row].Count; i < col; ++i)
+                for (int i = _table[row].Count; i <= col; ++i)
                     _table[row].Add(null);
  
                 _table[row][col] = data;

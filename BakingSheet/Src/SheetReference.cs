@@ -31,7 +31,7 @@ namespace Cathei.BakingSheet
             {
                 var sheet = context.Container.AllSheets
                     .FirstOrDefault(x => x.GetType().IsSubclassOf(typeof(Sheet<TKey, TValue>)));
-                
+ 
                 if (sheet != null)
                 {
                     Ref = (sheet as Sheet<TKey, TValue>)[Id];

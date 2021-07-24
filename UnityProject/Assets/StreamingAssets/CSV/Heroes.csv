@@ -1,0 +1,16 @@
+Name,Strength,Inteligence,Vitality,Id,StatMultiplier,RequiredExp,RequiredItem
+Warrior,100,80,140,HERO001,1,0,
+,,,,,1.2,10,
+,,,,,1.4,20,
+,,,,,1.6,40,
+,,,,,2,100,ITEM_LVUP001
+Mage,60,160,80,HERO002,1,0,
+,,,,,1.2,10,
+,,,,,1.4,20,
+,,,,,1.6,40,
+,,,,,2,100,ITEM_LVUP002
+Assassin,140,100,80,HERO003,1,0,
+,,,,,1.2,10,
+,,,,,1.4,20,
+,,,,,1.6,40,
+,,,,,2,100,ITEM_LVUP003

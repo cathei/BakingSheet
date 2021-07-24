@@ -74,6 +74,8 @@ namespace Cathei.BakingSheet.Raw
             {
                 var columnValue = page.GetCell(pageColumn, 0);
                 var cellValue = page.GetCell(pageColumn, pageRow);
+                if (string.IsNullOrEmpty(cellValue))
+                    continue;
 
                 var prop = type.GetProperty(columnValue, bindingFlags);
                 if (prop == null)

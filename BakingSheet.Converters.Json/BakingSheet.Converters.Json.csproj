@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>BakingSheet.Importers.Json</PackageId>
-    <PackageDescription>BakingSheet importer for Excel files</PackageDescription>
+    <PackageId>BakingSheet.Converters.Json</PackageId>
+    <PackageDescription>BakingSheet converter for Json files</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
