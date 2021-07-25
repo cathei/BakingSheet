@@ -41,7 +41,7 @@ namespace Cathei.BakingSheet.Raw
                     sheetRowProperties = sheetRow.GetType()
                         .GetProperties(bindingFlags)
                         .Where(ShouldExport)
-                        .OrderBy(x => x.Name == nameof(ISheetRow.Id))
+                        .OrderByDescending(x => x.Name == nameof(ISheetRow.Id))
                         .ToArray();
 
                     for (int i = 0; i < sheetRowProperties.Length; ++i)
