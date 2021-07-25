@@ -27,8 +27,10 @@ jobs:
           buildsPath: Build
           versioning: None
           buildMethod: Cathei.BakingSheet.Editor.PackageGenerationTools.GeneratePackage
-      - name: Upload Unity package
-        uses: actions/upload-artifact@v2
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Unity Package
-          path: Build/*.unitypackage
+          files:
+            Build/*.unitypackage
