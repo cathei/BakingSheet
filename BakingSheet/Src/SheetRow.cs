@@ -17,7 +17,7 @@ namespace Cathei.BakingSheet
     
     public abstract class SheetRow<TKey> : ISheetRow
     {
-        public TKey Id { get; internal set; }
+        public TKey Id { get; protected internal set; }
 
         object ISheetRow.Id => Id;
 

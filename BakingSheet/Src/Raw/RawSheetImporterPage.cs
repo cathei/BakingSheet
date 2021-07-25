@@ -54,7 +54,7 @@ namespace Cathei.BakingSheet.Raw
                     }
                     else
                     {
-                        sheet.Add(sheetRow.Id, sheetRow);
+                        sheet.Add(sheetRow);
                     }
                 }
 

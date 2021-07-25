@@ -34,7 +34,7 @@ namespace Cathei.BakingSheet.Raw
 
             int pageRow = 1;
 
-            foreach (ISheetRow sheetRow in sheet.Values)
+            foreach (ISheetRow sheetRow in sheet)
             {
                 if (sheetRowProperties == null)
                 {
