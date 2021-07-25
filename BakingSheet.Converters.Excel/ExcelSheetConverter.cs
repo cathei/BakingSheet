@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Cathei.BakingSheet.Raw;
 using ExcelDataReader;
 
@@ -13,12 +14,14 @@ namespace Cathei.BakingSheet
         private string _loadPath;
         private string _extension;
         private Dictionary<string, DataTable> _dataTables;
+        private IFileSystem _fileSystem;
 
-        public ExcelSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string extension = "xlsx")
+        public ExcelSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string extension = "xlsx", IFileSystem fileSystem = null)
             : base(timeZoneInfo)
         {
             _loadPath = loadPath;
             _extension = extension;
+            _fileSystem = fileSystem ?? new FileSystem();
         }
 
         private class Page : IRawSheetImporterPage
@@ -41,13 +44,13 @@ namespace Cathei.BakingSheet
 
         protected override Task<bool> LoadData()
         {
-            var files = Directory.GetFiles(_loadPath, $"*.{_extension}");
+            var files = _fileSystem.GetFiles(_loadPath, _extension);
 
             _dataTables = new Dictionary<string, DataTable>();
 
             foreach (var file in files)
             {
-                using (var stream = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var stream = File.OpenRead(file))
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     var dataset = reader.AsDataSet(new ExcelDataSetConfiguration {

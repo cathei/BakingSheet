@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -16,11 +17,13 @@ namespace Cathei.BakingSheet
     {
         public virtual string Extension => "json";
 
-        private string BasePath { get; }
+        private string _loadPath;
+        private IFileSystem _fileSystem;
 
-        public JsonSheetConverter(string path)
+        public JsonSheetConverter(string path, IFileSystem fileSystem = null)
         {
-            BasePath = path;
+            _loadPath = path;
+            _fileSystem = fileSystem ?? new FileSystem();
         }
 
         public virtual JsonSerializerSettings GetSettings(ILogger logError)
@@ -59,9 +62,11 @@ namespace Cathei.BakingSheet
             {
                 string data;
 
-                var path = Path.Combine(BasePath, $"{prop.Name}.{Extension}");
-                using (var file = File.OpenText(path))
-                    data = await file.ReadToEndAsync();
+                var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
+
+                using (var stream = _fileSystem.OpenRead(path))
+                using (var reader = new StreamReader(stream))
+                    data = await reader.ReadToEndAsync();
 
                 var sheet = Deserialize(data, prop.PropertyType, context.Logger) as ISheet;
                 prop.SetValue(context.Container, sheet);
@@ -85,9 +90,11 @@ namespace Cathei.BakingSheet
                 var sheet = prop.GetValue(context.Container);
                 var data = Serialize(sheet, prop.PropertyType, context.Logger);
 
-                var path = Path.Combine(BasePath, $"{prop.Name}.{Extension}");
-                using (var file = File.CreateText(path))
-                    await file.WriteAsync(data);
+                var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
+
+                using (var stream = _fileSystem.OpenWrite(path))
+                using (var writer = new StreamWriter(stream))
+                    await writer.WriteAsync(data);
             }
 
             return true;

@@ -4,6 +4,7 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Cathei.BakingSheet.Raw;
 using NReco.Csv;
 
@@ -11,6 +12,7 @@ namespace Cathei.BakingSheet
 {
     public class CsvSheetConverter : RawSheetConverter
     {
+        private IFileSystem _fileSystem;
         private string _loadPath;
         private string _extension;
         private Dictionary<string, CsvTable> _dataTables = new Dictionary<string, CsvTable>();
@@ -25,11 +27,12 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public CsvSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string extension = "csv")
+        public CsvSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string extension = "csv", IFileSystem fileSystem = null)
             : base(timeZoneInfo)
         {
             _loadPath = loadPath;
             _extension = extension;
+            _fileSystem = fileSystem ?? new FileSystem();
         }
 
         private class Page : IRawSheetImporterPage, IRawSheetExporterPage
@@ -80,13 +83,13 @@ namespace Cathei.BakingSheet
 
         protected override Task<bool> LoadData()
         {
-            var files = Directory.GetFiles(_loadPath, $"*.{_extension}");
+            var files = _fileSystem.GetFiles(_loadPath, _extension);
 
             _dataTables.Clear();
 
             foreach (var file in files)
             {
-                using (var stream = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var stream = _fileSystem.OpenRead(file))
                 using (var reader = new StreamReader(stream))
                 {
                     var csv = new CsvReader(reader);
@@ -112,7 +115,7 @@ namespace Cathei.BakingSheet
             {
                 var file = Path.Combine(_loadPath, $"{tableItem.Key}.{_extension}");
 
-                using (var stream = File.Open(file, FileMode.Create, FileAccess.Write, FileShare.Read))
+                using (var stream = _fileSystem.OpenWrite(file))
                 using (var writer = new StreamWriter(stream))
                 {
                     var csv = new CsvWriter(writer);
