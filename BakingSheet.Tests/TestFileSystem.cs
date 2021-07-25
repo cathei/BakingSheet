@@ -9,7 +9,7 @@ namespace Cathei.BakingSheet.Tests
 {
     public class TestFileSystem : IFileSystem, IDisposable
     {
-        public Dictionary<string, MemoryStream> files;
+        public Dictionary<string, MemoryStream> files = new Dictionary<string, MemoryStream>();
 
         public void SetTestData(string path, string content)
         {

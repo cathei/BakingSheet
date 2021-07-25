@@ -9,6 +9,11 @@ namespace Cathei.BakingSheet
         object Id { get; }
     }
 
+    public interface ISheetRowElem
+    {
+        int Index { get; }
+    }
+
     public interface ISheetRowArray
     {
         IList Arr { get; }

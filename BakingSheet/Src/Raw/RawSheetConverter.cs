@@ -20,6 +20,7 @@ namespace Cathei.BakingSheet.Raw
             {
                 var page = CreatePage(sheet.Name);
 
+                context.SetTag(sheet.Name);
                 page.Export(this, context, sheet);
             }
 

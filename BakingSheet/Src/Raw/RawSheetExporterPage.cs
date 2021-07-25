@@ -28,6 +28,8 @@ namespace Cathei.BakingSheet.Raw
             if (sheet.Count == 0)
                 return;
 
+            var parentTag = context.Tag;
+
             var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty;
 
             PropertyInfo[] sheetRowProperties = null, sheetElemProperties = null;
@@ -36,6 +38,8 @@ namespace Cathei.BakingSheet.Raw
 
             foreach (ISheetRow sheetRow in sheet)
             {
+                context.SetTag(parentTag, sheetRow.Id);
+
                 if (sheetRowProperties == null)
                 {
                     sheetRowProperties = sheetRow.GetType()
@@ -62,8 +66,10 @@ namespace Cathei.BakingSheet.Raw
 
                 if (sheetRow is ISheetRowArray sheetRowArray)
                 {
-                    foreach (var sheetElem in sheetRowArray.Arr)
+                    foreach (ISheetRowElem sheetElem in sheetRowArray.Arr)
                     {
+                        context.SetTag(parentTag, sheetRow.Id, sheetElem.Index);
+
                         if (sheetElemProperties == null)
                         {
                             sheetElemProperties = sheetElem.GetType()

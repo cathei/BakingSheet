@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Cathei.BakingSheet
 {
@@ -21,9 +22,6 @@ namespace Cathei.BakingSheet
         public string Name { get; set; }
         public Type RowType => typeof(TValue);
 
-        public ICollection<TKey> Keys => Dictionary.Keys;
-        public ICollection<TValue> Values => Dictionary.Values;
-
         public new TValue this[TKey id]
         {
             get
@@ -41,7 +39,7 @@ namespace Cathei.BakingSheet
 
         public virtual void PostLoad(SheetConvertingContext context)
         {
-            foreach (var row in Values)
+            foreach (var row in Items)
             {
                 context.SetTag(Name);
                 row.PostLoad(context);
@@ -50,7 +48,7 @@ namespace Cathei.BakingSheet
 
         public virtual void VerifyAssets(SheetConvertingContext context)
         {
-            foreach (var row in Values)
+            foreach (var row in Items)
             {
                 context.SetTag(Name);
                 row.VerifyAssets(context);
