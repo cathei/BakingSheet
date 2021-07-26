@@ -77,6 +77,14 @@ namespace Cathei.BakingSheet
                     continue;
 
                 sheet.Name = prop.Name;
+            }
+
+            foreach (var prop in GetSheetProperties())
+            {
+                var sheet = prop.GetValue(this) as ISheet;
+                if (sheet == null)
+                    continue;
+
                 sheet.PostLoad(context);
             }
         }
