@@ -50,13 +50,12 @@ namespace Cathei.BakingSheet.Tests
         public class Elem : SheetRowElem
         {
             public TestSheet.Reference NestedReferColumn { get; set; }
-            public TestArraySheet.Reference NestedSelfReferColumn { get; set; }
         }
 
         public class Row : SheetRowArray<Elem>
         {
             public TestSheet.Reference ReferColumn { get; set; }
-            public TestArraySheet.Reference SelfReferColumn { get; set; }
+            public TestReferenceSheet.Reference SelfReferColumn { get; set; }
         }
     }
 

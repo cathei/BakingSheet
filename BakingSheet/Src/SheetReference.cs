@@ -27,16 +27,22 @@ namespace Cathei.BakingSheet
 
             public Type IdType => typeof(TKey);
 
+            public Reference(TKey id)
+            {
+                Id = id;
+                Ref = default(TValue);
+            }
+
             void ISheetReference.Map(SheetConvertingContext context)
             {
                 var sheet = context.Container.GetSheetProperties()
                     .Where(p => p.PropertyType.IsSubclassOf(typeof(Sheet<TKey, TValue>)))
-                    .Select(p => p.GetValue(context.Container) as ISheet)
+                    .Select(p => p.GetValue(context.Container) as Sheet<TKey, TValue>)
                     .FirstOrDefault();
  
                 if (sheet != null)
                 {
-                    Ref = (sheet as Sheet<TKey, TValue>)[Id];
+                    Ref = sheet[Id];
                 }
 
                 if (Id != null && Ref == null)

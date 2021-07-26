@@ -31,11 +31,13 @@ namespace Cathei.BakingSheet
         {
             get
             {
-                if (!Contains(id))
+                if (id == null || !Contains(id))
                     return default(TValue);
                 return base[id];
             }
         }
+        
+        public TValue Find(TKey id) => this[id];
 
         bool ISheet.Contains(object key) => Contains((TKey)key);
         void ISheet.Add(object value) => Add((TValue)value);
