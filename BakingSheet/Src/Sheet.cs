@@ -7,10 +7,14 @@ using System.Linq;
 namespace Cathei.BakingSheet
 {
     // Used for reflection
-    public interface ISheet : IList
+    public interface ISheet : IEnumerable
     {
         string Name { get; }
         Type RowType { get; }
+
+        int Count { get; }
+        bool Contains(object key);
+        void Add(object value);
 
         void PostLoad(SheetConvertingContext context);
         void VerifyAssets(SheetConvertingContext context);
@@ -32,6 +36,9 @@ namespace Cathei.BakingSheet
                 return base[id];
             }
         }
+
+        bool ISheet.Contains(object key) => Contains((TKey)key);
+        void ISheet.Add(object value) => Add((TValue)value);
 
         protected override TKey GetKeyForItem(TValue item)
         {
@@ -56,7 +63,7 @@ namespace Cathei.BakingSheet
             }
         }
     }
-
+    
     // Convenient shorthand
     public abstract class Sheet<T> : Sheet<string, T>
         where T : SheetRow<string>, new() {}

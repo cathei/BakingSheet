@@ -4,6 +4,7 @@ using Cathei.BakingSheet.Internal;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace Cathei.BakingSheet.Tests
 {
@@ -26,7 +27,7 @@ namespace Cathei.BakingSheet.Tests
 
         public IEnumerable<string> GetFiles(string path, string extension)
         {
-            return files.Keys;
+            return files.Keys.Where(x => x.StartsWith(path));
         }
 
         public bool Exists(string path)

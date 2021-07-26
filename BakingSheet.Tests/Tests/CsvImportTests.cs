@@ -66,16 +66,31 @@ namespace Cathei.BakingSheet.Tests
         }
 
         [Fact]
-        public async Task TestImportConvertError()
+        public async Task TestImportWrongEnum()
         {
-            _fileSystem.SetTestData("testdata/Types.csv", "Id,EnumColumn\nTest,WrongEnum");
+            _fileSystem.SetTestData("testdata/Types.csv", "Id,IntColumn\nWrongEnum,1");
 
             var result = await _container.Bake(_converter);
 
             Assert.True(result);
             Assert.Single(_container.Types);
 
-            _loggerMock.VerifyLog(LogLevel.Error, "[Types>Test>EnumColumn] Failed to convert value \"WrongEnum\" of type Cathei.BakingSheet.Tests.TestEnum", Times.Once());
+            _loggerMock.VerifyLog(LogLevel.Error, "[Types>WrongEnum>Id] Failed to convert value \"WrongEnum\" of type Cathei.BakingSheet.Tests.TestEnum", Times.Once());
+        }
+
+        [Fact]
+        public async Task TestImportDuplicatedRow()
+        {
+            _fileSystem.SetTestData("testdata/Types.csv", "Id,IntColumn\nAlpha,1\nCharlie,2\nAlpha,3\nBravo,4");
+
+            var result = await _container.Bake(_converter);
+
+            Assert.True(result);
+            Assert.Equal(3, _container.Types.Count);
+            Assert.Equal(1, _container.Types[TestEnum.Alpha].IntColumn);
+            Assert.Equal(4, _container.Types[TestEnum.Bravo].IntColumn);
+
+            _loggerMock.VerifyLog(LogLevel.Error, "[Types>Alpha] Already has row with id \"Alpha\"", Times.Once());
         }
     }
 }

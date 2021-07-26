@@ -34,15 +34,14 @@ namespace Cathei.BakingSheet.Tests
         Alpha, Bravo, Charlie
     }
 
-    public class TestTypeSheet : Sheet<TestTypeSheet.Row>
+    public class TestTypeSheet : Sheet<TestEnum, TestTypeSheet.Row>
     {
-        public class Row : SheetRow
+        public class Row : SheetRow<TestEnum>
         {
             public int IntColumn { get; set; }
             public float FloatColumn { get; set; }
             public DateTime DateTimeColumn { get; set; }
             public TimeSpan TimeSpanColumn { get; set; }
-            public TestEnum EnumColumn { get; set; }
         }
     }
 

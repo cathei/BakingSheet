@@ -52,5 +52,20 @@ namespace Cathei.BakingSheet.Tests
             Assert.Empty(_container.Tests);
             Assert.Equal(nameof(TestSheetContainer.Tests), _container.Tests.Name);
         }
+
+        [Fact]
+        public async Task TestImportWrongEnum()
+        {
+            _fileSystem.SetTestData("testdata/Types.json", "[{\"Id\":\"WrongEnum\",\"IntColumn\":345}]");
+
+            var result = await _container.Bake(_converter);
+
+            Assert.True(result);
+            Assert.Single(_container.Types);
+            Assert.Equal(TestEnum.Alpha, _container.Types[0].Id);
+            Assert.Equal(345, _container.Types[0].IntColumn);
+
+            _loggerMock.VerifyLog(LogLevel.Error, "Error converting value \"WrongEnum\" to type 'Cathei.BakingSheet.Tests.TestEnum'. Path '[0].Id', line 1, position 18.", Times.Once());
+        }
     }
 }

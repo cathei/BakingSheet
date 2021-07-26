@@ -55,6 +55,8 @@ namespace Cathei.BakingSheet.Raw
 
                     page.ImportToObject(importer, context, sheetRow, pageRow);
 
+                    context.SetTag(parentTag, rowId);
+
                     if (sheet.Contains(sheetRow.Id))
                     {
                         context.Logger.LogError($"[{context.Tag}] Already has row with id \"{sheetRow.Id}\"");
