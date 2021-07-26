@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -7,9 +8,13 @@ namespace Cathei.BakingSheet
 {
     public class UnityLogger : ILogger
     {
+        private IExternalScopeProvider scopeProvider = new LoggerExternalScopeProvider();
+
+        private IList<object> scopes = new List<object>();
+
         public IDisposable BeginScope<TState>(TState state)
         {
-            throw new NotImplementedException();
+            return scopeProvider.Push(state);
         }
 
         public bool IsEnabled(LogLevel logLevel)
@@ -19,21 +24,28 @@ namespace Cathei.BakingSheet
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            scopes.Clear();
+            scopeProvider.ForEachScope((x, scopes) => scopes.Add(x), scopes);
+
+            var message = formatter(state, exception);
+            if (scopes.Count > 0)
+                message = $"[{string.Join(">", scopes)}] {message}";
+
             switch (logLevel)
             {
                 case LogLevel.Trace:
                 case LogLevel.Debug:
                 case LogLevel.Information:
-                    Debug.Log(formatter(state, exception));
+                    Debug.Log(message);
                     break;
 
                 case LogLevel.Warning:
-                    Debug.LogWarning(formatter(state, exception));
+                    Debug.LogWarning(message);
                     break;
 
                 case LogLevel.Error:
                 case LogLevel.Critical:
-                    Debug.LogWarning(formatter(state, exception));
+                    Debug.LogError(message);
                     break;
             }
         } 
