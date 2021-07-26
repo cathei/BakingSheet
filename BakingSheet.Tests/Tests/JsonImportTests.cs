@@ -67,5 +67,20 @@ namespace Cathei.BakingSheet.Tests
 
             _loggerMock.VerifyLog(LogLevel.Error, "Error converting value \"WrongEnum\" to type 'Cathei.BakingSheet.Tests.TestEnum'. Path '[0].Id', line 1, position 18.", Times.Once());
         }
+
+        [Fact]
+        public async Task TestImportDuplicatedRow()
+        {
+            _fileSystem.SetTestData("testdata/Types.json", "[{\"Id\":\"Alpha\",\"IntColumn\":1},{\"Id\":\"Charlie\",\"IntColumn\":2},{\"Id\":\"Alpha\",\"IntColumn\":3},{\"Id\":\"Bravo\",\"IntColumn\":4}]");
+
+            var result = await _container.Bake(_converter);
+
+            Assert.True(result);
+            Assert.Equal(3, _container.Types.Count);
+            Assert.Equal(1, _container.Types[TestEnum.Alpha].IntColumn);
+            Assert.Equal(4, _container.Types[TestEnum.Bravo].IntColumn);
+
+            _loggerMock.VerifyLog(LogLevel.Error, "An item with the same key has already been added. Key: Alpha", Times.Once());
+        }
     }
 }
