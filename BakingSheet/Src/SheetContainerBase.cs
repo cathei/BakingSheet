@@ -32,16 +32,6 @@ namespace Cathei.BakingSheet
             return _sheetProperties;
         }
 
-        // public IEnumerable<ISheet> AllSheets
-        // {
-        //     get
-        //     {
-        //         return GetSheetProperties()
-        //             .Select(p => p.GetValue(this) as ISheet)
-        //             .Where(x => x != null);
-        //     }
-        // }
-
         public async Task<bool> Bake(ISheetImporter importer)
         {
             var context = new SheetConvertingContext
