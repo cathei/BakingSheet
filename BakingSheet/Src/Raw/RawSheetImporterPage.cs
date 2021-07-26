@@ -35,7 +35,7 @@ namespace Cathei.BakingSheet.Raw
  
             if (idColumnName != nameof(ISheetRow.Id))
             {
-                context.Logger.LogError($"First column \"{idColumnName}\" must be named \"{nameof(ISheetRow.Id)}\"");
+                context.Logger.LogError("First column \"{ColumnName}\" must be named \"Id\"", idColumnName);
                 return;
             }
 
@@ -55,7 +55,7 @@ namespace Cathei.BakingSheet.Raw
 
                         if (sheet.Contains(sheetRow.Id))
                         {
-                            context.Logger.LogError($"Already has row with id \"{sheetRow.Id}\"");
+                            context.Logger.LogError("Already has row with id \"{RowId}\"", sheetRow.Id);
                             sheetRow = null;
                         }
                         else
@@ -101,12 +101,12 @@ namespace Cathei.BakingSheet.Raw
 
                     try
                     {
-                        object value = importer.StringToValue(context, prop.PropertyType, cellValue);
+                        object value = importer.StringToValue(prop.PropertyType, cellValue);
                         prop.SetValue(obj, value);
                     }
                     catch (Exception ex)
                     {
-                        context.Logger.LogError(ex, $"Failed to convert value \"{cellValue}\" of type {prop.PropertyType}");
+                        context.Logger.LogError(ex, "Failed to convert value \"{CellValue}\" of type {PropertyType}", cellValue, prop.PropertyType);
                     }
                 }
             }

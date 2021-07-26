@@ -10,15 +10,15 @@ namespace Cathei.BakingSheet.Tests
     public class CsvImportTests : IDisposable
     {
         private TestFileSystem _fileSystem;
-        private Mock<ILogger> _loggerMock;
+        private TestLogger _logger;
         private TestSheetContainer _container;
         private CsvSheetConverter _converter;
 
         public CsvImportTests()
         {
             _fileSystem = new TestFileSystem();
-            _loggerMock = new Mock<ILogger>();
-            _container = new TestSheetContainer(_loggerMock.Object);
+            _logger = new TestLogger();
+            _container = new TestSheetContainer(_logger);
             _converter = new CsvSheetConverter("testdata", TimeZoneInfo.Utc, fileSystem: _fileSystem);
         }
 
@@ -62,7 +62,9 @@ namespace Cathei.BakingSheet.Tests
             Assert.Empty(_container.Tests);
             Assert.Equal(nameof(TestSheetContainer.Tests), _container.Tests.Name);
 
-            _loggerMock.VerifyLog(LogLevel.Error, "[Tests] First column \"\" must be named \"Id\"", Times.Once());
+            _logger.VerifyLog(LogLevel.Error,
+                "First column \"(null)\" must be named \"Id\"",
+                new [] { "Tests" });
         }
 
         [Fact]
@@ -75,7 +77,9 @@ namespace Cathei.BakingSheet.Tests
             Assert.True(result);
             Assert.Single(_container.Types);
 
-            _loggerMock.VerifyLog(LogLevel.Error, "[Types>WrongEnum>Id] Failed to convert value \"WrongEnum\" of type Cathei.BakingSheet.Tests.TestEnum", Times.Once());
+            _logger.VerifyLog(LogLevel.Error,
+                "Failed to convert value \"WrongEnum\" of type Cathei.BakingSheet.Tests.TestEnum",
+                new [] { "Types", "WrongEnum", "Id" });
         }
 
         [Fact]
@@ -90,7 +94,9 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal(1, _container.Types[TestEnum.Alpha].IntColumn);
             Assert.Equal(4, _container.Types[TestEnum.Bravo].IntColumn);
 
-            _loggerMock.VerifyLog(LogLevel.Error, "[Types>Alpha] Already has row with id \"Alpha\"", Times.Once());
+            _logger.VerifyLog(LogLevel.Error,
+                "Already has row with id \"Alpha\"",
+                new [] { "Types", "Alpha" });
         }
     }
 }

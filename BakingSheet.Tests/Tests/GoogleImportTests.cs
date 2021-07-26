@@ -9,7 +9,7 @@ namespace Cathei.BakingSheet.Tests
 {
     public class GoogleImportTests : IDisposable
     {
-        private Mock<ILogger> _loggerMock;
+        private TestLogger _logger;
         private TestSheetContainer _container;
 
         // unit test google account credential
@@ -28,8 +28,8 @@ namespace Cathei.BakingSheet.Tests
 
         public GoogleImportTests()
         {
-            _loggerMock = new Mock<ILogger>();
-            _container = new TestSheetContainer(_loggerMock.Object);
+            _logger = new TestLogger();
+            _container = new TestSheetContainer(_logger);
         }
 
         public void Dispose()

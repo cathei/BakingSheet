@@ -57,7 +57,7 @@ namespace Cathei.BakingSheet.Raw
                     {
                         var prop = sheetRowProperties[i];
                         var value = prop.GetValue(sheetRow);
-                        var cellValue = exporter.ValueToString(context, prop.PropertyType, value);
+                        var cellValue = exporter.ValueToString(prop.PropertyType, value);
 
                         page.SetCell(i, pageRow, cellValue);
                     }
@@ -86,7 +86,7 @@ namespace Cathei.BakingSheet.Raw
                                 {
                                     var prop = sheetElemProperties[i];
                                     var value = prop.GetValue(sheetElem);
-                                    var cellValue = exporter.ValueToString(context, prop.PropertyType, value);
+                                    var cellValue = exporter.ValueToString(prop.PropertyType, value);
 
                                     page.SetCell(sheetRowProperties.Length + i, pageRow, cellValue);
                                 }

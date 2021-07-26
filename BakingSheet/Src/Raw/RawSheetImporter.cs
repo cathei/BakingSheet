@@ -30,17 +30,17 @@ namespace Cathei.BakingSheet.Raw
 
             foreach (var prop in sheetProps)
             {
-                var page = GetPage(prop.Name);
-                if (page == null)
+                using (context.Logger.BeginScope(prop.Name))
                 {
-                    context.Logger.LogError($"Failed to find sheet: {prop.Name}");
-                    continue;
-                }
+                    var page = GetPage(prop.Name);
+                    if (page == null)
+                    {
+                        context.Logger.LogError("Failed to find sheet: {SheetName}", prop.Name);
+                        continue;
+                    }
 
-                var sheet = Activator.CreateInstance(prop.PropertyType) as ISheet;
+                    var sheet = Activator.CreateInstance(prop.PropertyType) as ISheet;
 
-                using (context.Logger.BeginScope(sheet.Name))
-                {
                     page.Import(this, context, sheet);
                     prop.SetValue(context.Container, sheet);
                 }
@@ -49,7 +49,7 @@ namespace Cathei.BakingSheet.Raw
             return true;
         }
 
-        public virtual object StringToValue(SheetConvertingContext context, Type type, string value)
+        public virtual object StringToValue(Type type, string value)
         {
             if (type.IsEnum)
             {
@@ -59,7 +59,7 @@ namespace Cathei.BakingSheet.Raw
             if (typeof(ISheetReference).IsAssignableFrom(type))
             {
                 var reference = Activator.CreateInstance(type) as ISheetReference;
-                reference.Id = StringToValue(context, reference.IdType, value);
+                reference.Id = StringToValue(reference.IdType, value);
                 return reference;
             }
 
@@ -80,7 +80,7 @@ namespace Cathei.BakingSheet.Raw
                     return null;
 
                 var underlyingType = Nullable.GetUnderlyingType(type);
-                return StringToValue(context, underlyingType, value);
+                return StringToValue(underlyingType, value);
             }
 
             return Convert.ChangeType(value, type);

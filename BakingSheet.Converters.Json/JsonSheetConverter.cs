@@ -64,7 +64,7 @@ namespace Cathei.BakingSheet
 
                 if (!_fileSystem.Exists(path))
                 {
-                    context.Logger.LogError($"Failed to find sheet: {prop.Name}");
+                    context.Logger.LogError("Failed to find sheet: {SheetName}", prop.Name);
                     continue;
                 }
 

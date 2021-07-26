@@ -10,15 +10,15 @@ namespace Cathei.BakingSheet.Tests
     public class JsonImportTests : IDisposable
     {
         private TestFileSystem _fileSystem;
-        private Mock<ILogger> _loggerMock;
+        private TestLogger _logger;
         private TestSheetContainer _container;
         private JsonSheetConverter _converter;
 
         public JsonImportTests()
         {
             _fileSystem = new TestFileSystem();
-            _loggerMock = new Mock<ILogger>();
-            _container = new TestSheetContainer(_loggerMock.Object);
+            _logger = new TestLogger();
+            _container = new TestSheetContainer(_logger);
             _converter = new JsonSheetConverter("testdata", fileSystem: _fileSystem);
         }
 
@@ -65,7 +65,7 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal(TestEnum.Alpha, _container.Types[0].Id);
             Assert.Equal(345, _container.Types[0].IntColumn);
 
-            _loggerMock.VerifyLog(LogLevel.Error, "Error converting value \"WrongEnum\" to type 'Cathei.BakingSheet.Tests.TestEnum'. Path '[0].Id', line 1, position 18.", Times.Once());
+            _logger.VerifyLog(LogLevel.Error, "Error converting value \"WrongEnum\" to type 'Cathei.BakingSheet.Tests.TestEnum'. Path '[0].Id', line 1, position 18.");
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal(1, _container.Types[TestEnum.Alpha].IntColumn);
             Assert.Equal(4, _container.Types[TestEnum.Bravo].IntColumn);
 
-            _loggerMock.VerifyLog(LogLevel.Error, "An item with the same key has already been added. Key: Alpha", Times.Once());
+            _logger.VerifyLog(LogLevel.Error, "An item with the same key has already been added. Key: Alpha");
         }
     }
 }

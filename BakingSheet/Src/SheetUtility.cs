@@ -42,7 +42,7 @@ namespace Cathei.BakingSheet
                         {
                             var err = verifier.Verify(att, prop.GetValue(obj));
                             if (err != null)
-                                context.Logger.LogError($"Verification: {err}");
+                                context.Logger.LogError("Verification: {Error}", err);
                         }
                     }
                 }

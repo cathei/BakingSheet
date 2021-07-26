@@ -18,12 +18,12 @@ namespace Cathei.BakingSheet.Raw
         {
             foreach (var prop in context.Container.GetSheetProperties())
             {
-                var sheet = prop.GetValue(context.Container) as ISheet;
-                if (sheet == null)
-                    continue;
-
-                using (context.Logger.BeginScope(sheet.Name))
+                using (context.Logger.BeginScope(prop.Name))
                 {
+                    var sheet = prop.GetValue(context.Container) as ISheet;
+                    if (sheet == null)
+                        continue;
+
                     var page = CreatePage(sheet.Name);
                     page.Export(this, context, sheet);
                 }
@@ -40,7 +40,7 @@ namespace Cathei.BakingSheet.Raw
             return true;
         }
 
-        public virtual string ValueToString(SheetConvertingContext context, Type type, object value)
+        public virtual string ValueToString(Type type, object value)
         {
             if (value == null)
                 return null;
@@ -48,7 +48,7 @@ namespace Cathei.BakingSheet.Raw
             if (value is ISheetReference)
             {
                 var reference = value as ISheetReference;
-                return ValueToString(context, reference.IdType, reference.Id);
+                return ValueToString(reference.IdType, reference.Id);
             }
 
             if (value is DateTime)
