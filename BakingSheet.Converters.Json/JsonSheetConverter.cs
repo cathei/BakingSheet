@@ -60,9 +60,15 @@ namespace Cathei.BakingSheet
 
             foreach (var prop in sheetProps)
             {
-                string data;
-
                 var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
+
+                if (!_fileSystem.Exists(path))
+                {
+                    context.Logger.LogError($"Failed to find sheet: {prop.Name}");
+                    continue;
+                }
+
+                string data;
 
                 using (var stream = _fileSystem.OpenRead(path))
                 using (var reader = new StreamReader(stream))

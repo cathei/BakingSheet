@@ -39,6 +39,18 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal(nameof(TestSheetContainer.Tests), _container.Tests.Name);
         }
 
+        [Theory]
+        [InlineData("Id,@!$@!$! \"1!$@ 2,\n,,xxx,")]
+        public async Task TestImportMalformedCsv(string content)
+        {
+            _fileSystem.SetTestData("testdata/Tests.csv", content);
+
+            var result = await _container.Bake(_converter);
+
+            Assert.True(result);
+            Assert.Empty(_container.Tests);
+        }
+
         [Fact]
         public async Task TestImportMissingColumn()
         {
@@ -50,7 +62,7 @@ namespace Cathei.BakingSheet.Tests
             Assert.Empty(_container.Tests);
             Assert.Equal(nameof(TestSheetContainer.Tests), _container.Tests.Name);
 
-            _loggerMock.VerifyLog(LogLevel.Error, "[Tests] First column must be named \"Id\"", Times.Once());
+            _loggerMock.VerifyLog(LogLevel.Error, "[Tests] First column \"\" must be named \"Id\"", Times.Once());
         }
 
         [Fact]
@@ -61,9 +73,9 @@ namespace Cathei.BakingSheet.Tests
             var result = await _container.Bake(_converter);
 
             Assert.True(result);
-            Assert.Empty(_container.Types);
+            Assert.Single(_container.Types);
 
-            _loggerMock.VerifyLog(LogLevel.Error, "[Types>Test>EnumColumn]", Times.Once());
+            _loggerMock.VerifyLog(LogLevel.Error, "[Types>Test>EnumColumn] Failed to convert value \"WrongEnum\" of type Cathei.BakingSheet.Tests.TestEnum", Times.Once());
         }
     }
 }

@@ -32,10 +32,10 @@ namespace Cathei.BakingSheet.Raw
         public static void Import(this IRawSheetImporterPage page, RawSheetImporter importer, SheetConvertingContext context, ISheet sheet)
         {
             var idColumnName = page.GetCell(0, 0);
-            
+ 
             if (idColumnName != nameof(ISheetRow.Id))
             {
-                context.Logger.LogError($"[{context.Tag}] First column must be named \"{nameof(ISheetRow.Id)}\"");
+                context.Logger.LogError($"[{context.Tag}] First column \"{idColumnName}\" must be named \"{nameof(ISheetRow.Id)}\"");
                 return;
             }
 
@@ -51,9 +51,9 @@ namespace Cathei.BakingSheet.Raw
                 {
                     sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
 
-                    page.ImportToObject(importer, context, sheetRow, pageRow);
+                    context.SetTag(parentTag, rowId);
 
-                    context.SetTag(parentTag, sheetRow.Id);
+                    page.ImportToObject(importer, context, sheetRow, pageRow);
 
                     if (sheet.Contains(sheetRow.Id))
                     {

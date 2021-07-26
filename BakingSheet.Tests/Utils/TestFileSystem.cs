@@ -13,7 +13,7 @@ namespace Cathei.BakingSheet.Tests
 
         public void SetTestData(string path, string content)
         {
-            files[path] = new MemoryStream(Encoding.UTF8.GetBytes("content"));
+            files[path] = new MemoryStream(Encoding.UTF8.GetBytes(content));
         }
 
         public void VerifyTestData(string path, string expected)
@@ -27,6 +27,11 @@ namespace Cathei.BakingSheet.Tests
         public IEnumerable<string> GetFiles(string path, string extension)
         {
             return files.Keys;
+        }
+
+        public bool Exists(string path)
+        {
+            return files.ContainsKey(path);
         }
 
         public Stream OpenRead(string path)

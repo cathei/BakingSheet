@@ -27,30 +27,30 @@ namespace Cathei.BakingSheet.Tests
             _fileSystem.Dispose();
         }
 
-        [Fact]
-        public async Task TestImportEmptyJson()
+        [Theory]
+        [InlineData("")]
+        [InlineData("{}")]
+        [InlineData("!@#$RandomText")]
+        public async Task TestImportMalformedJson(string content)
         {
-            _fileSystem.SetTestData("testdata/Tests.json", "{}");
+            _fileSystem.SetTestData("testdata/Tests.json", content);
 
             var result = await _container.Bake(_converter);
 
             Assert.True(result);
-            Assert.Empty(_container.Tests);
-            Assert.Equal(nameof(TestSheetContainer.Tests), _container.Tests.Name);
+            Assert.Null(_container.Tests);
         }
 
         [Fact]
-        public async Task TestImportMissingColumn()
+        public async Task TestImportEmptyJson()
         {
-            _fileSystem.SetTestData("testdata/Tests.json", "");
+            _fileSystem.SetTestData("testdata/Tests.json", "[]");
 
             var result = await _container.Bake(_converter);
 
             Assert.True(result);
             Assert.Empty(_container.Tests);
             Assert.Equal(nameof(TestSheetContainer.Tests), _container.Tests.Name);
-
-            _loggerMock.VerifyLog(LogLevel.Error, "[Tests] First column must be named \"Id\"", Times.Once());
         }
     }
 }

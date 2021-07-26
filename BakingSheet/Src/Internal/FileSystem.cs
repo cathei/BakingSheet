@@ -9,6 +9,7 @@ namespace Cathei.BakingSheet.Internal
     {
         IEnumerable<string> GetFiles(string path, string extension);
 
+        bool Exists(string path);
         Stream OpenRead(string path);
         Stream OpenWrite(string path);
     }
@@ -18,6 +19,11 @@ namespace Cathei.BakingSheet.Internal
         public IEnumerable<string> GetFiles(string path, string extension)
         {
             return Directory.GetFiles(path, $"*.{extension}");
+        }
+
+        public bool Exists(string path)
+        {
+            return File.Exists(path);
         }
 
         public Stream OpenRead(string path)
