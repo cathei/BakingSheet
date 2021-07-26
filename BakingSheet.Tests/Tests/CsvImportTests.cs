@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -30,7 +31,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportEmptyCsv()
         {
-            _fileSystem.SetTestData("testdata/Tests.csv", "Id");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.csv"), "Id");
 
             var result = await _container.Bake(_converter);
 
@@ -43,7 +44,7 @@ namespace Cathei.BakingSheet.Tests
         [InlineData("Id,@!$@!$! \"1!$@ 2,\n,,xxx,")]
         public async Task TestImportMalformedCsv(string content)
         {
-            _fileSystem.SetTestData("testdata/Tests.csv", content);
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.csv"), content);
 
             var result = await _container.Bake(_converter);
 
@@ -54,7 +55,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportMissingColumn()
         {
-            _fileSystem.SetTestData("testdata/Tests.csv", "");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.csv"), "");
 
             var result = await _container.Bake(_converter);
 
@@ -70,7 +71,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportWrongEnum()
         {
-            _fileSystem.SetTestData("testdata/Types.csv", "Id,IntColumn\nWrongEnum,1");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn\nWrongEnum,1");
 
             var result = await _container.Bake(_converter);
 
@@ -85,7 +86,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportDuplicatedRow()
         {
-            _fileSystem.SetTestData("testdata/Types.csv", "Id,IntColumn\nAlpha,1\nCharlie,2\nAlpha,3\nBravo,4");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn\nAlpha,1\nCharlie,2\nAlpha,3\nBravo,4");
 
             var result = await _container.Bake(_converter);
 

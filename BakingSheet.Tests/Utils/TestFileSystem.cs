@@ -10,7 +10,7 @@ namespace Cathei.BakingSheet.Tests
 {
     public class TestFileSystem : IFileSystem, IDisposable
     {
-        public Dictionary<string, MemoryStream> files = new Dictionary<string, MemoryStream>();
+        public IDictionary<string, MemoryStream> files = new Dictionary<string, MemoryStream>();
 
         public void SetTestData(string path, string content)
         {
@@ -19,10 +19,10 @@ namespace Cathei.BakingSheet.Tests
 
         public void VerifyTestData(string path, string expected)
         {
-            Assert.True(files.ContainsKey(path));
+            Assert.Contains(path, files);
 
             var content = Encoding.UTF8.GetString(files[path].ToArray());
-            Assert.Equal(expected, content);
+            Assert.Equal(expected, content, ignoreLineEndingDifferences: true);
         }
 
         public IEnumerable<string> GetFiles(string path, string extension)

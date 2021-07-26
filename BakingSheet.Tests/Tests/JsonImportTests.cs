@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -33,7 +34,7 @@ namespace Cathei.BakingSheet.Tests
         [InlineData("!@#$RandomText")]
         public async Task TestImportMalformedJson(string content)
         {
-            _fileSystem.SetTestData("testdata/Tests.json", content);
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.json"), content);
 
             var result = await _container.Bake(_converter);
 
@@ -44,7 +45,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportEmptyJson()
         {
-            _fileSystem.SetTestData("testdata/Tests.json", "[]");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.json"), "[]");
 
             var result = await _container.Bake(_converter);
 
@@ -56,7 +57,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportWrongEnum()
         {
-            _fileSystem.SetTestData("testdata/Types.json", "[{\"Id\":\"WrongEnum\",\"IntColumn\":345}]");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Types.json"), "[{\"Id\":\"WrongEnum\",\"IntColumn\":345}]");
 
             var result = await _container.Bake(_converter);
 
@@ -71,7 +72,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportDuplicatedRow()
         {
-            _fileSystem.SetTestData("testdata/Types.json", "[{\"Id\":\"Alpha\",\"IntColumn\":1},{\"Id\":\"Charlie\",\"IntColumn\":2},{\"Id\":\"Alpha\",\"IntColumn\":3},{\"Id\":\"Bravo\",\"IntColumn\":4}]");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Types.json"), "[{\"Id\":\"Alpha\",\"IntColumn\":1},{\"Id\":\"Charlie\",\"IntColumn\":2},{\"Id\":\"Alpha\",\"IntColumn\":3},{\"Id\":\"Bravo\",\"IntColumn\":4}]");
 
             var result = await _container.Bake(_converter);
 

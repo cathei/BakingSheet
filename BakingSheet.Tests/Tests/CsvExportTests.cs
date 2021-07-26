@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -33,8 +34,8 @@ namespace Cathei.BakingSheet.Tests
 
             Assert.True(result);
 
-            _fileSystem.VerifyTestData("testdata/Tests.csv", "");
-            _fileSystem.VerifyTestData("testdata/Arrays.csv", "");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Tests.csv"), "");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Arrays.csv"), "");
         }
 
         [Fact]
@@ -53,7 +54,7 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Store(_converter);
 
-            _fileSystem.VerifyTestData("testdata/Tests.csv", "Id,Content\nTestId,TestContent\n");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Tests.csv"), "Id,Content\nTestId,TestContent\n");
         }
 
         [Fact]
@@ -83,7 +84,7 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Store(_converter);
 
-            _fileSystem.VerifyTestData("testdata/Arrays.csv", "Id,Content,ElemContent\nTestId,TestContent,TestElemContent1\n,,TestElemContent2\n");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Arrays.csv"), "Id,Content,ElemContent\nTestId,TestContent,TestElemContent1\n,,TestElemContent2\n");
         }
     }
 }
