@@ -39,13 +39,10 @@ namespace Cathei.BakingSheet.Raw
 
                 var sheet = Activator.CreateInstance(prop.PropertyType) as ISheet;
 
-                sheet.Name = prop.Name;
-                context.SetTag(sheet.Name);
-
+                context.SetTag(prop.Name);
                 page.Import(this, context, sheet);
 
                 prop.SetValue(context.Container, sheet);
-                context.Container.AllSheets.Add(sheet);
             }
  
             return true;

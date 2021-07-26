@@ -12,10 +12,7 @@ namespace Cathei.BakingSheet.Tests
     {
         public class Row : SheetRow
         {
-            public string StringColumn { get; set; }
-            public float FloatColumn { get; set; }
-            public DateTime DateTimeColumn { get; set; }
-            public TimeSpan TimeSpanColumn { get; set; }
+            public string Content { get; set; }
         }
     }
 
@@ -23,14 +20,44 @@ namespace Cathei.BakingSheet.Tests
     {
         public class Elem : SheetRowElem
         {
-            public TestSheet.Reference ReferColumn { get; set; }
-            public TestArraySheet.Reference SelfReferColumn { get; set; }
-            public int IntColumn { get; set; }
+            public string ElemContent { get; set; }
         }
 
         public class Row : SheetRowArray<Elem>
         {
+            public string Content { get; set; }
+        }
+    }
 
+    public enum TestEnum
+    {
+        Alpha, Bravo, Charlie
+    }
+
+    public class TestTypeSheet : Sheet<TestTypeSheet.Row>
+    {
+        public class Row : SheetRow
+        {
+            public int IntColumn { get; set; }
+            public float FloatColumn { get; set; }
+            public DateTime DateTimeColumn { get; set; }
+            public TimeSpan TimeSpanColumn { get; set; }
+            public TestEnum EnumColumn { get; set; }
+        }
+    }
+
+    public class TestReferenceSheet : Sheet<TestReferenceSheet.Row>
+    {
+        public class Elem : SheetRowElem
+        {
+            public TestSheet.Reference NestedReferColumn { get; set; }
+            public TestArraySheet.Reference NestedSelfReferColumn { get; set; }
+        }
+
+        public class Row : SheetRowArray<Elem>
+        {
+            public TestSheet.Reference ReferColumn { get; set; }
+            public TestArraySheet.Reference SelfReferColumn { get; set; }
         }
     }
 
@@ -41,7 +68,9 @@ namespace Cathei.BakingSheet.Tests
 
         }
 
-        public TestSheet Tests { get; private set; }
-        public TestArraySheet TestArrays { get; private set; }
+        public TestSheet Tests { get; set; }
+        public TestArraySheet Arrays { get; set; }
+        public TestTypeSheet Types { get; set; }
+        public TestReferenceSheet Refers { get; set; }
     }
 }

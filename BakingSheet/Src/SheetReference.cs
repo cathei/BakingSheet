@@ -29,8 +29,10 @@ namespace Cathei.BakingSheet
 
             void ISheetReference.Map(SheetConvertingContext context)
             {
-                var sheet = context.Container.AllSheets
-                    .FirstOrDefault(x => x.GetType().IsSubclassOf(typeof(Sheet<TKey, TValue>)));
+                var sheet = context.Container.GetSheetProperties()
+                    .Where(p => p.PropertyType.IsSubclassOf(typeof(Sheet<TKey, TValue>)))
+                    .Select(p => p.GetValue(context.Container) as ISheet)
+                    .FirstOrDefault();
  
                 if (sheet != null)
                 {

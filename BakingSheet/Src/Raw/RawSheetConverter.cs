@@ -16,8 +16,12 @@ namespace Cathei.BakingSheet.Raw
 
         public async Task<bool> Export(SheetConvertingContext context)
         {
-            foreach (var sheet in context.Container.AllSheets)
+            foreach (var prop in context.Container.GetSheetProperties())
             {
+                var sheet = prop.GetValue(context.Container) as ISheet;
+                if (sheet == null)
+                    continue;
+
                 var page = CreatePage(sheet.Name);
 
                 context.SetTag(sheet.Name);

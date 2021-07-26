@@ -11,11 +11,8 @@ namespace Cathei.BakingSheet
 {
     public class SheetContainerBase
     {
-        public bool IsLoaded { get; private set; }
-
-        public List<ISheet> AllSheets = new List<ISheet>();
-
         private ILogger _logger;
+        private PropertyInfo[] _sheetProperties;
 
         public SheetContainerBase(ILogger logger)
         {
@@ -24,15 +21,29 @@ namespace Cathei.BakingSheet
 
         public IEnumerable<PropertyInfo> GetSheetProperties()
         {
-            return GetType()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(p => typeof(ISheet).IsAssignableFrom(p.PropertyType));
+            if (_sheetProperties == null)
+            {
+                _sheetProperties = GetType()
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                    .Where(p => typeof(ISheet).IsAssignableFrom(p.PropertyType))
+                    .ToArray();
+            }
+
+            return _sheetProperties;
         }
+
+        // public IEnumerable<ISheet> AllSheets
+        // {
+        //     get
+        //     {
+        //         return GetSheetProperties()
+        //             .Select(p => p.GetValue(this) as ISheet)
+        //             .Where(x => x != null);
+        //     }
+        // }
 
         public async Task<bool> Bake(ISheetImporter importer)
         {
-            AllSheets.Clear();
-
             var context = new SheetConvertingContext
             {
                 Container = this,
@@ -44,21 +55,13 @@ namespace Cathei.BakingSheet
             if (!success)
                 return false;
 
-            PostLoad(context);
-
-            IsLoaded = true;
+            PostLoad();
 
             return true;
         }
 
         public async Task<bool> Store(ISheetExporter exporter)
         {
-            if (!IsLoaded)
-            {
-                _logger.LogError("Sheet container is not loaded!");
-                return false;
-            }
-
             var context = new SheetConvertingContext
             {
                 Container = this,
@@ -69,10 +72,21 @@ namespace Cathei.BakingSheet
             return success;
         }
 
-        protected virtual void PostLoad(SheetConvertingContext context)
+        public virtual void PostLoad()
         {
-            foreach (var sheet in AllSheets)
+            var context = new SheetConvertingContext
             {
+                Container = this,
+                Logger = _logger,
+            };
+
+            foreach (var prop in GetSheetProperties())
+            {
+                var sheet = prop.GetValue(this) as ISheet;
+                if (sheet == null)
+                    continue;
+
+                context.SetTag(prop.Name);
                 sheet.PostLoad(context);
             }
         }
@@ -86,8 +100,13 @@ namespace Cathei.BakingSheet
                 Verifiers = verifiers
             };
 
-            foreach (var sheet in AllSheets)
+            foreach (var prop in GetSheetProperties())
             {
+                var sheet = prop.GetValue(this) as ISheet;
+                if (sheet == null)
+                    continue;
+
+                context.SetTag(prop.Name);
                 sheet.VerifyAssets(context);
             }
         }

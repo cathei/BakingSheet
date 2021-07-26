@@ -16,6 +16,14 @@ namespace Cathei.BakingSheet.Tests
             files[path] = new MemoryStream(Encoding.UTF8.GetBytes("content"));
         }
 
+        public void VerifyTestData(string path, string expected)
+        {
+            Assert.True(files.ContainsKey(path));
+
+            var content = Encoding.UTF8.GetString(files[path].ToArray());
+            Assert.Equal(expected, content);
+        }
+
         public IEnumerable<string> GetFiles(string path, string extension)
         {
             return files.Keys;

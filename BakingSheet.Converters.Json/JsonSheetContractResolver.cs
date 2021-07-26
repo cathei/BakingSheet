@@ -9,7 +9,7 @@ namespace Cathei.BakingSheet
         protected override JsonContract CreateContract(System.Type objectType)
         {
             if (typeof(ISheetRow).IsAssignableFrom(objectType) ||
-                typeof(SheetRowElem).IsAssignableFrom(objectType))
+                typeof(ISheetRowElem).IsAssignableFrom(objectType))
             {
                 return CreateObjectContract(objectType);
             }

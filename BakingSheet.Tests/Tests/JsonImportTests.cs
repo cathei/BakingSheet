@@ -7,19 +7,19 @@ using Xunit;
 
 namespace Cathei.BakingSheet.Tests
 {
-    public class CsvImportTests : IDisposable
+    public class JsonImportTests : IDisposable
     {
         private TestFileSystem _fileSystem;
         private Mock<ILogger> _loggerMock;
         private TestSheetContainer _container;
-        private CsvSheetConverter _converter;
+        private JsonSheetConverter _converter;
 
-        public CsvImportTests()
+        public JsonImportTests()
         {
             _fileSystem = new TestFileSystem();
             _loggerMock = new Mock<ILogger>();
             _container = new TestSheetContainer(_loggerMock.Object);
-            _converter = new CsvSheetConverter("testdata", TimeZoneInfo.Utc, fileSystem: _fileSystem);
+            _converter = new JsonSheetConverter("testdata", fileSystem: _fileSystem);
         }
 
         public void Dispose()
@@ -28,9 +28,9 @@ namespace Cathei.BakingSheet.Tests
         }
 
         [Fact]
-        public async Task TestImportEmptyCsv()
+        public async Task TestImportEmptyJson()
         {
-            _fileSystem.SetTestData("testdata/Tests.csv", "Id");
+            _fileSystem.SetTestData("testdata/Tests.json", "{}");
 
             var result = await _container.Bake(_converter);
 
@@ -42,7 +42,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportMissingColumn()
         {
-            _fileSystem.SetTestData("testdata/Tests.csv", "");
+            _fileSystem.SetTestData("testdata/Tests.json", "");
 
             var result = await _container.Bake(_converter);
 
@@ -51,19 +51,6 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal(nameof(TestSheetContainer.Tests), _container.Tests.Name);
 
             _loggerMock.VerifyLog(LogLevel.Error, "[Tests] First column must be named \"Id\"", Times.Once());
-        }
-
-        [Fact]
-        public async Task TestImportConvertError()
-        {
-            _fileSystem.SetTestData("testdata/Types.csv", "Id,EnumColumn\nTest,WrongEnum");
-
-            var result = await _container.Bake(_converter);
-
-            Assert.True(result);
-            Assert.Empty(_container.Types);
-
-            _loggerMock.VerifyLog(LogLevel.Error, "[Types>Test>EnumColumn]", Times.Once());
         }
     }
 }

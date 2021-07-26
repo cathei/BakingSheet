@@ -70,12 +70,6 @@ namespace Cathei.BakingSheet
 
                 var sheet = Deserialize(data, prop.PropertyType, context.Logger) as ISheet;
                 prop.SetValue(context.Container, sheet);
-
-                if (sheet != null)
-                {
-                    sheet.Name = prop.Name;
-                    context.Container.AllSheets.Add(sheet);
-                }
             }
 
             return true;
