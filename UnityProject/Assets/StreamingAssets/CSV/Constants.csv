@@ -1,4 +1,4 @@
-Value,Id
-https://github.com/cathei/BakingSheet,ServerAddress
-1000,InitialGold
-0.1,CriticalChance
+Id,Value
+ServerAddress,https://github.com/cathei/BakingSheet
+InitialGold,1000
+CriticalChance,0.1
