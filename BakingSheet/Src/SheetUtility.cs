@@ -12,15 +12,14 @@ namespace Cathei.BakingSheet
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => typeof(ISheetReference).IsAssignableFrom(p.PropertyType));
 
-            var parentTag = context.Tag;
-
             foreach (var prop in refProps)
             {
-                context.SetTag(parentTag, prop.Name);
-
-                var refer = prop.GetValue(obj) as ISheetReference;
-                refer.Map(context);
-                prop.SetValue(obj, refer);
+                using (context.Logger.BeginScope(prop.Name))
+                {
+                    var refer = prop.GetValue(obj) as ISheetReference;
+                    refer.Map(context);
+                    prop.SetValue(obj, refer);
+                }
             }
         }
 
@@ -30,22 +29,21 @@ namespace Cathei.BakingSheet
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.GetCustomAttribute(typeof(SheetAssetAttribute)) != null);
 
-            var parentTag = context.Tag;
-
             foreach (var prop in assetProps)
             {
-                context.SetTag(parentTag, prop.Name);
-
-                foreach (var verifier in context.Verifiers)
+                using (context.Logger.BeginScope(prop.Name))
                 {
-                    if (!verifier.TargetType.IsAssignableFrom(prop.PropertyType))
-                        continue;
-
-                    foreach (var att in prop.GetCustomAttributes(verifier.TargetAttribute))
+                    foreach (var verifier in context.Verifiers)
                     {
-                        var err = verifier.Verify(att, prop.GetValue(obj));
-                        if (err != null)
-                            context.Logger.LogError($"[{context.Tag}] Verification: {err}");
+                        if (!verifier.TargetType.IsAssignableFrom(prop.PropertyType))
+                            continue;
+
+                        foreach (var att in prop.GetCustomAttributes(verifier.TargetAttribute))
+                        {
+                            var err = verifier.Verify(att, prop.GetValue(obj));
+                            if (err != null)
+                                context.Logger.LogError($"Verification: {err}");
+                        }
                     }
                 }
             }

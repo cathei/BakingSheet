@@ -76,7 +76,7 @@ namespace Cathei.BakingSheet
                 if (sheet == null)
                     continue;
 
-                context.SetTag(prop.Name);
+                sheet.Name = prop.Name;
                 sheet.PostLoad(context);
             }
         }
@@ -96,7 +96,6 @@ namespace Cathei.BakingSheet
                 if (sheet == null)
                     continue;
 
-                context.SetTag(prop.Name);
                 sheet.VerifyAssets(context);
             }
         }

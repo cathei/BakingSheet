@@ -28,14 +28,18 @@ namespace Cathei.BakingSheet
 
         public virtual void PostLoad(SheetConvertingContext context)
         {
-            context.SetTag(context.Tag, Id);
-            SheetUtility.MapReferences(context, this);
+            using (context.Logger.BeginScope(Id))
+            {
+                SheetUtility.MapReferences(context, this);
+            }
         }
 
         public virtual void VerifyAssets(SheetConvertingContext context)
         {
-            context.SetTag(context.Tag, Id);
-            SheetUtility.VerifyAssets(context, this);
+            using (context.Logger.BeginScope(Id))
+            {
+                SheetUtility.VerifyAssets(context, this);
+            }
         }
     }
 
@@ -46,14 +50,18 @@ namespace Cathei.BakingSheet
 
         public virtual void PostLoad(SheetConvertingContext context)
         {
-            context.SetTag(context.Tag, Index);
-            SheetUtility.MapReferences(context, this);
+            using (context.Logger.BeginScope(Index))
+            {
+                SheetUtility.MapReferences(context, this);
+            }
         }
 
         public virtual void VerifyAssets(SheetConvertingContext context)
         {
-            context.SetTag(context.Tag, Index);
-            SheetUtility.VerifyAssets(context, this);
+            using (context.Logger.BeginScope(Index))
+            {
+                SheetUtility.VerifyAssets(context, this);
+            }
         }
     }
 
@@ -75,14 +83,13 @@ namespace Cathei.BakingSheet
         {
             base.PostLoad(context);
 
-            var parentTag = context.Tag;
-
-            for (int idx = 0; idx < Arr.Count; ++idx)
+            using (context.Logger.BeginScope(Id))
             {
-                context.SetTag(parentTag, Id);
-
-                Arr[idx].Index = idx;
-                Arr[idx].PostLoad(context);
+                for (int idx = 0; idx < Arr.Count; ++idx)
+                {
+                    Arr[idx].Index = idx;
+                    Arr[idx].PostLoad(context);
+                }
             }
         }
 
@@ -90,12 +97,12 @@ namespace Cathei.BakingSheet
         {
             base.VerifyAssets(context);
 
-            var parentTag = context.Tag;
-
-            for (int idx = 0; idx < Arr.Count; ++idx)
+            using (context.Logger.BeginScope(Id))
             {
-                context.SetTag(parentTag, Id);
-                Arr[idx].VerifyAssets(context);
+                for (int idx = 0; idx < Arr.Count; ++idx)
+                {
+                    Arr[idx].VerifyAssets(context);
+                }
             }
         }
     }

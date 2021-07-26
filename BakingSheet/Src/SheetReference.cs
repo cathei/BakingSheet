@@ -47,7 +47,7 @@ namespace Cathei.BakingSheet
 
                 if (Id != null && Ref == null)
                 {
-                    context.Logger.LogError($"[{context.Tag}] Failed to find reference \"{Id}\" on {sheet.Name}");
+                    context.Logger.LogError($"Failed to find reference \"{Id}\" on {sheet.Name}");
                 }
             }
 

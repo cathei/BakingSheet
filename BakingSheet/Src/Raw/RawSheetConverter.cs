@@ -22,10 +22,11 @@ namespace Cathei.BakingSheet.Raw
                 if (sheet == null)
                     continue;
 
-                var page = CreatePage(sheet.Name);
-
-                context.SetTag(sheet.Name);
-                page.Export(this, context, sheet);
+                using (context.Logger.BeginScope(sheet.Name))
+                {
+                    var page = CreatePage(sheet.Name);
+                    page.Export(this, context, sheet);
+                }
             }
 
             var success = await SaveData();

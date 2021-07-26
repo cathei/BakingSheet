@@ -9,7 +9,7 @@ namespace Cathei.BakingSheet
     // Used for reflection
     public interface ISheet : IEnumerable
     {
-        string Name { get; }
+        string Name { get; set; }
         Type RowType { get; }
 
         int Count { get; }
@@ -23,7 +23,7 @@ namespace Cathei.BakingSheet
     public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet
         where TValue : SheetRow<TKey>, new()
     {
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         public Type RowType => typeof(TValue);
 
@@ -49,19 +49,19 @@ namespace Cathei.BakingSheet
 
         public virtual void PostLoad(SheetConvertingContext context)
         {
-            Name = context.Tag;
-
-            foreach (var row in Items)
+            using (context.Logger.BeginScope(Name))
             {
-                row.PostLoad(context);
+                foreach (var row in Items)
+                    row.PostLoad(context);
             }
         }
 
         public virtual void VerifyAssets(SheetConvertingContext context)
         {
-            foreach (var row in Items)
+            using (context.Logger.BeginScope(Name))
             {
-                row.VerifyAssets(context);
+                foreach (var row in Items)
+                    row.VerifyAssets(context);
             }
         }
     }

@@ -35,13 +35,11 @@ namespace Cathei.BakingSheet.Raw
  
             if (idColumnName != nameof(ISheetRow.Id))
             {
-                context.Logger.LogError($"[{context.Tag}] First column \"{idColumnName}\" must be named \"{nameof(ISheetRow.Id)}\"");
+                context.Logger.LogError($"First column \"{idColumnName}\" must be named \"{nameof(ISheetRow.Id)}\"");
                 return;
             }
 
             ISheetRow sheetRow = null;
-
-            var parentTag = context.Tag;
 
             for (int pageRow = 1; !page.IsEmptyRow(pageRow); ++pageRow)
             {
@@ -49,34 +47,35 @@ namespace Cathei.BakingSheet.Raw
 
                 if (!string.IsNullOrEmpty(rowId))
                 {
-                    sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
-
-                    context.SetTag(parentTag, rowId);
-
-                    page.ImportToObject(importer, context, sheetRow, pageRow);
-
-                    context.SetTag(parentTag, rowId);
-
-                    if (sheet.Contains(sheetRow.Id))
+                    using (context.Logger.BeginScope(rowId))
                     {
-                        context.Logger.LogError($"[{context.Tag}] Already has row with id \"{sheetRow.Id}\"");
-                        sheetRow = null;
-                    }
-                    else
-                    {
-                        sheet.Add(sheetRow);
+                        sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
+
+                        page.ImportToObject(importer, context, sheetRow, pageRow);
+
+                        if (sheet.Contains(sheetRow.Id))
+                        {
+                            context.Logger.LogError($"Already has row with id \"{sheetRow.Id}\"");
+                            sheetRow = null;
+                        }
+                        else
+                        {
+                            sheet.Add(sheetRow);
+                        }
                     }
                 }
 
                 if (sheetRow is ISheetRowArray sheetRowArray)
                 {
-                    context.SetTag(parentTag, sheetRow.Id, sheetRowArray.Arr.Count);
+                    using (context.Logger.BeginScope(sheetRow.Id))
+                    using (context.Logger.BeginScope(sheetRowArray.Arr.Count))
+                    {
+                        var sheetElem = Activator.CreateInstance(sheetRowArray.ElemType);
 
-                    var sheetElem = Activator.CreateInstance(sheetRowArray.ElemType);
+                        page.ImportToObject(importer, context, sheetElem, pageRow);
 
-                    page.ImportToObject(importer, context, sheetElem, pageRow);
-
-                    sheetRowArray.Arr.Add(sheetElem);
+                        sheetRowArray.Arr.Add(sheetElem);
+                    }
                 }
             }
         }
@@ -86,29 +85,29 @@ namespace Cathei.BakingSheet.Raw
             var type = obj.GetType();
             var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty;
 
-            var parentTag = context.Tag;
-
             for (int pageColumn = 0; !page.IsEmptyCell(pageColumn, 0); ++pageColumn)
             {
                 var columnValue = page.GetCell(pageColumn, 0);
-                var cellValue = page.GetCell(pageColumn, pageRow);
-                if (string.IsNullOrEmpty(cellValue))
-                    continue;
 
-                var prop = type.GetProperty(columnValue, bindingFlags);
-                if (prop == null)
-                    continue;
-
-                context.SetTag(parentTag, columnValue);
-
-                try
+                using (context.Logger.BeginScope(columnValue))
                 {
-                    object value = importer.StringToValue(context, prop.PropertyType, cellValue);
-                    prop.SetValue(obj, value);
-                }
-                catch (Exception ex)
-                {
-                    context.Logger.LogError(ex, $"[{context.Tag}] Failed to convert value \"{cellValue}\" of type {prop.PropertyType}");
+                    var cellValue = page.GetCell(pageColumn, pageRow);
+                    if (string.IsNullOrEmpty(cellValue))
+                        continue;
+
+                    var prop = type.GetProperty(columnValue, bindingFlags);
+                    if (prop == null)
+                        continue;
+
+                    try
+                    {
+                        object value = importer.StringToValue(context, prop.PropertyType, cellValue);
+                        prop.SetValue(obj, value);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Logger.LogError(ex, $"Failed to convert value \"{cellValue}\" of type {prop.PropertyType}");
+                    }
                 }
             }
         }

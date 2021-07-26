@@ -28,8 +28,6 @@ namespace Cathei.BakingSheet.Raw
             if (sheet.Count == 0)
                 return;
 
-            var parentTag = context.Tag;
-
             var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty;
 
             PropertyInfo[] sheetRowProperties = null, sheetElemProperties = null;
@@ -38,68 +36,71 @@ namespace Cathei.BakingSheet.Raw
 
             foreach (ISheetRow sheetRow in sheet)
             {
-                context.SetTag(parentTag, sheetRow.Id);
-
-                if (sheetRowProperties == null)
+                using (context.Logger.BeginScope(sheetRow.Id))
                 {
-                    sheetRowProperties = sheetRow.GetType()
-                        .GetProperties(bindingFlags)
-                        .Where(ShouldExport)
-                        .OrderByDescending(x => x.Name == nameof(ISheetRow.Id))
-                        .ToArray();
+                    if (sheetRowProperties == null)
+                    {
+                        sheetRowProperties = sheetRow.GetType()
+                            .GetProperties(bindingFlags)
+                            .Where(ShouldExport)
+                            .OrderByDescending(x => x.Name == nameof(ISheetRow.Id))
+                            .ToArray();
+
+                        for (int i = 0; i < sheetRowProperties.Length; ++i)
+                        {
+                            var prop = sheetRowProperties[i];
+                            page.SetCell(i, 0, prop.Name);
+                        }
+                    }
 
                     for (int i = 0; i < sheetRowProperties.Length; ++i)
                     {
                         var prop = sheetRowProperties[i];
-                        page.SetCell(i, 0, prop.Name);
+                        var value = prop.GetValue(sheetRow);
+                        var cellValue = exporter.ValueToString(context, prop.PropertyType, value);
+
+                        page.SetCell(i, pageRow, cellValue);
                     }
-                }
 
-                for (int i = 0; i < sheetRowProperties.Length; ++i)
-                {
-                    var prop = sheetRowProperties[i];
-                    var value = prop.GetValue(sheetRow);
-                    var cellValue = exporter.ValueToString(context, prop.PropertyType, value);
-
-                    page.SetCell(i, pageRow, cellValue);
-                }
-
-                if (sheetRow is ISheetRowArray sheetRowArray)
-                {
-                    foreach (ISheetRowElem sheetElem in sheetRowArray.Arr)
+                    if (sheetRow is ISheetRowArray sheetRowArray)
                     {
-                        context.SetTag(parentTag, sheetRow.Id, sheetElem.Index);
-
-                        if (sheetElemProperties == null)
+                        foreach (ISheetRowElem sheetElem in sheetRowArray.Arr)
                         {
-                            sheetElemProperties = sheetElem.GetType()
-                                .GetProperties(bindingFlags)
-                                .Where(ShouldExport)
-                                .ToArray();
-
-                            for (int i = 0; i < sheetElemProperties.Length; ++i)
+                            using (context.Logger.BeginScope(sheetElem.Index))
                             {
-                                var prop = sheetElemProperties[i];
-                                page.SetCell(sheetRowProperties.Length + i, 0, prop.Name);
+                                if (sheetElemProperties == null)
+                                {
+                                    sheetElemProperties = sheetElem.GetType()
+                                        .GetProperties(bindingFlags)
+                                        .Where(ShouldExport)
+                                        .ToArray();
+
+                                    for (int i = 0; i < sheetElemProperties.Length; ++i)
+                                    {
+                                        var prop = sheetElemProperties[i];
+                                        page.SetCell(sheetRowProperties.Length + i, 0, prop.Name);
+                                    }
+                                }
+
+                                for (int i = 0; i < sheetElemProperties.Length; ++i)
+                                {
+                                    var prop = sheetElemProperties[i];
+                                    var value = prop.GetValue(sheetElem);
+                                    var cellValue = exporter.ValueToString(context, prop.PropertyType, value);
+
+                                    page.SetCell(sheetRowProperties.Length + i, pageRow, cellValue);
+                                }
+
+                                pageRow += 1;
                             }
                         }
-
-                        for (int i = 0; i < sheetElemProperties.Length; ++i)
-                        {
-                            var prop = sheetElemProperties[i];
-                            var value = prop.GetValue(sheetElem);
-                            var cellValue = exporter.ValueToString(context, prop.PropertyType, value);
-
-                            page.SetCell(sheetRowProperties.Length + i, pageRow, cellValue);
-                        }
-
+                    }
+                    else
+                    {
                         pageRow += 1;
                     }
                 }
-                else
-                {
-                    pageRow += 1;
-                }
+
             }
         }
     }
