@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
 {
-    public abstract class RawSheetConverter : RawSheetImporter, ISheetExporter
+    public abstract class RawSheetConverter : RawSheetImporter, ISheetConverter
     {
         protected abstract Task<bool> SaveData();
         protected abstract IRawSheetExporterPage CreatePage(string sheetName);

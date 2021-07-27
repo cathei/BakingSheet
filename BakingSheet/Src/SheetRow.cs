@@ -4,22 +4,6 @@ using System.Collections.Generic;
 
 namespace Cathei.BakingSheet
 {
-    public interface ISheetRow
-    {
-        object Id { get; }
-    }
-
-    public interface ISheetRowElem
-    {
-        int Index { get; }
-    }
-
-    public interface ISheetRowArray
-    {
-        IList Arr { get; }
-        Type ElemType { get; }
-    }
-    
     public abstract class SheetRow<TKey> : ISheetRow
     {
         public TKey Id { get; set; }

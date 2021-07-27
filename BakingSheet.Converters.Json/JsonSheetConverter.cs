@@ -13,7 +13,7 @@ using Newtonsoft.Json.Converters;
 
 namespace Cathei.BakingSheet
 {
-    public class JsonSheetConverter : ISheetImporter, ISheetExporter
+    public class JsonSheetConverter : ISheetConverter
     {
         public virtual string Extension => "json";
 

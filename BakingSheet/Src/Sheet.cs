@@ -6,20 +6,6 @@ using System.Linq;
 
 namespace Cathei.BakingSheet
 {
-    // Used for reflection
-    public interface ISheet : IEnumerable
-    {
-        string Name { get; set; }
-        Type RowType { get; }
-
-        int Count { get; }
-        bool Contains(object key);
-        void Add(object value);
-
-        void PostLoad(SheetConvertingContext context);
-        void VerifyAssets(SheetConvertingContext context);
-    }
-
     public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet
         where TValue : SheetRow<TKey>, new()
     {

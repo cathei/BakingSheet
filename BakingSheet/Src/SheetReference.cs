@@ -4,14 +4,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
-    public interface ISheetReference
-    {
-        void Map(SheetConvertingContext context);
-
-        object Id { get; set; }
-        Type IdType { get; }
-    }
-
     public partial class Sheet<TKey, TValue>
     {
         public struct Reference : ISheetReference
