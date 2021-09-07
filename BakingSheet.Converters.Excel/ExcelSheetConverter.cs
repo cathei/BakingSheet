@@ -50,7 +50,7 @@ namespace Cathei.BakingSheet
 
             foreach (var file in files)
             {
-                using (var stream = File.OpenRead(file))
+                using (var stream = _fileSystem.OpenRead(file))
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     var dataset = reader.AsDataSet(new ExcelDataSetConfiguration {
