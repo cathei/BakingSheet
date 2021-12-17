@@ -35,44 +35,55 @@ namespace Cathei.BakingSheet.Raw
 
             var leafs = propertyMap.TraverseLeaf();
 
-            int pageColumn = -1;
+            int pageColumn = 0;
 
-            foreach ((var node, int offset, var indexes) in leafs)
+            foreach ((var node, bool array, var indexes) in leafs)
             {
-                if (offset == 0)
-                {
-                    pageColumn += 1;
+                var columnName = string.Format(node.FullPath, indexes.Cast<object>().ToArray());
 
-                    var columnName = string.Format(node.FullPath, indexes);
-                    page.SetCell(pageColumn, 0, columnName);
-                }
+                page.SetCell(pageColumn, 0, columnName);
+                pageColumn += 1;
             }
 
             int pageRow = 1;
 
             foreach (ISheetRow sheetRow in sheet)
             {
-                pageColumn = -1;
+                pageColumn = 0;
 
-                int usedRow = 0;
+                var sheetRowArray = sheetRow as ISheetRowArray;
 
                 using (context.Logger.BeginScope(sheetRow.Id))
                 {
-                    foreach ((var node, int offset, var indexes) in leafs)
+                    foreach ((var node, bool array, var indexes) in leafs)
                     {
-                        if (offset == 0)
-                            pageColumn += 1;
+                        if (!array)
+                        {
+                            object value = node.Get(sheetRow, indexes);
+                            string cellValue = exporter.ValueToString(node.Element, value);
+                            page.SetCell(pageColumn, pageRow, cellValue);
+                        }
+                        else if (sheetRowArray != null)
+                        {
+                            for (int i = 0; i < sheetRowArray.Arr.Count; ++i)
+                            {
+                                indexes[0] = i;
 
-                        object value = node.Get(sheetRow, indexes);
-                        string cellValue = exporter.ValueToString(node.Element, value);
+                                object value = node.Get(sheetRow, indexes);
+                                string cellValue = exporter.ValueToString(node.Element, value);
+                                page.SetCell(pageColumn, pageRow + i, cellValue);
+                            }
 
-                        page.SetCell(pageColumn, pageRow + offset, cellValue);
+                        }
 
-                        usedRow = Math.Max(usedRow, offset);
+                        pageColumn += 1;
                     }
+
+                    if (sheetRowArray != null && sheetRowArray.Arr.Count > 1)
+                        pageRow += sheetRowArray.Arr.Count - 1;
+                    pageRow += 1;
                 }
 
-                pageRow += usedRow + 1;
             }
         }
     }

@@ -75,14 +75,23 @@ namespace Cathei.BakingSheet.Raw
                 else if (NodeType == NodeType.List)
                 {
                     if (Parent == null)
-                        obj = (row as ISheetRowArray).Arr;
+                        obj = row;
                     else
                         obj = Parent.GetInternal(row, indexIter, create);
 
                     if (obj == null)
                         return null;
 
-                    var list = obj as IList;
+                    var list = Property.GetValue(obj) as IList;
+
+                    if (list == null)
+                    {
+                        if (!create)
+                            return null;
+                        
+                        list = Activator.CreateInstance(Property.PropertyType) as IList;
+                        Property.SetValue(obj, list);
+                    }
 
                     indexIter.MoveNext();
                     var idx = indexIter.Current;
@@ -157,11 +166,23 @@ namespace Cathei.BakingSheet.Raw
 
         private Type[] GetGenericArgument(Type type, Type baseType)
         {
-            while (type != null)
+            if (baseType.IsInterface)
             {
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == baseType)
-                    return type.GetGenericArguments();
-                type = type.BaseType;
+                // just use the first interface available
+                foreach (var impl in type.GetInterfaces())
+                {
+                    if (impl.IsGenericType && impl.GetGenericTypeDefinition() == baseType)
+                        return impl.GetGenericArguments();
+                }
+            }
+            else
+            {
+                while (type != null)
+                {
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == baseType)
+                        return type.GetGenericArguments();
+                    type = type.BaseType;
+                }
             }
 
             return null;
@@ -313,19 +334,28 @@ namespace Cathei.BakingSheet.Raw
         {
             UpdateCountInternal(Root, row);
 
-            if (row is ISheetRowArray rowArray)
-                UpdateCountInternal(Arr, rowArray.Arr);
+            if (Arr != null)
+                UpdateCountInternal(Arr, row);
         }
 
         private void UpdateCountInternal(Node node, object obj)
         {
             if (node.NodeType == NodeType.List)
             {
-                var list = obj as IList;
+                IList list = node.Property.GetValue(obj) as IList;
 
-                node.MaxCount = Math.Max(node.MaxCount, list.Count);
+                if (list == null)
+                    return;
 
-                foreach (var elem in list)
+                // root array count is meant to vary per row
+                // so we will keep max count as 1 here
+                if (node.Parent != null)
+                    node.MaxCount = Math.Max(node.MaxCount, list.Count);
+
+                if (node.Children == null)
+                    return;
+
+                foreach (object elem in list)
                 {
                     if (elem == null)
                         continue;
@@ -340,30 +370,33 @@ namespace Cathei.BakingSheet.Raw
             {
                 if (node.Children == null)
                     return;
+                
+                if (node.Property != null)
+                    obj = node.Property.GetValue(obj);
 
-                foreach (var child in node.Children.Values)
+                if (obj == null)
+                    return;
+
+                foreach (Node child in node.Children.Values)
                 {
-                    var prop = child.Property.GetValue(obj);
-
-                    if (prop != null)
-                        UpdateCountInternal(child, prop);
+                    UpdateCountInternal(child, obj);
                 }
             }
         }
 
         // UpdateCount is required to get correct result
         // index list are returned just to feed back, only valid on enumeration loop
-        public IEnumerable<(Node, int, List<int>)> TraverseLeaf()
+        public IEnumerable<(Node, bool, List<int>)> TraverseLeaf()
         {
             _indexes.Clear();
 
             foreach (var node in TraverseInternal(Root))
-                yield return (node, 0, _indexes);
+                yield return (node, false, _indexes);
 
             if (Arr != null)
             {
                 foreach (var node in TraverseInternal(Arr))
-                    yield return (node, _indexes[0], _indexes);
+                    yield return (node, true, _indexes);
             }
         }
 

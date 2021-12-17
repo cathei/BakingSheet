@@ -29,6 +29,26 @@ namespace Cathei.BakingSheet.Tests
         }
     }
 
+    public class TestNestedSheet : Sheet<TestNestedSheet.Row>
+    {
+        public struct NestedStruct
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+            public string[] Z { get; set; }
+        }
+        
+        public class Elem : SheetRowElem
+        {
+            public List<int> IntList { get; set; }
+        }
+
+        public class Row : SheetRowArray<Elem>
+        {
+            public List<NestedStruct> Struct { get; set; }
+        }
+    }
+
     public enum TestEnum
     {
         Alpha, Bravo, Charlie
@@ -70,5 +90,6 @@ namespace Cathei.BakingSheet.Tests
         public TestArraySheet Arrays { get; set; }
         public TestTypeSheet Types { get; set; }
         public TestReferenceSheet Refers { get; set; }
+        public TestNestedSheet Nested { get; set; }
     }
 }
