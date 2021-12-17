@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -25,82 +26,53 @@ namespace Cathei.BakingSheet.Raw
 
         public static void Export(this IRawSheetExporterPage page, RawSheetConverter exporter, SheetConvertingContext context, ISheet sheet)
         {
-            if (sheet.Count == 0)
-                return;
+            PropertyMap propertyMap = new PropertyMap(exporter, context, sheet);
 
-            var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty;
+            foreach (ISheetRow sheetRow in sheet)
+            {
+                propertyMap.UpdateCount(sheetRow);
+            }
 
-            PropertyInfo[] sheetRowProperties = null, sheetElemProperties = null;
+            var leafs = propertyMap.TraverseLeaf();
+
+            int pageColumn = -1;
+
+            foreach ((var node, int offset, var indexes) in leafs)
+            {
+                if (offset == 0)
+                {
+                    pageColumn += 1;
+
+                    var columnName = string.Format(node.FullPath, indexes);
+                    page.SetCell(pageColumn, 0, columnName);
+                }
+            }
 
             int pageRow = 1;
 
             foreach (ISheetRow sheetRow in sheet)
             {
+                pageColumn = -1;
+
+                int usedRow = 0;
+
                 using (context.Logger.BeginScope(sheetRow.Id))
                 {
-                    if (sheetRowProperties == null)
+                    foreach ((var node, int offset, var indexes) in leafs)
                     {
-                        sheetRowProperties = sheetRow.GetType()
-                            .GetProperties(bindingFlags)
-                            .Where(ShouldExport)
-                            .OrderByDescending(x => x.Name == nameof(ISheetRow.Id))
-                            .ToArray();
+                        if (offset == 0)
+                            pageColumn += 1;
 
-                        for (int i = 0; i < sheetRowProperties.Length; ++i)
-                        {
-                            var prop = sheetRowProperties[i];
-                            page.SetCell(i, 0, prop.Name);
-                        }
-                    }
+                        object value = node.Get(sheetRow, indexes);
+                        string cellValue = exporter.ValueToString(node.Element, value);
 
-                    for (int i = 0; i < sheetRowProperties.Length; ++i)
-                    {
-                        var prop = sheetRowProperties[i];
-                        var value = prop.GetValue(sheetRow);
-                        var cellValue = exporter.ValueToString(prop.PropertyType, value);
+                        page.SetCell(pageColumn, pageRow + offset, cellValue);
 
-                        page.SetCell(i, pageRow, cellValue);
-                    }
-
-                    if (sheetRow is ISheetRowArray sheetRowArray)
-                    {
-                        foreach (ISheetRowElem sheetElem in sheetRowArray.Arr)
-                        {
-                            using (context.Logger.BeginScope(sheetElem.Index))
-                            {
-                                if (sheetElemProperties == null)
-                                {
-                                    sheetElemProperties = sheetElem.GetType()
-                                        .GetProperties(bindingFlags)
-                                        .Where(ShouldExport)
-                                        .ToArray();
-
-                                    for (int i = 0; i < sheetElemProperties.Length; ++i)
-                                    {
-                                        var prop = sheetElemProperties[i];
-                                        page.SetCell(sheetRowProperties.Length + i, 0, prop.Name);
-                                    }
-                                }
-
-                                for (int i = 0; i < sheetElemProperties.Length; ++i)
-                                {
-                                    var prop = sheetElemProperties[i];
-                                    var value = prop.GetValue(sheetElem);
-                                    var cellValue = exporter.ValueToString(prop.PropertyType, value);
-
-                                    page.SetCell(sheetRowProperties.Length + i, pageRow, cellValue);
-                                }
-
-                                pageRow += 1;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        pageRow += 1;
+                        usedRow = Math.Max(usedRow, offset);
                     }
                 }
 
+                pageRow += usedRow + 1;
             }
         }
     }

@@ -34,8 +34,8 @@ namespace Cathei.BakingSheet.Tests
 
             Assert.True(result);
 
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Tests.csv"), "");
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Arrays.csv"), "");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Tests.csv"), "Id,Content\n");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Arrays.csv"), "Id,Content,ElemContent\n");
         }
 
         [Fact]

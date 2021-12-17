@@ -49,6 +49,23 @@ namespace Cathei.BakingSheet.Raw
             return true;
         }
 
+        public virtual bool IsConvertable(Type type)
+        {
+            if (type.IsPrimitive || type.IsEnum)
+                return true;
+ 
+            if (type == typeof(string) || type == typeof(DateTime) || type == typeof(TimeSpan))
+                return true;
+
+            if (typeof(ISheetReference).IsAssignableFrom(type))
+                return true;
+
+            if (Nullable.GetUnderlyingType(type) != null)
+                return true;
+
+            return false;
+        }
+
         public virtual object StringToValue(Type type, string value)
         {
             if (type.IsEnum)
@@ -63,23 +80,23 @@ namespace Cathei.BakingSheet.Raw
                 return reference;
             }
 
-            if(typeof(DateTime).IsAssignableFrom(type))
+            if (type == typeof(DateTime))
             {
                 var local = DateTime.Parse(value);
                 return TimeZoneInfo.ConvertTimeToUtc(local, TimeZoneInfo);
             }
 
-            if(typeof(TimeSpan).IsAssignableFrom(type))
+            if (type == typeof(TimeSpan))
             {
                 return TimeSpan.Parse(value);
             }
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            Type underlyingType = Nullable.GetUnderlyingType(type);
+
+            if (underlyingType != null)
             {
                 if (string.IsNullOrEmpty(value))
                     return null;
-
-                var underlyingType = Nullable.GetUnderlyingType(type);
                 return StringToValue(underlyingType, value);
             }
 
