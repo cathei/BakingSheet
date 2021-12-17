@@ -140,7 +140,7 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Store(_converter);
 
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct.0.X,Struct.0.Y,Struct.0.Z.0,Struct.0.Z.1,Struct.1.X,Struct.1.Y,Struct.1.Z.0,Struct.1.Z.1,IntList.0,IntList.1,IntList.2,IntList.3,IntList.4\nRow1,,,,,,,,,1,2,3,,\n,,,,,,,,,4,5,6,7,8\nRow2,,,,,,,,\nRow3,1,10,a,b,2,20,c,,,,,,\n");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct.1.X,Struct.1.Y,Struct.1.Z.1,Struct.1.Z.2,Struct.2.X,Struct.2.Y,Struct.2.Z.1,Struct.2.Z.2,IntList.1,IntList.2,IntList.3,IntList.4,IntList.5\nRow1,,,,,,,,,1,2,3,,\n,,,,,,,,,4,5,6,7,8\nRow2,,,,,,,,\nRow3,1,10,a,b,2,20,c,,,,,,\n");
         }
     }
 }

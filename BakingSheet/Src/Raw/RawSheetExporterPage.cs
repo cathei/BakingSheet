@@ -67,7 +67,8 @@ namespace Cathei.BakingSheet.Raw
                         {
                             for (int i = 0; i < sheetRowArray.Arr.Count; ++i)
                             {
-                                indexes[0] = i;
+                                // use 1-base for index
+                                indexes[0] = i + 1;
 
                                 object value = node.Get(sheetRow, indexes);
                                 string cellValue = exporter.ValueToString(node.Element, value);

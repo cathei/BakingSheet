@@ -94,7 +94,9 @@ namespace Cathei.BakingSheet.Raw
                     }
 
                     indexIter.MoveNext();
-                    var idx = indexIter.Current;
+                    
+                    // convert 1-base to 0-base
+                    var idx = indexIter.Current - 1;
 
                     if (idx < list.Count)
                         return list[idx];
@@ -301,7 +303,9 @@ namespace Cathei.BakingSheet.Raw
                         }
 
                         node = Arr;
-                        _indexes.Add(arrIndex);
+
+                        // convert 0-base to 1-base
+                        _indexes.Add(arrIndex + 1);
                     }
                 }
 
@@ -408,11 +412,13 @@ namespace Cathei.BakingSheet.Raw
             {
                 int current = _indexes.Count;
 
-                _indexes.Add(0);
+                // convert 0-base to 1-base
+                _indexes.Add(1);
 
                 for (int i = 0; i < node.MaxCount; ++i)
                 {
-                    _indexes[current] = i;
+                    // convert 0-base to 1-base
+                    _indexes[current] = i + 1;
 
                     if (isLeaf)
                     {
