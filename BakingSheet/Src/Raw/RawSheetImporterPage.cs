@@ -50,7 +50,7 @@ namespace Cathei.BakingSheet.Raw
             {
                 string idCellValue = page.GetCell(0, pageRow);
 
-                if (idCellValue != null)
+                if (!string.IsNullOrEmpty(idCellValue))
                 {
                     rowId = idCellValue;
                     sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
@@ -84,6 +84,8 @@ namespace Cathei.BakingSheet.Raw
                             sheet.Add(sheetRow);
                         }
                     }
+
+                    sameRow += 1;
                 }
             }
         }

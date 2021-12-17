@@ -99,5 +99,20 @@ namespace Cathei.BakingSheet.Tests
                 "Already has row with id \"Alpha\"",
                 new [] { "Types", "Alpha" });
         }
+
+        [Fact]
+        public async Task TestImportNestedCsv()
+        {
+            _fileSystem.SetTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct.1.X,Struct.1.Y,Struct.1.Z.1,Struct.1.Z.2,Struct.2.X,Struct.2.Y,Struct.2.Z.1,Struct.2.Z.2,IntList.1,IntList.2,IntList.3,IntList.4,IntList.5\nRow1,,,,,,,,,1,2,3,,\n,,,,,,,,,4,5,6,7,8\nRow2,,,,,,,,\nRow3,1,10,a,b,2,20,c,,,,,,\n");
+
+            var result = await _container.Bake(_converter);
+
+            Assert.True(result);
+            Assert.Equal(3, _container.Nested.Count);
+            Assert.Equal(2, _container.Nested["Row1"].Count);
+            Assert.Equal(3, _container.Nested["Row1"][0].IntList.Count);
+            Assert.Equal(2, _container.Nested["Row3"].Struct.Count);
+            Assert.Null(_container.Nested["Row1"].Struct);
+        }
     }
 }

@@ -44,7 +44,7 @@ namespace Cathei.BakingSheet.Raw
                 Children.Add(path, child);
             }
 
-            public object GetInternal(ISheetRow row, IEnumerator<int> indexIter, bool create)
+            public object GetInternal(ISheetRow row, ref List<int>.Enumerator indexer, bool create)
             {
                 object obj = null;
 
@@ -53,7 +53,7 @@ namespace Cathei.BakingSheet.Raw
                     if (Parent == null)
                         return row;
 
-                    obj = Parent.GetInternal(row, indexIter, create);
+                    obj = Parent.GetInternal(row, ref indexer, create);
 
                     if (obj == null)
                         return null;
@@ -77,7 +77,7 @@ namespace Cathei.BakingSheet.Raw
                     if (Parent == null)
                         obj = row;
                     else
-                        obj = Parent.GetInternal(row, indexIter, create);
+                        obj = Parent.GetInternal(row, ref indexer, create);
 
                     if (obj == null)
                         return null;
@@ -93,10 +93,10 @@ namespace Cathei.BakingSheet.Raw
                         Property.SetValue(obj, list);
                     }
 
-                    indexIter.MoveNext();
-                    
+                    indexer.MoveNext();
+
                     // convert 1-base to 0-base
-                    var idx = indexIter.Current - 1;
+                    var idx = indexer.Current - 1;
 
                     if (idx < list.Count)
                         return list[idx];
@@ -119,13 +119,44 @@ namespace Cathei.BakingSheet.Raw
 
             public void Set(ISheetRow row, List<int> indexes, object value)
             {
-                var obj = Parent.GetInternal(row, indexes.GetEnumerator(), true);
-                Property.SetValue(obj, value);
+                var indexer = indexes.GetEnumerator();
+
+                var obj = Parent.GetInternal(row, ref indexer, true);
+
+                if (NodeType == NodeType.Object)
+                {
+                    Property.SetValue(obj, value);
+                }
+                else
+                {
+                    var list = Property.GetValue(obj) as IList;
+
+                    if (list == null)
+                    {
+                        list = Activator.CreateInstance(Property.PropertyType) as IList;
+                        Property.SetValue(obj, list);
+                    }
+
+                    indexer.MoveNext();
+
+                    // convert 1-base to 0-base
+                    var idx = indexer.Current - 1;
+
+                    // create value
+                    while (list.Count <= idx)
+                    {
+                        var elem = Activator.CreateInstance(Element);
+                        list.Add(elem);
+                    }
+
+                    list[idx] = value;
+                }
             }
 
             public object Get(ISheetRow row, List<int> indexes)
             {
-                return GetInternal(row, indexes.GetEnumerator(), false);
+                var indexer = indexes.GetEnumerator();
+                return GetInternal(row, ref indexer, false);
             }
         }
 
@@ -146,7 +177,7 @@ namespace Cathei.BakingSheet.Raw
 
             while (next != -1)
             {
-                yield return path.Substring(idx, next);
+                yield return path.Substring(idx, next - idx);
 
                 idx = next + 1;
                 next = path.IndexOf(delimeter, idx);
