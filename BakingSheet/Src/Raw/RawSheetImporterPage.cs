@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
@@ -52,6 +53,9 @@ namespace Cathei.BakingSheet.Raw
 
                 if (!string.IsNullOrEmpty(idCellValue))
                 {
+                    if (idCellValue.StartsWith(Config.Comment))
+                        continue;
+
                     rowId = idCellValue;
                     sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
                     sameRow = 0;
@@ -61,7 +65,10 @@ namespace Cathei.BakingSheet.Raw
                 {
                     for (int pageColumn = 0; !page.IsEmptyCell(pageColumn, 0); ++pageColumn)
                     {
-                        var columnValue = page.GetCell(pageColumn, 0);
+                        string columnValue = page.GetCell(pageColumn, 0);
+
+                        if (columnValue.StartsWith(Config.Comment))
+                            continue;
 
                         using (context.Logger.BeginScope(columnValue))
                         {

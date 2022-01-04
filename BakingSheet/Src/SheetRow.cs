@@ -52,7 +52,8 @@ namespace Cathei.BakingSheet
     public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, IEnumerable<TElem>, ISheetRowArray
         where TElem : SheetRowElem, new()
     {
-        public List<TElem> Arr { get; } = new List<TElem>();
+        // setter is necessary for reflection
+        public List<TElem> Arr { get; private set; } = new List<TElem>();
 
         IList ISheetRowArray.Arr => Arr;
         public Type ElemType => typeof(TElem);

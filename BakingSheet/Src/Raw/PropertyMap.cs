@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
@@ -204,17 +205,15 @@ namespace Cathei.BakingSheet.Raw
 
         internal static IEnumerable<string> ParseFlattenPath(string path)
         {
-            const char delimeter = '.';
-
             int idx = 0;
-            int next = path.IndexOf(delimeter);
+            int next = path.IndexOf(Config.Delimiter);
 
             while (next != -1)
             {
                 yield return path.Substring(idx, next - idx);
 
                 idx = next + 1;
-                next = path.IndexOf(delimeter, idx);
+                next = path.IndexOf(Config.Delimiter, idx);
             }
 
             yield return path.Substring(idx);
@@ -317,7 +316,7 @@ namespace Cathei.BakingSheet.Raw
 
                     node = new Node
                     {
-                        FullPath = $"{fullPath}.{{{parent.ListDepth}}}",
+                        FullPath = $"{fullPath}{Config.Delimiter}{{{parent.ListDepth}}}",
                         Property = propertyInfo,
                         Element = elementType,
                         NodeType = NodeType.List,

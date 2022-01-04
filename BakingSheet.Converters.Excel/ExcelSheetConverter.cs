@@ -63,7 +63,7 @@ namespace Cathei.BakingSheet
                     for (int i = 0; i < dataset.Tables.Count; ++i)
                     {
                         var table = dataset.Tables[i];
-                        if (!table.TableName.StartsWith("$"))
+                        if (!table.TableName.StartsWith(Config.Comment))
                             _dataTables.Add(table.TableName, table);
                     }
                 }
