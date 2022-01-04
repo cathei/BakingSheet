@@ -77,6 +77,7 @@ namespace Cathei.BakingSheet.Tests
         {
             public TestSheet.Reference ReferColumn { get; set; }
             public TestReferenceSheet.Reference SelfReferColumn { get; set; }
+            public List<TestSheet.Reference> ReferList { get; set; }
         }
     }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Cathei.BakingSheet.Internal;
 
 namespace Cathei.BakingSheet.Raw
 {
@@ -26,12 +27,9 @@ namespace Cathei.BakingSheet.Raw
 
         public static void Export(this IRawSheetExporterPage page, RawSheetConverter exporter, SheetConvertingContext context, ISheet sheet)
         {
-            PropertyMap propertyMap = new PropertyMap(exporter, context, sheet);
+            PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), Config.IsConvertable);
 
-            foreach (ISheetRow sheetRow in sheet)
-            {
-                propertyMap.UpdateCount(sheetRow);
-            }
+            propertyMap.UpdateCount(sheet);
 
             var leafs = propertyMap.TraverseLeaf();
 
@@ -74,7 +72,6 @@ namespace Cathei.BakingSheet.Raw
                                 string cellValue = exporter.ValueToString(node.Element, value);
                                 page.SetCell(pageColumn, pageRow + i, cellValue);
                             }
-
                         }
 
                         pageColumn += 1;
@@ -84,7 +81,6 @@ namespace Cathei.BakingSheet.Raw
                         pageRow += sheetRowArray.Arr.Count - 1;
                     pageRow += 1;
                 }
-
             }
         }
     }

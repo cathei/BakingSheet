@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
-namespace Cathei.BakingSheet.Raw
+namespace Cathei.BakingSheet.Internal
 {
     // property map for a sheet
     public class PropertyMap
@@ -200,7 +199,6 @@ namespace Cathei.BakingSheet.Raw
         private Node Root { get; set; }
         private Node Arr { get; set; }
 
-        private RawSheetImporter _importer;
         private SheetConvertingContext _context;
 
         internal static IEnumerable<string> ParseFlattenPath(string path)
@@ -254,12 +252,11 @@ namespace Cathei.BakingSheet.Raw
             return null;
         }
 
-        public PropertyMap(RawSheetImporter importer, SheetConvertingContext context, ISheet sheet)
+        public PropertyMap(SheetConvertingContext context, Type sheetType, Func<Type, bool> isLeaf)
         {
-            _importer = importer;
             _context = context;
 
-            Type rowType = GetGenericArgument(sheet.GetType(), typeof(Sheet<,>))[1];
+            Type rowType = GetGenericArgument(sheetType, typeof(Sheet<,>))[1];
 
             Root = new Node
             {
@@ -270,7 +267,7 @@ namespace Cathei.BakingSheet.Raw
                 ListDepth = 0,
             };
 
-            GenerateChildren(Root);
+            GenerateChildren(Root, isLeaf);
 
             if (typeof(ISheetRowArray).IsAssignableFrom(rowType))
             {
@@ -286,11 +283,11 @@ namespace Cathei.BakingSheet.Raw
                     ListDepth = 1,
                 };
 
-                GenerateChildren(Arr);
+                GenerateChildren(Arr, isLeaf);
             }
         }
 
-        private void GenerateChildren(Node parent)
+        private void GenerateChildren(Node parent, Func<Type, bool> isLeaf)
         {
             // TODO: Prevent cycle!
 
@@ -337,14 +334,14 @@ namespace Cathei.BakingSheet.Raw
 
                 parent.Add(propertyInfo.Name, node);
 
-                if (!_importer.IsConvertable(node.Element))
-                    GenerateChildren(node);
+                if (!isLeaf(node.Element))
+                    GenerateChildren(node, isLeaf);
             }
         }
 
         private List<int> _indexes = new List<int>();
 
-        public void SetValue(ISheetRow row, int arrIndex, string path, string value)
+        public void SetValue(ISheetRow row, int arrIndex, string path, string value, Func<Type, string, object> converter)
         {
             Node node = null;
 
@@ -388,15 +385,9 @@ namespace Cathei.BakingSheet.Raw
                 node = node.Children[subpath];
             }
 
-            if (!_importer.IsConvertable(node.Element))
-            {
-                _context.Logger.LogError("Type {PropertyType} is not convertable", node.Element);
-                return;
-            }
-
             try
             {
-                node.Set(row, _indexes, _importer.StringToValue(node.Element, value));
+                node.Set(row, _indexes, converter(node.Element, value));
             }
             catch (Exception ex)
             {
@@ -404,12 +395,15 @@ namespace Cathei.BakingSheet.Raw
             }
         }
 
-        public void UpdateCount(ISheetRow row)
+        public void UpdateCount(ISheet sheet)
         {
-            UpdateCountInternal(Root, row);
+            foreach (var row in sheet)
+            {
+                UpdateCountInternal(Root, row);
 
-            if (Arr != null)
-                UpdateCountInternal(Arr, row);
+                if (Arr != null)
+                    UpdateCountInternal(Arr, row);
+            }
         }
 
         private void UpdateCountInternal(Node node, object obj)
@@ -476,7 +470,7 @@ namespace Cathei.BakingSheet.Raw
 
         private IEnumerable<Node> TraverseInternal(Node node)
         {
-            bool isLeaf = _importer.IsConvertable(node.Element);
+            bool isLeaf = node.Children == null;
 
             if (node.NodeType == NodeType.List)
             {

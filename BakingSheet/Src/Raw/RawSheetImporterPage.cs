@@ -41,7 +41,7 @@ namespace Cathei.BakingSheet.Raw
                 return;
             }
 
-            PropertyMap propertyMap = new PropertyMap(importer, context, sheet);
+            PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), Config.IsConvertable);
 
             ISheetRow sheetRow = null;
             string rowId = null;
@@ -78,7 +78,7 @@ namespace Cathei.BakingSheet.Raw
 
                             try
                             {
-                                propertyMap.SetValue(sheetRow, sameRow, columnValue, cellValue);
+                                propertyMap.SetValue(sheetRow, sameRow, columnValue, cellValue, importer.StringToValue);
                             }
                             catch (Exception ex)
                             {

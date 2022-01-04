@@ -10,21 +10,8 @@ namespace Cathei.BakingSheet
 
         object ISheetRow.Id => Id;
 
-        public virtual void PostLoad(SheetConvertingContext context)
-        {
-            using (context.Logger.BeginScope(Id))
-            {
-                SheetUtility.MapReferences(context, this);
-            }
-        }
-
-        public virtual void VerifyAssets(SheetConvertingContext context)
-        {
-            using (context.Logger.BeginScope(Id))
-            {
-                SheetUtility.VerifyAssets(context, this);
-            }
-        }
+        public virtual void PostLoad(SheetConvertingContext context) { }
+        public virtual void VerifyAssets(SheetConvertingContext context) { }
     }
 
     public abstract class SheetRowElem : ISheetRowElem
@@ -32,21 +19,8 @@ namespace Cathei.BakingSheet
         [NonSerialized]
         public int Index { get; internal set; }
 
-        public virtual void PostLoad(SheetConvertingContext context)
-        {
-            using (context.Logger.BeginScope(Index))
-            {
-                SheetUtility.MapReferences(context, this);
-            }
-        }
-
-        public virtual void VerifyAssets(SheetConvertingContext context)
-        {
-            using (context.Logger.BeginScope(Index))
-            {
-                SheetUtility.VerifyAssets(context, this);
-            }
-        }
+        public virtual void PostLoad(SheetConvertingContext context) { }
+        public virtual void VerifyAssets(SheetConvertingContext context) { }
     }
 
     public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, IEnumerable<TElem>, ISheetRowArray
@@ -68,9 +42,9 @@ namespace Cathei.BakingSheet
         {
             base.PostLoad(context);
 
-            using (context.Logger.BeginScope(Id))
+            for (int idx = 0; idx < Arr.Count; ++idx)
             {
-                for (int idx = 0; idx < Arr.Count; ++idx)
+                using (context.Logger.BeginScope(idx))
                 {
                     Arr[idx].Index = idx;
                     Arr[idx].PostLoad(context);
@@ -82,9 +56,9 @@ namespace Cathei.BakingSheet
         {
             base.VerifyAssets(context);
 
-            using (context.Logger.BeginScope(Id))
+            for (int idx = 0; idx < Arr.Count; ++idx)
             {
-                for (int idx = 0; idx < Arr.Count; ++idx)
+                using (context.Logger.BeginScope(idx))
                 {
                     Arr[idx].VerifyAssets(context);
                 }

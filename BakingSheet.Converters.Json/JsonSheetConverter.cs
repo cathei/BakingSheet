@@ -32,7 +32,9 @@ namespace Cathei.BakingSheet
 
             settings.Error = (sender, err) =>
             {
-                logError.LogError(err.ErrorContext.Error, err.ErrorContext.Error.Message);
+                using (logError.BeginScope(err.ErrorContext.Path))
+                    logError.LogError(err.ErrorContext.Error, err.ErrorContext.Error.Message);
+
                 err.ErrorContext.Handled = true;
             };
 
@@ -60,22 +62,25 @@ namespace Cathei.BakingSheet
 
             foreach (var prop in sheetProps)
             {
-                var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
-
-                if (!_fileSystem.Exists(path))
+                using (context.Logger.BeginScope(prop.Name))
                 {
-                    context.Logger.LogError("Failed to find sheet: {SheetName}", prop.Name);
-                    continue;
+                    var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
+
+                    if (!_fileSystem.Exists(path))
+                    {
+                        context.Logger.LogError("Failed to find sheet: {SheetName}", prop.Name);
+                        continue;
+                    }
+
+                    string data;
+
+                    using (var stream = _fileSystem.OpenRead(path))
+                    using (var reader = new StreamReader(stream))
+                        data = await reader.ReadToEndAsync();
+
+                    var sheet = Deserialize(data, prop.PropertyType, context.Logger) as ISheet;
+                    prop.SetValue(context.Container, sheet);
                 }
-
-                string data;
-
-                using (var stream = _fileSystem.OpenRead(path))
-                using (var reader = new StreamReader(stream))
-                    data = await reader.ReadToEndAsync();
-
-                var sheet = Deserialize(data, prop.PropertyType, context.Logger) as ISheet;
-                prop.SetValue(context.Container, sheet);
             }
 
             return true;
@@ -87,14 +92,17 @@ namespace Cathei.BakingSheet
 
             foreach (var prop in sheetProps)
             {
-                var sheet = prop.GetValue(context.Container);
-                var data = Serialize(sheet, prop.PropertyType, context.Logger);
+                using (context.Logger.BeginScope(prop.Name))
+                {
+                    var sheet = prop.GetValue(context.Container);
+                    var data = Serialize(sheet, prop.PropertyType, context.Logger);
 
-                var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
+                    var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
 
-                using (var stream = _fileSystem.OpenWrite(path))
-                using (var writer = new StreamWriter(stream))
-                    await writer.WriteAsync(data);
+                    using (var stream = _fileSystem.OpenWrite(path))
+                    using (var writer = new StreamWriter(stream))
+                        await writer.WriteAsync(data);
+                }
             }
 
             return true;
@@ -104,6 +112,9 @@ namespace Cathei.BakingSheet
         {
             public override ISheetReference ReadJson(JsonReader reader, Type objectType, ISheetReference existingValue, bool hasExistingValue, JsonSerializer serializer)
             {
+                if (existingValue == null)
+                    existingValue = Activator.CreateInstance(objectType) as ISheetReference;
+
                 existingValue.Id = serializer.Deserialize(reader, existingValue.IdType);
                 return existingValue;
             }

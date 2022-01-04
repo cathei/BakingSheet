@@ -72,20 +72,11 @@ namespace Cathei.BakingSheet
 
             foreach (var prop in GetSheetProperties())
             {
-                var sheet = prop.GetValue(this) as ISheet;
-                if (sheet == null)
-                    continue;
-
-                sheet.Name = prop.Name;
-            }
-
-            foreach (var prop in GetSheetProperties())
-            {
-                var sheet = prop.GetValue(this) as ISheet;
-                if (sheet == null)
-                    continue;
-
-                sheet.PostLoad(context);
+                if (prop.GetValue(this) is ISheet sheet)
+                {
+                    sheet.Name = prop.Name;
+                    sheet.PostLoad(context);
+                }
             }
         }
 
@@ -100,11 +91,10 @@ namespace Cathei.BakingSheet
 
             foreach (var prop in GetSheetProperties())
             {
-                var sheet = prop.GetValue(this) as ISheet;
-                if (sheet == null)
-                    continue;
-
-                sheet.VerifyAssets(context);
+                if (prop.GetValue(this) is ISheet sheet)
+                {
+                    sheet.VerifyAssets(context);
+                }
             }
         }
     }

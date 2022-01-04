@@ -29,6 +29,35 @@ namespace Cathei.BakingSheet.Tests
         }
 
         [Fact]
+        public async Task TestExportReferenceJson()
+        {
+            _container.Tests = new TestSheet();
+            _container.Refers = new TestReferenceSheet();
+
+            var referRow = new TestReferenceSheet.Row();
+
+            referRow.Id = "Refer";
+            referRow.ReferColumn = new TestSheet.Reference("Test");
+            referRow.ReferList = new List<TestSheet.Reference> { new TestSheet.Reference("Test"), new TestSheet.Reference("Test") };
+
+            _container.Refers.Add(referRow);
+
+            var testRow = new TestSheet.Row();
+
+            testRow.Id = "Test";
+
+            _container.Tests.Add(testRow);
+
+            _container.PostLoad();
+
+            var result = await _container.Store(_converter);
+
+            _logger.VerifyNoError();
+
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Refers.json"), "[{\"ReferColumn\":\"Test\",\"SelfReferColumn\":null,\"ReferList\":[\"Test\",\"Test\"],\"Arr\":[],\"Id\":\"Refer\"}]");
+        }
+
+        [Fact]
         public async Task TestExportNestedJson()
         {
             _container.Nested = new TestNestedSheet();

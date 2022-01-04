@@ -31,7 +31,7 @@ namespace Cathei.BakingSheet
                     .Where(p => p.PropertyType.IsSubclassOf(typeof(Sheet<TKey, TValue>)))
                     .Select(p => p.GetValue(context.Container) as Sheet<TKey, TValue>)
                     .FirstOrDefault();
- 
+
                 if (sheet != null)
                 {
                     Ref = sheet[Id];
@@ -50,7 +50,7 @@ namespace Cathei.BakingSheet
 
             public override bool Equals(object obj)
             {
-                return obj is Reference && this == (Reference)obj;
+                return obj is Reference refer && this == refer;
             }
 
             public override int GetHashCode()

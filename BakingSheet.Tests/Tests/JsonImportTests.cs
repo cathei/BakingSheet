@@ -87,6 +87,22 @@ namespace Cathei.BakingSheet.Tests
         }
 
         [Fact]
+        public async Task TestImportReferenceJson()
+        {
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.json"), "[{\"Id\":\"Test\"}]");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Refers.json"), "[{\"ReferColumn\":\"Test\",\"SelfReferColumn\":null,\"ReferList\":[\"Test\",\"Test\"],\"Arr\":[],\"Id\":\"Refer\"}]");
+
+            var result = await _container.Bake(_converter);
+
+            _logger.VerifyNoError();
+
+            Assert.True(result);
+            Assert.Equal(2, _container.Refers["Refer"].ReferList.Count);
+            Assert.Equal(_container.Tests["Test"], _container.Refers["Refer"].ReferColumn.Ref);
+            Assert.Equal(_container.Tests["Test"], _container.Refers["Refer"].ReferList[0].Ref);
+        }
+
+        [Fact]
         public async Task TestImportNestedJson()
         {
             _fileSystem.SetTestData(Path.Combine("testdata", "Nested.json"), "[{\"Struct\":{\"XInt\":0,\"YFloat\":0.0,\"ZList\":null},\"StructList\":[],\"Arr\":[{\"IntList\":[1,2,3]},{\"IntList\":[4,5,6,7,8]}],\"Id\":\"Row1\"},{\"Struct\":{\"XInt\":10,\"YFloat\":50.42,\"ZList\":[\"x\",\"y\"]},\"StructList\":null,\"Arr\":[],\"Id\":\"Row2\"},{\"Struct\":{\"XInt\":0,\"YFloat\":0.0,\"ZList\":null},\"StructList\":[{\"XInt\":1,\"YFloat\":0.124,\"ZList\":[\"a\",\"b\"]},{\"XInt\":2,\"YFloat\":20.0,\"ZList\":[\"c\"]}],\"Arr\":[{\"IntList\":null}],\"Id\":\"Row3\"}]");

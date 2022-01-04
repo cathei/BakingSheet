@@ -49,23 +49,6 @@ namespace Cathei.BakingSheet.Raw
             return true;
         }
 
-        public virtual bool IsConvertable(Type type)
-        {
-            if (type.IsPrimitive || type.IsEnum)
-                return true;
-
-            if (type == typeof(string) || type == typeof(DateTime) || type == typeof(TimeSpan))
-                return true;
-
-            if (typeof(ISheetReference).IsAssignableFrom(type))
-                return true;
-
-            if (Nullable.GetUnderlyingType(type) != null)
-                return true;
-
-            return false;
-        }
-
         public virtual object StringToValue(Type type, string value)
         {
             if (type.IsEnum)
