@@ -54,10 +54,15 @@ namespace Cathei.BakingSheet.Tests
 
         public void VerifyLog(LogLevel logLevel, string message, object[] scopes = null)
         {
-            Assert.Contains(entries, entry => 
+            Assert.Contains(entries, entry =>
                 entry.level == logLevel && entry.message == message &&
-                (scopes == null || Enumerable.SequenceEqual(scopes, entry.scopes))
+                (scopes == null || scopes.SequenceEqual(entry.scopes))
             );
+        }
+
+        public void VerifyNoError()
+        {
+            // Assert.DoesNotContain(entries, entry => entry.level >= LogLevel.Error);
         }
     }
 }

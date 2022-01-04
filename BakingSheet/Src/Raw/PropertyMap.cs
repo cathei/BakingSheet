@@ -46,7 +46,7 @@ namespace Cathei.BakingSheet.Raw
 
             public object GetInternal(ISheetRow row, ref List<int>.Enumerator indexer, bool create)
             {
-                object obj = null;
+                object obj;
 
                 if (NodeType == NodeType.Object)
                 {
@@ -60,17 +60,16 @@ namespace Cathei.BakingSheet.Raw
 
                     var value = Property.GetValue(obj);
 
-                    if (!create)
-                        return value;
-                    
-                    if (value == null)
-                    {
-                        // create value
-                        var elem = Activator.CreateInstance(Element);
-                        Property.SetValue(obj, elem);
+                    // if value is struct??
 
-                        return elem;
-                    }
+                    if (value != null || !create)
+                        return value;
+
+                    // create value
+                    var elem = Activator.CreateInstance(Element);
+                    Property.SetValue(obj, elem);
+
+                    return elem;
                 }
                 else if (NodeType == NodeType.List)
                 {
@@ -88,7 +87,7 @@ namespace Cathei.BakingSheet.Raw
                     {
                         if (!create)
                             return null;
-                        
+
                         list = Activator.CreateInstance(Property.PropertyType) as IList;
                         Property.SetValue(obj, list);
                     }
@@ -115,6 +114,11 @@ namespace Cathei.BakingSheet.Raw
                 }
 
                 return null;
+            }
+
+            public void SetInternal(object obj, object value)
+            {
+
             }
 
             public void Set(ISheetRow row, List<int> indexes, object value)
@@ -190,7 +194,7 @@ namespace Cathei.BakingSheet.Raw
         {
             if (propertyInfo.GetCustomAttribute<NonSerializedAttribute>() != null)
                 return false;
-            
+
             if (propertyInfo.SetMethod == null)
                 return false;
 
@@ -355,7 +359,7 @@ namespace Cathei.BakingSheet.Raw
                 return;
             }
 
-            try 
+            try
             {
                 node.Set(row, _indexes, _importer.StringToValue(node.Element, value));
             }
@@ -405,7 +409,7 @@ namespace Cathei.BakingSheet.Raw
             {
                 if (node.Children == null)
                     return;
-                
+
                 if (node.Property != null)
                     obj = node.Property.GetValue(obj);
 
@@ -467,7 +471,7 @@ namespace Cathei.BakingSheet.Raw
 
                 _indexes.RemoveAt(current);
             }
-            else 
+            else
             {
                 if (isLeaf)
                 {

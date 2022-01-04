@@ -22,7 +22,7 @@ namespace Cathei.BakingSheet.Raw
 
             if (!success)
             {
-                context.Logger.LogError($"Failed to load data");
+                context.Logger.LogError("Failed to load data");
                 return false;
             }
 
@@ -45,7 +45,7 @@ namespace Cathei.BakingSheet.Raw
                     prop.SetValue(context.Container, sheet);
                 }
             }
- 
+
             return true;
         }
 
@@ -53,7 +53,7 @@ namespace Cathei.BakingSheet.Raw
         {
             if (type.IsPrimitive || type.IsEnum)
                 return true;
- 
+
             if (type == typeof(string) || type == typeof(DateTime) || type == typeof(TimeSpan))
                 return true;
 
@@ -72,7 +72,7 @@ namespace Cathei.BakingSheet.Raw
             {
                 return Enum.Parse(type, value, true);
             }
- 
+
             if (typeof(ISheetReference).IsAssignableFrom(type))
             {
                 var reference = Activator.CreateInstance(type) as ISheetReference;

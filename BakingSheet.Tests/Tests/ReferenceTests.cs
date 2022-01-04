@@ -44,6 +44,8 @@ namespace Cathei.BakingSheet.Tests
 
             _container.PostLoad();
 
+            _logger.VerifyNoError();
+
             Assert.Equal(testRow, _container.Refers["Refer"].ReferColumn.Ref);
         }
 
@@ -82,6 +84,8 @@ namespace Cathei.BakingSheet.Tests
 
             _container.PostLoad();
 
+            _logger.VerifyNoError();
+
             Assert.Equal("Content1", _container.Refers["Refer"].ReferColumn.Ref.Content);
             Assert.Equal("Content2", _container.Refers["Refer"][0].NestedReferColumn.Ref.Content);
         }
@@ -107,6 +111,8 @@ namespace Cathei.BakingSheet.Tests
 
             _container.PostLoad();
 
+            _logger.VerifyNoError();
+
             Assert.Null(_container.Refers["Refer"].ReferColumn.Ref);
         }
 
@@ -131,6 +137,8 @@ namespace Cathei.BakingSheet.Tests
 
             _container.PostLoad();
 
+            _logger.VerifyNoError();
+
             Assert.Equal("WrongId", _container.Refers["Refer"].ReferColumn.Id);
             Assert.Null(_container.Refers["Refer"].ReferColumn.Ref);
         }
@@ -148,6 +156,8 @@ namespace Cathei.BakingSheet.Tests
             _container.Refers.Add(referRow);
 
             _container.PostLoad();
+
+            _logger.VerifyNoError();
 
             Assert.Equal("Refer", _container.Refers["Refer"].SelfReferColumn.Id);
             Assert.Equal(_container.Refers["Refer"], _container.Refers["Refer"].SelfReferColumn.Ref);

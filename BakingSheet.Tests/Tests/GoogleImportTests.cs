@@ -43,6 +43,8 @@ namespace Cathei.BakingSheet.Tests
             var converter = new GoogleSheetConverter("1iWMZVI4FgtGbig4EgPIun_BRbzp4ulqRIzINZQl-AFI", GoogleCredential, TimeZoneInfo.Utc);
             var result = await _container.Bake(converter);
 
+            _logger.VerifyNoError();
+
             Assert.True(result);
             Assert.NotNull(_container.Tests);
 

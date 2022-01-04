@@ -33,7 +33,7 @@ namespace Cathei.BakingSheet.Raw
 
             if (!success)
             {
-                context.Logger.LogError($"Failed to save data");
+                context.Logger.LogError("Failed to save data");
                 return false;
             }
 

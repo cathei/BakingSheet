@@ -33,6 +33,8 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Store(_converter);
 
+            _logger.VerifyNoError();
+
             Assert.True(result);
 
             _fileSystem.VerifyTestData(Path.Combine("testdata", "Tests.csv"), "Id,Content\n");
@@ -43,7 +45,7 @@ namespace Cathei.BakingSheet.Tests
         public async Task TestExportSampleCsv()
         {
             _container.Tests = new TestSheet();
-            
+ 
             var testRow = new TestSheet.Row {
                 Id = "TestId",
                 Content = "TestContent"
@@ -54,6 +56,8 @@ namespace Cathei.BakingSheet.Tests
             _container.PostLoad();
 
             var result = await _container.Store(_converter);
+
+            _logger.VerifyNoError();
 
             _fileSystem.VerifyTestData(Path.Combine("testdata", "Tests.csv"), "Id,Content\nTestId,TestContent\n");
         }
@@ -85,6 +89,8 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Store(_converter);
 
+            _logger.VerifyNoError();
+
             _fileSystem.VerifyTestData(Path.Combine("testdata", "Arrays.csv"), "Id,Content,ElemContent\nTestId,TestContent,TestElemContent1\n,,TestElemContent2\n");
         }
 
@@ -95,22 +101,25 @@ namespace Cathei.BakingSheet.Tests
 
             var row1 = new TestNestedSheet.Row {
                 Id = "Row1",
-                Struct = new List<TestNestedSheet.NestedStruct>()
+                StructList = new List<TestNestedSheet.NestedStruct>()
             };
 
             var row2 = new TestNestedSheet.Row {
                 Id = "Row2",
-                Struct = null
+                Struct = new TestNestedSheet.NestedStruct {
+                    XInt = 10, YFloat = 50.42f, ZList = new[] { "x", "y" }
+                },
+                StructList = null
             };
 
             var row3 = new TestNestedSheet.Row {
                 Id = "Row3",
-                Struct = new List<TestNestedSheet.NestedStruct> {
+                StructList = new List<TestNestedSheet.NestedStruct> {
                     new TestNestedSheet.NestedStruct {
-                        X = 1, Y = 10, Z = new[] { "a", "b" }
+                        XInt = 1, YFloat = 0.124f, ZList = new[] { "a", "b" }
                     },
                     new TestNestedSheet.NestedStruct {
-                        X = 2, Y = 20, Z = new[] { "c" }
+                        XInt = 2, YFloat = 20, ZList = new[] { "c" }
                     }
                 }
             };
@@ -140,7 +149,9 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Store(_converter);
 
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct.1.X,Struct.1.Y,Struct.1.Z.1,Struct.1.Z.2,Struct.2.X,Struct.2.Y,Struct.2.Z.1,Struct.2.Z.2,IntList.1,IntList.2,IntList.3,IntList.4,IntList.5\nRow1,,,,,,,,,1,2,3,,\n,,,,,,,,,4,5,6,7,8\nRow2,,,,,,,,\nRow3,1,10,a,b,2,20,c,,,,,,\n");
+            _logger.VerifyNoError();
+
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct.XInt,Struct.YFloat,Struct.ZList.1,Struct.ZList.2,StructList.1.XInt,StructList.1.YFloat,StructList.1.ZList.1,StructList.1.ZList.2,StructList.2.XInt,StructList.2.YFloat,StructList.2.ZList.1,StructList.2.ZList.2,IntList.1,IntList.2,IntList.3,IntList.4,IntList.5\nRow1,0,0,,,,,,,,,,,1,2,3,,\n,,,,,,,,,,,,,4,5,6,7,8\nRow2,10,50.42,x,y,,,,,,,,\nRow3,0,0,,,1,0.124,a,b,2,20,c,,,,,,\n");
         }
     }
 }

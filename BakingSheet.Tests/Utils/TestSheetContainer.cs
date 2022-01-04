@@ -33,11 +33,11 @@ namespace Cathei.BakingSheet.Tests
     {
         public struct NestedStruct
         {
-            public int X { get; set; }
-            public int Y { get; set; }
-            public string[] Z { get; set; }
+            public int XInt { get; set; }
+            public float YFloat { get; set; }
+            public string[] ZList { get; set; }
         }
-        
+
         public class Elem : SheetRowElem
         {
             public List<int> IntList { get; set; }
@@ -45,7 +45,8 @@ namespace Cathei.BakingSheet.Tests
 
         public class Row : SheetRowArray<Elem>
         {
-            public List<NestedStruct> Struct { get; set; }
+            public NestedStruct Struct { get; set; }
+            public List<NestedStruct> StructList { get; set; }
         }
     }
 
@@ -81,10 +82,7 @@ namespace Cathei.BakingSheet.Tests
 
     public class TestSheetContainer : SheetContainerBase
     {
-        public TestSheetContainer(ILogger logger) : base(logger)
-        {
-
-        }
+        public TestSheetContainer(ILogger logger) : base(logger) { }
 
         public TestSheet Tests { get; set; }
         public TestArraySheet Arrays { get; set; }

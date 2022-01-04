@@ -33,7 +33,7 @@ namespace Cathei.BakingSheet.Raw
         public static void Import(this IRawSheetImporterPage page, RawSheetImporter importer, SheetConvertingContext context, ISheet sheet)
         {
             var idColumnName = page.GetCell(0, 0);
- 
+
             if (idColumnName != nameof(ISheetRow.Id))
             {
                 context.Logger.LogError("First column \"{ColumnName}\" must be named \"Id\"", idColumnName);

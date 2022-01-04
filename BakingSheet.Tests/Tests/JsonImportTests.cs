@@ -38,6 +38,8 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Bake(_converter);
 
+            _logger.VerifyNoError();
+
             Assert.True(result);
             Assert.Null(_container.Tests);
         }
@@ -48,6 +50,8 @@ namespace Cathei.BakingSheet.Tests
             _fileSystem.SetTestData(Path.Combine("testdata", "Tests.json"), "[]");
 
             var result = await _container.Bake(_converter);
+
+            _logger.VerifyNoError();
 
             Assert.True(result);
             Assert.Empty(_container.Tests);
