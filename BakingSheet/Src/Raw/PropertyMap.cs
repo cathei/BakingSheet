@@ -44,7 +44,7 @@ namespace Cathei.BakingSheet.Raw
                 Children.Add(path, child);
             }
 
-            public object GetInternal(ISheetRow row, ref List<int>.Enumerator indexer, bool create)
+            public object GetInternal(ISheetRow row, ref List<int>.Enumerator indexer)
             {
                 object obj;
 
@@ -53,30 +53,21 @@ namespace Cathei.BakingSheet.Raw
                     if (Parent == null)
                         return row;
 
-                    obj = Parent.GetInternal(row, ref indexer, create);
+                    obj = Parent.GetInternal(row, ref indexer);
 
                     if (obj == null)
                         return null;
 
                     var value = Property.GetValue(obj);
 
-                    // if value is struct??
-
-                    if (value != null || !create)
-                        return value;
-
-                    // create value
-                    var elem = Activator.CreateInstance(Element);
-                    Property.SetValue(obj, elem);
-
-                    return elem;
+                    return value;
                 }
                 else if (NodeType == NodeType.List)
                 {
                     if (Parent == null)
                         obj = row;
                     else
-                        obj = Parent.GetInternal(row, ref indexer, create);
+                        obj = Parent.GetInternal(row, ref indexer);
 
                     if (obj == null)
                         return null;
@@ -84,13 +75,7 @@ namespace Cathei.BakingSheet.Raw
                     var list = Property.GetValue(obj) as IList;
 
                     if (list == null)
-                    {
-                        if (!create)
-                            return null;
-
-                        list = Activator.CreateInstance(Property.PropertyType) as IList;
-                        Property.SetValue(obj, list);
-                    }
+                        return null;
 
                     indexer.MoveNext();
 
@@ -99,9 +84,57 @@ namespace Cathei.BakingSheet.Raw
 
                     if (idx < list.Count)
                         return list[idx];
+                }
 
-                    if (create)
+                return null;
+            }
+
+            private delegate void ModifierDelegate(object obj, ref List<int>.Enumerator idxer);
+
+            private void PropagateInternal(ISheetRow row, ref List<int>.Enumerator indexer, ModifierDelegate modifier)
+            {
+                if (NodeType == NodeType.Object)
+                {
+                    if (Parent == null)
                     {
+                        modifier(row, ref indexer);
+                        return;
+                    }
+
+                    Parent.PropagateInternal(row, ref indexer, (object obj, ref List<int>.Enumerator idxer) =>
+                    {
+                        if (obj == null)
+                            return;
+
+                        var value = Property.GetValue(obj) ?? Activator.CreateInstance(Element);
+
+                        modifier(value, ref idxer);
+
+                        // incase of value-type struct, set back to original variable
+                        if (Element.IsValueType)
+                            Property.SetValue(obj, value);
+                    });
+                }
+                else if (NodeType == NodeType.List)
+                {
+                    ModifierDelegate listModifier = (object obj, ref List<int>.Enumerator idxer) =>
+                    {
+                        if (obj == null)
+                            return;
+
+                        var list = Property.GetValue(obj) as IList;
+
+                        if (list == null)
+                        {
+                            list = Activator.CreateInstance(Property.PropertyType) as IList;
+                            Property.SetValue(obj, list);
+                        }
+
+                        idxer.MoveNext();
+
+                        // convert 1-base to 0-base
+                        var idx = idxer.Current - 1;
+
                         // create value
                         while (list.Count <= idx)
                         {
@@ -109,58 +142,61 @@ namespace Cathei.BakingSheet.Raw
                             list.Add(elem);
                         }
 
-                        return list[idx];
-                    }
+                        var value = list[idx];
+                        modifier(value, ref idxer);
+
+                        if (Element.IsValueType)
+                            list[idx] = value;
+                    };
+
+                    if (Parent == null)
+                        listModifier(row, ref indexer);
+                    else
+                        Parent.PropagateInternal(row, ref indexer, listModifier);
                 }
-
-                return null;
-            }
-
-            public void SetInternal(object obj, object value)
-            {
-
             }
 
             public void Set(ISheetRow row, List<int> indexes, object value)
             {
                 var indexer = indexes.GetEnumerator();
 
-                var obj = Parent.GetInternal(row, ref indexer, true);
-
-                if (NodeType == NodeType.Object)
+                Parent.PropagateInternal(row, ref indexer, (object obj, ref List<int>.Enumerator idxer) =>
                 {
-                    Property.SetValue(obj, value);
-                }
-                else
-                {
-                    var list = Property.GetValue(obj) as IList;
-
-                    if (list == null)
+                    if (NodeType == NodeType.Object)
                     {
-                        list = Activator.CreateInstance(Property.PropertyType) as IList;
-                        Property.SetValue(obj, list);
+                        Property.SetValue(obj, value);
                     }
-
-                    indexer.MoveNext();
-
-                    // convert 1-base to 0-base
-                    var idx = indexer.Current - 1;
-
-                    // create value
-                    while (list.Count <= idx)
+                    else
                     {
-                        var elem = Activator.CreateInstance(Element);
-                        list.Add(elem);
-                    }
+                        var list = Property.GetValue(obj) as IList;
 
-                    list[idx] = value;
-                }
+                        if (list == null)
+                        {
+                            list = Activator.CreateInstance(Property.PropertyType) as IList;
+                            Property.SetValue(obj, list);
+                        }
+
+                        idxer.MoveNext();
+
+                        // convert 1-base to 0-base
+                        var idx = idxer.Current - 1;
+
+                        // create value
+                        while (list.Count <= idx)
+                        {
+                            var elem = Activator.CreateInstance(Element);
+                            list.Add(elem);
+                        }
+
+                        list[idx] = value;
+                    }
+                });
             }
 
             public object Get(ISheetRow row, List<int> indexes)
             {
                 var indexer = indexes.GetEnumerator();
-                return GetInternal(row, ref indexer, false);
+                return GetInternal(row, ref indexer);
             }
         }
 
