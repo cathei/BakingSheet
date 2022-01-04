@@ -35,7 +35,7 @@ namespace Cathei.BakingSheet.Tests
         {
             public int XInt { get; set; }
             public float YFloat { get; set; }
-            public string[] ZList { get; set; }
+            public List<string> ZList { get; set; }
         }
 
         public class Elem : SheetRowElem

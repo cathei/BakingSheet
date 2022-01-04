@@ -126,6 +126,7 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal(2, _container.Nested["Row3"].StructList.Count);
             Assert.Equal(10, _container.Nested["Row2"].Struct.XInt);
             Assert.Equal(1, _container.Nested["Row3"].StructList[0].XInt);
+            Assert.Equal("b", _container.Nested["Row3"].StructList[0].ZList[1]);
             Assert.Null(_container.Nested["Row1"].StructList);
         }
     }

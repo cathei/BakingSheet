@@ -137,12 +137,9 @@ namespace Cathei.BakingSheet.Raw
 
                         // create value
                         while (list.Count <= idx)
-                        {
-                            var elem = Activator.CreateInstance(Element);
-                            list.Add(elem);
-                        }
+                            list.Add(Activator.CreateInstance(Element));
 
-                        var value = list[idx];
+                        var value = list[idx] ?? Activator.CreateInstance(Element);
                         modifier(value, ref idxer);
 
                         if (Element.IsValueType)
@@ -181,12 +178,9 @@ namespace Cathei.BakingSheet.Raw
                         // convert 1-base to 0-base
                         var idx = idxer.Current - 1;
 
-                        // create value
+                        // set null for default since some of class like string does not have default constructor
                         while (list.Count <= idx)
-                        {
-                            var elem = Activator.CreateInstance(Element);
-                            list.Add(elem);
-                        }
+                            list.Add(Element.IsValueType ? Activator.CreateInstance(Element) : null);
 
                         list[idx] = value;
                     }
@@ -313,6 +307,12 @@ namespace Cathei.BakingSheet.Raw
 
                 if (typeof(IList).IsAssignableFrom(propertyType))
                 {
+                    if (propertyType.IsArray)
+                    {
+                        _context.Logger.LogError("Array is not supported! Use List instead.");
+                        continue;
+                    }
+
                     Type elementType = GetGenericArgument(propertyType, typeof(IList<>))[0];
 
                     node = new Node

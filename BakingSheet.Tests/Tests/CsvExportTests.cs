@@ -107,7 +107,7 @@ namespace Cathei.BakingSheet.Tests
             var row2 = new TestNestedSheet.Row {
                 Id = "Row2",
                 Struct = new TestNestedSheet.NestedStruct {
-                    XInt = 10, YFloat = 50.42f, ZList = new[] { "x", "y" }
+                    XInt = 10, YFloat = 50.42f, ZList = new List<string> { "x", "y" }
                 },
                 StructList = null
             };
@@ -116,10 +116,10 @@ namespace Cathei.BakingSheet.Tests
                 Id = "Row3",
                 StructList = new List<TestNestedSheet.NestedStruct> {
                     new TestNestedSheet.NestedStruct {
-                        XInt = 1, YFloat = 0.124f, ZList = new[] { "a", "b" }
+                        XInt = 1, YFloat = 0.124f, ZList = new List<string> { "a", "b" }
                     },
                     new TestNestedSheet.NestedStruct {
-                        XInt = 2, YFloat = 20, ZList = new[] { "c" }
+                        XInt = 2, YFloat = 20, ZList = new List<string> { "c" }
                     }
                 }
             };

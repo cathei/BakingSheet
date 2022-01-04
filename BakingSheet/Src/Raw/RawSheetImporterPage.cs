@@ -69,7 +69,14 @@ namespace Cathei.BakingSheet.Raw
                             if (string.IsNullOrEmpty(cellValue))
                                 continue;
 
-                            propertyMap.SetValue(sheetRow, sameRow, columnValue, cellValue);
+                            try
+                            {
+                                propertyMap.SetValue(sheetRow, sameRow, columnValue, cellValue);
+                            }
+                            catch (Exception ex)
+                            {
+                                context.Logger.LogError(ex, "Failed to set value {CellValue}", cellValue);
+                            }
                         }
                     }
 
