@@ -302,7 +302,7 @@ namespace Cathei.BakingSheet.Raw
                 Type propertyType = propertyInfo.PropertyType;
                 Node node = null;
 
-                string fullPath = parent.FullPath == null ? propertyInfo.Name : $"{parent.FullPath}.{propertyInfo.Name}";
+                string fullPath = parent.FullPath == null ? propertyInfo.Name : $"{parent.FullPath}{Config.Delimiter}{propertyInfo.Name}";
 
                 if (typeof(IList).IsAssignableFrom(propertyType))
                 {

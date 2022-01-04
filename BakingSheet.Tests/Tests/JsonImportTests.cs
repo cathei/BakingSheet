@@ -38,8 +38,6 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Bake(_converter);
 
-            _logger.VerifyNoError();
-
             Assert.True(result);
             Assert.Null(_container.Tests);
         }
@@ -86,6 +84,26 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal(4, _container.Types[TestEnum.Bravo].IntColumn);
 
             _logger.VerifyLog(LogLevel.Error, "An item with the same key has already been added. Key: Alpha");
+        }
+
+        [Fact]
+        public async Task TestImportNestedJson()
+        {
+            _fileSystem.SetTestData(Path.Combine("testdata", "Nested.json"), "[{\"Struct\":{\"XInt\":0,\"YFloat\":0.0,\"ZList\":null},\"StructList\":[],\"Arr\":[{\"IntList\":[1,2,3]},{\"IntList\":[4,5,6,7,8]}],\"Id\":\"Row1\"},{\"Struct\":{\"XInt\":10,\"YFloat\":50.42,\"ZList\":[\"x\",\"y\"]},\"StructList\":null,\"Arr\":[],\"Id\":\"Row2\"},{\"Struct\":{\"XInt\":0,\"YFloat\":0.0,\"ZList\":null},\"StructList\":[{\"XInt\":1,\"YFloat\":0.124,\"ZList\":[\"a\",\"b\"]},{\"XInt\":2,\"YFloat\":20.0,\"ZList\":[\"c\"]}],\"Arr\":[{\"IntList\":null}],\"Id\":\"Row3\"}]");
+
+            var result = await _container.Bake(_converter);
+
+            _logger.VerifyNoError();
+
+            Assert.True(result);
+            Assert.Equal(3, _container.Nested.Count);
+            Assert.Equal(2, _container.Nested["Row1"].Count);
+            Assert.Equal(3, _container.Nested["Row1"][0].IntList.Count);
+            Assert.Equal(2, _container.Nested["Row3"].StructList.Count);
+            Assert.Equal(10, _container.Nested["Row2"].Struct.XInt);
+            Assert.Equal(1, _container.Nested["Row3"].StructList[0].XInt);
+            Assert.Equal("b", _container.Nested["Row3"].StructList[0].ZList[1]);
+            Assert.Empty(_container.Nested["Row1"].StructList);
         }
     }
 }

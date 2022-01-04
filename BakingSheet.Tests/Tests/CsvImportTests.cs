@@ -63,8 +63,6 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Bake(_converter);
 
-            _logger.VerifyNoError();
-
             Assert.True(result);
             Assert.Empty(_container.Tests);
             Assert.Equal(nameof(TestSheetContainer.Tests), _container.Tests.Name);
@@ -81,8 +79,6 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Bake(_converter);
 
-            _logger.VerifyNoError();
-
             Assert.True(result);
             Assert.Single(_container.Types);
 
@@ -98,8 +94,6 @@ namespace Cathei.BakingSheet.Tests
 
             var result = await _container.Bake(_converter);
 
-            _logger.VerifyNoError();
-
             Assert.True(result);
             Assert.Equal(3, _container.Types.Count);
             Assert.Equal(1, _container.Types[TestEnum.Alpha].IntColumn);
@@ -113,7 +107,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportNestedCsv()
         {
-            _fileSystem.SetTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct.XInt,Struct.YFloat,Struct.ZList.1,Struct.ZList.2,StructList.1.XInt,StructList.1.YFloat,StructList.1.ZList.1,StructList.1.ZList.2,StructList.2.XInt,StructList.2.YFloat,StructList.2.ZList.1,StructList.2.ZList.2,IntList.1,IntList.2,IntList.3,IntList.4,IntList.5\nRow1,0,0,,,,,,,,,,,1,2,3,,\n,,,,,,,,,,,,,4,5,6,7,8\nRow2,10,50.42,x,y,,,,,,,,\nRow3,0,0,,,1,0.124,a,b,2,20,c,,,,,,\n");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct:XInt,Struct:YFloat,Struct:ZList:1,Struct:ZList:2,StructList:1:XInt,StructList:1:YFloat,StructList:1:ZList:1,StructList:1:ZList:2,StructList:2:XInt,StructList:2:YFloat,StructList:2:ZList:1,StructList:2:ZList:2,IntList:1,IntList:2,IntList:3,IntList:4,IntList:5\nRow1,0,0,,,,,,,,,,,1,2,3,,\n,,,,,,,,,,,,,4,5,6,7,8\nRow2,10,50.42,x,y,,,,,,,,\nRow3,0,0,,,1,0.124,a,b,2,20,c,,,,,,\n");
 
             var result = await _container.Bake(_converter);
 

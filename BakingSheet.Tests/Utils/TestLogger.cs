@@ -62,7 +62,8 @@ namespace Cathei.BakingSheet.Tests
 
         public void VerifyNoError()
         {
-            // Assert.DoesNotContain(entries, entry => entry.level >= LogLevel.Error);
+            Assert.DoesNotContain(entries, entry =>
+                entry.level >= LogLevel.Error && !entry.message.Contains("Failed to find sheet"));
         }
     }
 }

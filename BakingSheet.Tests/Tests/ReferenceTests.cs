@@ -137,8 +137,6 @@ namespace Cathei.BakingSheet.Tests
 
             _container.PostLoad();
 
-            _logger.VerifyNoError();
-
             Assert.Equal("WrongId", _container.Refers["Refer"].ReferColumn.Id);
             Assert.Null(_container.Refers["Refer"].ReferColumn.Ref);
         }
