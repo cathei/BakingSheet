@@ -106,7 +106,13 @@ namespace Cathei.BakingSheet.Internal
                         if (obj == null)
                             return;
 
-                        var value = Property.GetValue(obj) ?? Activator.CreateInstance(Element);
+                        var value = Property.GetValue(obj);
+
+                        if (value == null)
+                        {
+                            value = Activator.CreateInstance(Element);
+                            Property.SetValue(obj, value);
+                        }
 
                         modifier(value, ref idxer);
 
@@ -117,7 +123,7 @@ namespace Cathei.BakingSheet.Internal
                 }
                 else if (NodeType == NodeType.List)
                 {
-                    ModifierDelegate listModifier = (object obj, ref List<int>.Enumerator idxer) =>
+                    void listModifier(object obj, ref List<int>.Enumerator idxer)
                     {
                         if (obj == null)
                             return;
@@ -144,7 +150,7 @@ namespace Cathei.BakingSheet.Internal
 
                         if (Element.IsValueType)
                             list[idx] = value;
-                    };
+                    }
 
                     if (Parent == null)
                         listModifier(row, ref indexer);
