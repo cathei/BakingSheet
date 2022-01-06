@@ -81,6 +81,20 @@ namespace Cathei.BakingSheet.Tests
         }
     }
 
+    public class TestDictSheet : Sheet<TestDictSheet.Row>
+    {
+        public class Elem : SheetRowElem
+        {
+            public Dictionary<int, List<string>> NestedDict { get; set; }
+        }
+
+        public class Row : SheetRowArray<Elem>
+        {
+            public Dictionary<string, float> Dict { get; set; }
+        }
+    }
+
+
     public class TestSheetContainer : SheetContainerBase
     {
         public TestSheetContainer(ILogger logger) : base(logger) { }
@@ -90,5 +104,6 @@ namespace Cathei.BakingSheet.Tests
         public TestTypeSheet Types { get; set; }
         public TestReferenceSheet Refers { get; set; }
         public TestNestedSheet Nested { get; set; }
+        public TestDictSheet Dict { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace Cathei.BakingSheet.Raw
         {
             PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), Config.IsConvertable);
 
-            propertyMap.UpdateCount(sheet);
+            propertyMap.UpdateIndex(sheet);
 
             var leafs = propertyMap.TraverseLeaf();
 
@@ -53,9 +53,9 @@ namespace Cathei.BakingSheet.Raw
 
                 using (context.Logger.BeginScope(sheetRow.Id))
                 {
-                    foreach ((var node, bool array, var indexes) in leafs)
+                    foreach ((var node, bool isArray, var indexes) in leafs)
                     {
-                        if (!array)
+                        if (!isArray)
                         {
                             object value = node.Get(sheetRow, indexes);
                             string cellValue = exporter.ValueToString(node.Element, value);

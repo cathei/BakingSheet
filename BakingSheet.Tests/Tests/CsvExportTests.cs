@@ -153,5 +153,44 @@ namespace Cathei.BakingSheet.Tests
 
             _fileSystem.VerifyTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct:XInt,Struct:YFloat,Struct:ZList:1,Struct:ZList:2,StructList:1:XInt,StructList:1:YFloat,StructList:1:ZList:1,StructList:1:ZList:2,StructList:2:XInt,StructList:2:YFloat,StructList:2:ZList:1,StructList:2:ZList:2,IntList:1,IntList:2,IntList:3,IntList:4,IntList:5\nRow1,0,0,,,,,,,,,,,1,2,3,,\n,,,,,,,,,,,,,4,5,6,7,8\nRow2,10,50.42,x,y,,,,,,,,\nRow3,0,0,,,1,0.124,a,b,2,20,c,,,,,,\n");
         }
+
+        [Fact]
+        public async Task TestExportDictCsv()
+        {
+            _container.Dict = new TestDictSheet();
+
+            var row1 = new TestDictSheet.Row {
+                Id = "Dict1",
+                Dict = new Dictionary<string, float> {
+                    { "A", 10.0f }, { "B", 20.0f }
+                }
+            };
+
+            var row2 = new TestDictSheet.Row {
+                Id = "Dict2",
+                Dict = new Dictionary<string, float> {
+                    { "C", 10.0f }, { "B", 20.0f }
+                }
+            };
+
+            var elem1 = new TestDictSheet.Elem {
+                NestedDict = new Dictionary<int, List<string>> {
+                    { 2034, new List<string> { "X", "YYY", "ZZZZZ" } }
+                }
+            };
+
+            row1.Arr.Add(elem1);
+
+            _container.Dict.Add(row1);
+            _container.Dict.Add(row2);
+
+            _container.PostLoad();
+
+            var result = await _container.Store(_converter);
+
+            _logger.VerifyNoError();
+
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.csv"), "");
+        }
     }
 }

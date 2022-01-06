@@ -14,7 +14,8 @@ namespace Cathei.BakingSheet.Internal
         public enum NodeType
         {
             Object,
-            List
+            List,
+            Dictionary
         }
 
         // node represent a property
@@ -24,6 +25,7 @@ namespace Cathei.BakingSheet.Internal
             public string FullPath { get; set; }
 
             public PropertyInfo Property { get; set; }
+            public Type Key { get; set; }
             public Type Element { get; set; }
 
             public Node Parent { get; set; }
@@ -31,9 +33,11 @@ namespace Cathei.BakingSheet.Internal
 
             // used to organize columns when export
             public int MaxCount { get; set; } = 1;
+            // used to organize columns when export
+            public HashSet<object> PossibleKeys { get; set; } = null;
 
             // used for path formatting
-            public int ListDepth { get; set; } = 0;
+            public int FormatIndex { get; set; } = 0;
 
             public void Add(string path, Node child)
             {
@@ -44,7 +48,7 @@ namespace Cathei.BakingSheet.Internal
                 Children.Add(path, child);
             }
 
-            public object GetInternal(ISheetRow row, ref List<int>.Enumerator indexer)
+            public object GetInternal(ISheetRow row, ref List<object>.Enumerator indexer)
             {
                 object obj;
 
@@ -80,18 +84,40 @@ namespace Cathei.BakingSheet.Internal
                     indexer.MoveNext();
 
                     // convert 1-base to 0-base
-                    var idx = indexer.Current - 1;
+                    int idx = (int)indexer.Current - 1;
 
                     if (idx < list.Count)
                         return list[idx];
+                }
+                else if (NodeType == NodeType.Dictionary)
+                {
+                    if (Parent == null)
+                        obj = row;
+                    else
+                        obj = Parent.GetInternal(row, ref indexer);
+
+                    if (obj == null)
+                        return null;
+
+                    var dict = Property.GetValue(obj) as IDictionary;
+
+                    if (dict == null)
+                        return null;
+
+                    indexer.MoveNext();
+
+                    object key = indexer.Current;
+
+                    if (dict.Contains(key))
+                        return dict[key];
                 }
 
                 return null;
             }
 
-            private delegate void ModifierDelegate(object obj, ref List<int>.Enumerator idxer);
+            private delegate void ModifierDelegate(object obj, ref List<object>.Enumerator idxer);
 
-            private void PropagateInternal(ISheetRow row, ref List<int>.Enumerator indexer, ModifierDelegate modifier)
+            private void PropagateInternal(ISheetRow row, ref List<object>.Enumerator indexer, ModifierDelegate modifier)
             {
                 if (NodeType == NodeType.Object)
                 {
@@ -101,7 +127,7 @@ namespace Cathei.BakingSheet.Internal
                         return;
                     }
 
-                    Parent.PropagateInternal(row, ref indexer, (object obj, ref List<int>.Enumerator idxer) =>
+                    Parent.PropagateInternal(row, ref indexer, (object obj, ref List<object>.Enumerator idxer) =>
                     {
                         if (obj == null)
                             return;
@@ -123,7 +149,7 @@ namespace Cathei.BakingSheet.Internal
                 }
                 else if (NodeType == NodeType.List)
                 {
-                    void listModifier(object obj, ref List<int>.Enumerator idxer)
+                    void listModifier(object obj, ref List<object>.Enumerator idxer)
                     {
                         if (obj == null)
                             return;
@@ -139,7 +165,7 @@ namespace Cathei.BakingSheet.Internal
                         idxer.MoveNext();
 
                         // convert 1-base to 0-base
-                        var idx = idxer.Current - 1;
+                        var idx = (int)idxer.Current - 1;
 
                         // create value
                         while (list.Count <= idx)
@@ -157,19 +183,54 @@ namespace Cathei.BakingSheet.Internal
                     else
                         Parent.PropagateInternal(row, ref indexer, listModifier);
                 }
+                else if (NodeType == NodeType.Dictionary)
+                {
+                    void dictModifier(object obj, ref List<object>.Enumerator idxer)
+                    {
+                        if (obj == null)
+                            return;
+
+                        var dict = Property.GetValue(obj) as IDictionary;
+
+                        if (dict == null)
+                        {
+                            dict = Activator.CreateInstance(Property.PropertyType) as IDictionary;
+                            Property.SetValue(obj, dict);
+                        }
+
+                        idxer.MoveNext();
+
+                        object key = idxer.Current;
+
+                        // create value
+                        if (!dict.Contains(key) || dict[key] == null)
+                            dict[key] = Activator.CreateInstance(Element);
+
+                        var value = dict[key] ?? Activator.CreateInstance(Element);
+                        modifier(value, ref idxer);
+
+                        if (Element.IsValueType)
+                            dict[key] = value;
+                    }
+
+                    if (Parent == null)
+                        dictModifier(row, ref indexer);
+                    else
+                        Parent.PropagateInternal(row, ref indexer, dictModifier);
+                }
             }
 
-            public void Set(ISheetRow row, List<int> indexes, object value)
+            public void Set(ISheetRow row, List<object> indexes, object value)
             {
                 var indexer = indexes.GetEnumerator();
 
-                Parent.PropagateInternal(row, ref indexer, (object obj, ref List<int>.Enumerator idxer) =>
+                Parent.PropagateInternal(row, ref indexer, (object obj, ref List<object>.Enumerator idxer) =>
                 {
                     if (NodeType == NodeType.Object)
                     {
                         Property.SetValue(obj, value);
                     }
-                    else
+                    else if (NodeType == NodeType.List)
                     {
                         var list = Property.GetValue(obj) as IList;
 
@@ -182,7 +243,7 @@ namespace Cathei.BakingSheet.Internal
                         idxer.MoveNext();
 
                         // convert 1-base to 0-base
-                        var idx = idxer.Current - 1;
+                        int idx = (int)idxer.Current - 1;
 
                         // set null for default since some of class like string does not have default constructor
                         while (list.Count <= idx)
@@ -190,10 +251,26 @@ namespace Cathei.BakingSheet.Internal
 
                         list[idx] = value;
                     }
+                    else if (NodeType == NodeType.Dictionary)
+                    {
+                        var dict = Property.GetValue(obj) as IDictionary;
+
+                        if (dict == null)
+                        {
+                            dict = Activator.CreateInstance(Property.PropertyType) as IDictionary;
+                            Property.SetValue(obj, dict);
+                        }
+
+                        idxer.MoveNext();
+
+                        object key = idxer.Current;
+
+                        dict[key] = value;
+                    }
                 });
             }
 
-            public object Get(ISheetRow row, List<int> indexes)
+            public object Get(ISheetRow row, List<object> indexes)
             {
                 var indexer = indexes.GetEnumerator();
                 return GetInternal(row, ref indexer);
@@ -270,7 +347,7 @@ namespace Cathei.BakingSheet.Internal
                 Property = null,
                 Element = rowType,
                 NodeType = NodeType.Object,
-                ListDepth = 0,
+                FormatIndex = 0,
             };
 
             GenerateChildren(Root, isLeaf);
@@ -286,7 +363,7 @@ namespace Cathei.BakingSheet.Internal
                     Property = arrPropertyInfo,
                     Element = arrElementType,
                     NodeType = NodeType.List,
-                    ListDepth = 1,
+                    FormatIndex = 1,
                 };
 
                 GenerateChildren(Arr, isLeaf);
@@ -296,6 +373,9 @@ namespace Cathei.BakingSheet.Internal
         private void GenerateChildren(Node parent, Func<Type, bool> isLeaf)
         {
             // TODO: Prevent cycle!
+
+
+
 
             foreach (PropertyInfo propertyInfo in parent.Element.GetProperties(BindingFlag))
             {
@@ -319,11 +399,25 @@ namespace Cathei.BakingSheet.Internal
 
                     node = new Node
                     {
-                        FullPath = $"{fullPath}{Config.Delimiter}{{{parent.ListDepth}}}",
+                        FullPath = $"{fullPath}{Config.Delimiter}{{{parent.FormatIndex}}}",
                         Property = propertyInfo,
                         Element = elementType,
                         NodeType = NodeType.List,
-                        ListDepth = parent.ListDepth + 1
+                        FormatIndex = parent.FormatIndex + 1
+                    };
+                }
+                else if (typeof(IDictionary).IsAssignableFrom(propertyType))
+                {
+                    Type[] genericArguments = GetGenericArgument(propertyType, typeof(IDictionary<,>));
+
+                    node = new Node
+                    {
+                        FullPath = $"{fullPath}{Config.Delimiter}{{{parent.FormatIndex}}}",
+                        Property = propertyInfo,
+                        Key = genericArguments[0],
+                        Element = genericArguments[1],
+                        NodeType = NodeType.Dictionary,
+                        FormatIndex = parent.FormatIndex + 1
                     };
                 }
                 else
@@ -334,7 +428,7 @@ namespace Cathei.BakingSheet.Internal
                         Property = propertyInfo,
                         Element = propertyType,
                         NodeType = NodeType.Object,
-                        ListDepth = parent.ListDepth
+                        FormatIndex = parent.FormatIndex
                     };
                 }
 
@@ -345,11 +439,12 @@ namespace Cathei.BakingSheet.Internal
             }
         }
 
-        private List<int> _indexes = new List<int>();
+        private List<object> _indexes = new List<object>();
 
         public void SetValue(ISheetRow row, int arrIndex, string path, string value, Func<Type, string, object> converter)
         {
             Node node = null;
+            bool checkIndex = false;
 
             _indexes.Clear();
 
@@ -382,13 +477,33 @@ namespace Cathei.BakingSheet.Internal
                     }
                 }
 
-                if (int.TryParse(subpath, NumberStyles.Integer, CultureInfo.InvariantCulture, out var index))
+                if (checkIndex)
                 {
-                    _indexes.Add(index);
+                    if (node.NodeType == NodeType.List)
+                    {
+                        if (!int.TryParse(subpath, NumberStyles.Integer, CultureInfo.InvariantCulture, out var index))
+                        {
+                            _context.Logger.LogError("Failed to parse {Index} as List index", subpath);
+                            return;
+                        }
+
+                        _indexes.Add(index);
+                    }
+                    else if (node.NodeType == NodeType.Dictionary)
+                    {
+                        object key = converter(node.Key, subpath);
+
+                        _indexes.Add(key);
+                    }
+
+                    checkIndex = false;
                     continue;
                 }
 
                 node = node.Children[subpath];
+
+                if (node.NodeType == NodeType.List || node.NodeType == NodeType.Dictionary)
+                    checkIndex = true;
             }
 
             try
@@ -401,18 +516,18 @@ namespace Cathei.BakingSheet.Internal
             }
         }
 
-        public void UpdateCount(ISheet sheet)
+        public void UpdateIndex(ISheet sheet)
         {
             foreach (var row in sheet)
             {
-                UpdateCountInternal(Root, row);
+                UpdateIndexInternal(Root, row);
 
                 if (Arr != null)
-                    UpdateCountInternal(Arr, row);
+                    UpdateIndexInternal(Arr, row);
             }
         }
 
-        private void UpdateCountInternal(Node node, object obj)
+        private void UpdateIndexInternal(Node node, object obj)
         {
             if (node.NodeType == NodeType.List)
             {
@@ -436,7 +551,34 @@ namespace Cathei.BakingSheet.Internal
 
                     foreach (var child in node.Children.Values)
                     {
-                        UpdateCountInternal(child, elem);
+                        UpdateIndexInternal(child, elem);
+                    }
+                }
+            }
+            else if (node.NodeType == NodeType.Dictionary)
+            {
+                IDictionary dict = node.Property.GetValue(obj) as IDictionary;
+
+                if (dict == null)
+                    return;
+
+                if (node.PossibleKeys == null)
+                    node.PossibleKeys = new HashSet<object>();
+
+                foreach (var key in dict.Keys)
+                    node.PossibleKeys.Add(key);
+
+                if (node.Children == null)
+                    return;
+
+                foreach (object elem in dict)
+                {
+                    if (elem == null)
+                        continue;
+
+                    foreach (var child in node.Children.Values)
+                    {
+                        UpdateIndexInternal(child, elem);
                     }
                 }
             }
@@ -453,14 +595,14 @@ namespace Cathei.BakingSheet.Internal
 
                 foreach (Node child in node.Children.Values)
                 {
-                    UpdateCountInternal(child, obj);
+                    UpdateIndexInternal(child, obj);
                 }
             }
         }
 
         // UpdateCount is required to get correct result
         // index list are returned just to feed back, only valid on enumeration loop
-        public IEnumerable<(Node, bool, List<int>)> TraverseLeaf()
+        public IEnumerable<(Node, bool, List<object>)> TraverseLeaf()
         {
             _indexes.Clear();
 
@@ -482,13 +624,38 @@ namespace Cathei.BakingSheet.Internal
             {
                 int current = _indexes.Count;
 
-                // convert 0-base to 1-base
-                _indexes.Add(1);
+                _indexes.Add(null);
 
                 for (int i = 0; i < node.MaxCount; ++i)
                 {
                     // convert 0-base to 1-base
                     _indexes[current] = i + 1;
+
+                    if (isLeaf)
+                    {
+                        yield return node;
+                    }
+                    else
+                    {
+                        foreach (Node child in node.Children.Values)
+                        {
+                            foreach (Node result in TraverseInternal(child))
+                                yield return result;
+                        }
+                    }
+                }
+
+                _indexes.RemoveAt(current);
+            }
+            else if (node.NodeType == NodeType.Dictionary)
+            {
+                int current = _indexes.Count;
+
+                _indexes.Add(null);
+
+                foreach (object key in node.PossibleKeys)
+                {
+                    _indexes[current] = key;
 
                     if (isLeaf)
                     {

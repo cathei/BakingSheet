@@ -39,21 +39,38 @@ namespace Cathei.BakingSheet
             {
                 var propertyMap = new PropertyMap(context, GetType(), Config.IsConvertable);
 
-                propertyMap.UpdateCount(this);
+                propertyMap.UpdateIndex(this);
 
-                foreach (var (node, isArray, indexes) in propertyMap.TraverseLeaf())
+                foreach ((var node, bool isArray, var indexes) in propertyMap.TraverseLeaf())
                 {
                     if (typeof(ISheetReference).IsAssignableFrom(node.Element))
                     {
                         foreach (var row in Items)
                         {
-                            using (context.Logger.BeginScope(row.Id))
-                            using (context.Logger.BeginScope(node.FullPath))
+                            void mapReference()
                             {
-                                if (node.Get(row, indexes) is ISheetReference refer)
+                                using (context.Logger.BeginScope(row.Id))
+                                using (context.Logger.BeginScope(node.FullPath, indexes))
                                 {
-                                    refer.Map(context);
-                                    node.Set(row, indexes, refer);
+                                    if (node.Get(row, indexes) is ISheetReference refer)
+                                    {
+                                        refer.Map(context);
+                                        node.Set(row, indexes, refer);
+                                    }
+                                }
+                            }
+
+                            if (!isArray)
+                            {
+                                mapReference();
+                            }
+                            else if (row is ISheetRowArray rowArray)
+                            {
+                                for (int i = 0; i < rowArray.Arr.Count; ++i)
+                                {
+                                    // use 1-base for index
+                                    indexes[0] = i + 1;
+                                    mapReference();
                                 }
                             }
                         }
@@ -76,9 +93,9 @@ namespace Cathei.BakingSheet
             {
                 var propertyMap = new PropertyMap(context, GetType(), Config.IsConvertable);
 
-                propertyMap.UpdateCount(this);
+                propertyMap.UpdateIndex(this);
 
-                foreach (var (node, isArray, indexes) in propertyMap.TraverseLeaf())
+                foreach ((var node, bool isArray, var indexes) in propertyMap.TraverseLeaf())
                 {
                     foreach (var verifier in context.Verifiers)
                     {
@@ -89,12 +106,29 @@ namespace Cathei.BakingSheet
                         {
                             foreach (var row in Items)
                             {
-                                using (context.Logger.BeginScope(row.Id))
-                                using (context.Logger.BeginScope(node.FullPath))
+                                void verifyAsset()
                                 {
-                                    var err = verifier.Verify(att, node.Get(row, indexes));
-                                    if (err != null)
-                                        context.Logger.LogError("Verification: {Error}", err);
+                                    using (context.Logger.BeginScope(row.Id))
+                                    using (context.Logger.BeginScope(node.FullPath, indexes))
+                                    {
+                                        var err = verifier.Verify(att, node.Get(row, indexes));
+                                        if (err != null)
+                                            context.Logger.LogError("Verification: {Error}", err);
+                                    }
+                                }
+
+                                if (!isArray)
+                                {
+                                    verifyAsset();
+                                }
+                                else if (row is ISheetRowArray rowArray)
+                                {
+                                    for (int i = 0; i < rowArray.Arr.Count; ++i)
+                                    {
+                                        // use 1-base for index
+                                        indexes[0] = i + 1;
+                                        verifyAsset();
+                                    }
                                 }
                             }
                         }
