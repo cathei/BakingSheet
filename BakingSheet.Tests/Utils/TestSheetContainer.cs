@@ -86,6 +86,7 @@ namespace Cathei.BakingSheet.Tests
         public class Elem : SheetRowElem
         {
             public Dictionary<int, List<string>> NestedDict { get; set; }
+            public int Value { get; set; }
         }
 
         public class Row : SheetRowArray<Elem>

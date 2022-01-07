@@ -43,7 +43,7 @@ namespace Cathei.BakingSheet
 
                 foreach ((var node, bool isArray, var indexes) in propertyMap.TraverseLeaf())
                 {
-                    if (typeof(ISheetReference).IsAssignableFrom(node.Element))
+                    if (typeof(ISheetReference).IsAssignableFrom(node.ValueType))
                     {
                         foreach (var row in Items)
                         {
@@ -52,10 +52,12 @@ namespace Cathei.BakingSheet
                                 using (context.Logger.BeginScope(row.Id))
                                 using (context.Logger.BeginScope(node.FullPath, indexes))
                                 {
-                                    if (node.Get(row, indexes) is ISheetReference refer)
+                                    var obj = node.GetValue(row, indexes.GetEnumerator());
+
+                                    if (obj is ISheetReference refer)
                                     {
                                         refer.Map(context);
-                                        node.Set(row, indexes, refer);
+                                        node.SetValue(row, indexes.GetEnumerator(), refer);
                                     }
                                 }
                             }
@@ -99,10 +101,10 @@ namespace Cathei.BakingSheet
                 {
                     foreach (var verifier in context.Verifiers)
                     {
-                        if (!verifier.TargetType.IsAssignableFrom(node.Element))
+                        if (!verifier.TargetType.IsAssignableFrom(node.ValueType))
                             continue;
 
-                        foreach (var att in node.Property.GetCustomAttributes(verifier.TargetAttribute))
+                        foreach (var att in node.AttributesGetter(verifier.TargetAttribute))
                         {
                             foreach (var row in Items)
                             {
@@ -111,7 +113,7 @@ namespace Cathei.BakingSheet
                                     using (context.Logger.BeginScope(row.Id))
                                     using (context.Logger.BeginScope(node.FullPath, indexes))
                                     {
-                                        var err = verifier.Verify(att, node.Get(row, indexes));
+                                        var err = verifier.Verify(att, node.GetValue(row, indexes.GetEnumerator()));
                                         if (err != null)
                                             context.Logger.LogError("Verification: {Error}", err);
                                     }

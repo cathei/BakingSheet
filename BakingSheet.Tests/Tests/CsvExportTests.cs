@@ -173,16 +173,32 @@ namespace Cathei.BakingSheet.Tests
                 }
             };
 
+            var row3 = new TestDictSheet.Row {
+                Id = "Empty",
+            };
+
             var elem1 = new TestDictSheet.Elem {
                 NestedDict = new Dictionary<int, List<string>> {
                     { 2034, new List<string> { "X", "YYY", "ZZZZZ" } }
                 }
             };
 
+            var elem2 = new TestDictSheet.Elem {
+                Value = 8
+            };
+
+            var elem3 = new TestDictSheet.Elem {
+                Value = 65
+            };
+
             row1.Arr.Add(elem1);
+
+            row3.Arr.Add(elem2);
+            row3.Arr.Add(elem3);
 
             _container.Dict.Add(row1);
             _container.Dict.Add(row2);
+            _container.Dict.Add(row3);
 
             _container.PostLoad();
 
@@ -190,7 +206,7 @@ namespace Cathei.BakingSheet.Tests
 
             _logger.VerifyNoError();
 
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.csv"), "");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.csv"), "Id,Dict:A,Dict:B,Dict:C,NestedDict:2034:1,NestedDict:2034:2,NestedDict:2034:3,Value\nDict1,10,20,,X,YYY,ZZZZZ,0\nDict2,,20,10\nEmpty,,,,,,,8\n,,,,,,,65\n");
         }
     }
 }

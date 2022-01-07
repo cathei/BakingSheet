@@ -37,7 +37,8 @@ namespace Cathei.BakingSheet.Raw
 
             foreach ((var node, bool array, var indexes) in leafs)
             {
-                var columnName = string.Format(node.FullPath, indexes.Cast<object>().ToArray());
+                var arguments = indexes.Select(x => exporter.ValueToString(x.GetType(), x)).ToArray();
+                var columnName = string.Format(node.FullPath, arguments);
 
                 page.SetCell(pageColumn, 0, columnName);
                 pageColumn += 1;
@@ -57,8 +58,8 @@ namespace Cathei.BakingSheet.Raw
                     {
                         if (!isArray)
                         {
-                            object value = node.Get(sheetRow, indexes);
-                            string cellValue = exporter.ValueToString(node.Element, value);
+                            object value = node.GetValue(sheetRow, indexes.GetEnumerator());
+                            string cellValue = exporter.ValueToString(node.ValueType, value);
                             page.SetCell(pageColumn, pageRow, cellValue);
                         }
                         else if (sheetRowArray != null)
@@ -68,8 +69,8 @@ namespace Cathei.BakingSheet.Raw
                                 // use 1-base for index
                                 indexes[0] = i + 1;
 
-                                object value = node.Get(sheetRow, indexes);
-                                string cellValue = exporter.ValueToString(node.Element, value);
+                                object value = node.GetValue(sheetRow, indexes.GetEnumerator());
+                                string cellValue = exporter.ValueToString(node.ValueType, value);
                                 page.SetCell(pageColumn, pageRow + i, cellValue);
                             }
                         }

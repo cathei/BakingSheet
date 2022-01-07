@@ -11,276 +11,378 @@ namespace Cathei.BakingSheet.Internal
     // property map for a sheet
     public class PropertyMap
     {
-        public enum NodeType
+        public abstract class Node
         {
-            Object,
-            List,
-            Dictionary
-        }
-
-        // node represent a property
-        public class Node
-        {
-            public NodeType NodeType { get; set; }
-            public string FullPath { get; set; }
-
-            public PropertyInfo Property { get; set; }
-            public Type Key { get; set; }
-            public Type Element { get; set; }
+            public delegate object GetterDelegate(object obj, object key);
+            public delegate void SetterDelegate(object obj, object key, object value);
+            public delegate IEnumerable<Attribute> AttributesGetterDelegate(Type attribute);
+            public delegate object ModifyDelegate(object original);
 
             public Node Parent { get; set; }
-            public Dictionary<string, Node> Children { get; set; }
+            public string FullPath { get; set; }
 
-            // used to organize columns when export
-            public int MaxCount { get; set; } = 1;
-            // used to organize columns when export
-            public HashSet<object> PossibleKeys { get; set; } = null;
+            public Type IndexType { get; set; }
+            public Type ValueType { get; set; }
 
-            // used for path formatting
-            public int FormatIndex { get; set; } = 0;
+            public GetterDelegate Getter { get; set; }
+            public SetterDelegate Setter { get; set; }
+            public AttributesGetterDelegate AttributesGetter { get; set; }
 
-            public void Add(string path, Node child)
+            public virtual bool IsLeaf => false;
+            public abstract Node GetChild(string subpath);
+            public virtual bool HasSubpath(string subpath) => false;
+
+            public abstract void UpdateIndex(object obj);
+            public abstract IEnumerable<Node> TraverseChildren(List<object> indexes);
+            public abstract void GenerateChildren(Func<Type, bool> isLeaf, int depth);
+
+            protected string AppendPath(string subpath)
             {
-                if (Children == null)
-                    Children = new Dictionary<string, Node>();
+                if (FullPath == null)
+                    return subpath;
+
+                return $"{FullPath}{Config.Delimiter}{subpath}";
+            }
+
+            protected string AppendIndex(int depth)
+            {
+                // for root array ignore depth
+                if (Parent == null)
+                    return null;
+
+                if (FullPath == null)
+                    return "{{{depth}}}";
+
+                return $"{FullPath}{Config.Delimiter}{{{depth}}}";
+            }
+
+            public object GetValue(ISheetRow row, IEnumerator<object> indexer)
+            {
+                object obj = row;
+
+                if (Parent != null)
+                    obj = Parent.GetValue(row, indexer);
+
+                object index = null;
+
+                if (Parent?.IndexType != null)
+                {
+                    indexer.MoveNext();
+                    index = indexer.Current;
+                }
+
+                if (obj == null)
+                    return null;
+
+                return Getter(obj, index);
+            }
+
+            public void SetValue(ISheetRow row, IEnumerator<object> indexer, object value)
+            {
+                ModifyValue(row, indexer, _ => value);
+            }
+
+            public void ModifyValue(ISheetRow row, IEnumerator<object> indexer, ModifyDelegate modifier)
+            {
+                object obj = null;
+
+                if (Parent == null)
+                {
+                    obj = Getter(row, null);
+                    obj = modifier(obj);
+
+                    // there'd be no setter for root node
+                    // Setter(row, null, obj);
+                    return;
+                }
+
+                Parent.ModifyValue(row, indexer, parentObj =>
+                {
+                    object index = null;
+
+                    if (Parent?.IndexType != null)
+                    {
+                        indexer.MoveNext();
+                        index = indexer.Current;
+                    }
+
+                    if (parentObj == null)
+                        return null;
+
+                    obj = Getter(parentObj, index);
+
+                    // for leaf nodes there might be no default constructor available
+                    if (obj == null && !IsLeaf)
+                        obj = Activator.CreateInstance(ValueType);
+
+                    obj = modifier(obj);
+
+                    Setter(parentObj, index, obj);
+
+                    return parentObj;
+                });
+            }
+        }
+
+        public class NodeObject : Node
+        {
+            private Dictionary<string, Node> Children { get; set; }
+
+            public override bool IsLeaf => Children == null;
+
+            public override Node GetChild(string subpath) => Children?[subpath];
+
+            public override bool HasSubpath(string subpath) => Children?.ContainsKey(subpath) ?? false;
+
+            public override void UpdateIndex(object obj)
+            {
+                if (IsLeaf)
+                    return;
+
+                foreach (var child in Children.Values)
+                {
+                    var elem = child.Getter(obj, null);
+                    child.UpdateIndex(elem);
+                }
+            }
+
+            public override IEnumerable<Node> TraverseChildren(List<object> indexes)
+            {
+                if (IsLeaf)
+                {
+                    yield return this;
+                    yield break;
+                }
+
+                foreach (var child in Children.OrderByDescending(x => x.Key == "Id").Select(x => x.Value))
+                {
+                    foreach (var node in child.TraverseChildren(indexes))
+                        yield return node;
+                }
+            }
+
+            public override void GenerateChildren(Func<Type, bool> isLeaf, int depth)
+            {
+                if (isLeaf(ValueType))
+                    return;
+
+                Children = new Dictionary<string, Node>();
+
+                foreach (PropertyInfo propertyInfo in ValueType.GetProperties(BindingFlag))
+                {
+                    if (!ShouldInclude(propertyInfo))
+                        continue;
+
+                    var child = CreateNode(propertyInfo.PropertyType);
+
+                    child.Parent = this;
+                    child.ValueType = propertyInfo.PropertyType;
+                    child.FullPath = AppendPath(propertyInfo.Name);
+                    child.Getter = (obj, key) => propertyInfo.GetValue(obj);
+                    child.Setter = (obj, key, value) => propertyInfo.SetValue(obj, value);
+                    child.AttributesGetter = att => propertyInfo.GetCustomAttributes(att);
+
+                    child.GenerateChildren(isLeaf, depth);
+
+                    Children.Add(propertyInfo.Name, child);
+                }
+            }
+        }
+
+        public class NodeList : Node
+        {
+            public Node Child { get; set; }
+
+            private int MaxCount { get; set; } = 1;
+
+            public override Node GetChild(string subpath) => Child;
+
+            public override void UpdateIndex(object obj)
+            {
+                if (obj is IList list)
+                {
+                    // for root array size varies, so keep 1 as max count
+                    if (Parent != null)
+                        MaxCount = Math.Max(MaxCount, list.Count);
+
+                    foreach (var elem in list)
+                        Child.UpdateIndex(elem);
+                }
+            }
+
+            public override IEnumerable<Node> TraverseChildren(List<object> indexes)
+            {
+                int current = indexes.Count;
+                indexes.Add(null);
+
+                for (int i = 0; i < MaxCount; ++i)
+                {
+                    // convert 0-base to 1-base
+                    indexes[current] = i + 1;
+
+                    foreach (var node in Child.TraverseChildren(indexes))
+                        yield return node;
+                }
+
+                indexes.RemoveAt(current);
+            }
+
+            public override void GenerateChildren(Func<Type, bool> isLeaf, int depth)
+            {
+                var elementType = GetGenericArgument(ValueType, typeof(IList<>))[0];
+
+                IndexType = typeof(int);
+
+                var child = CreateNode(elementType);
 
                 child.Parent = this;
-                Children.Add(path, child);
-            }
+                child.ValueType = elementType;
+                child.FullPath = AppendIndex(depth);
 
-            public object GetInternal(ISheetRow row, ref List<object>.Enumerator indexer)
-            {
-                object obj;
-
-                if (NodeType == NodeType.Object)
+                child.Getter = (obj, key) =>
                 {
-                    if (Parent == null)
-                        return row;
-
-                    obj = Parent.GetInternal(row, ref indexer);
-
-                    if (obj == null)
-                        return null;
-
-                    var value = Property.GetValue(obj);
-
-                    return value;
-                }
-                else if (NodeType == NodeType.List)
-                {
-                    if (Parent == null)
-                        obj = row;
-                    else
-                        obj = Parent.GetInternal(row, ref indexer);
-
-                    if (obj == null)
-                        return null;
-
-                    var list = Property.GetValue(obj) as IList;
-
-                    if (list == null)
-                        return null;
-
-                    indexer.MoveNext();
-
-                    // convert 1-base to 0-base
-                    int idx = (int)indexer.Current - 1;
-
-                    if (idx < list.Count)
-                        return list[idx];
-                }
-                else if (NodeType == NodeType.Dictionary)
-                {
-                    if (Parent == null)
-                        obj = row;
-                    else
-                        obj = Parent.GetInternal(row, ref indexer);
-
-                    if (obj == null)
-                        return null;
-
-                    var dict = Property.GetValue(obj) as IDictionary;
-
-                    if (dict == null)
-                        return null;
-
-                    indexer.MoveNext();
-
-                    object key = indexer.Current;
-
-                    if (dict.Contains(key))
-                        return dict[key];
-                }
-
-                return null;
-            }
-
-            private delegate void ModifierDelegate(object obj, ref List<object>.Enumerator idxer);
-
-            private void PropagateInternal(ISheetRow row, ref List<object>.Enumerator indexer, ModifierDelegate modifier)
-            {
-                if (NodeType == NodeType.Object)
-                {
-                    if (Parent == null)
+                    if (obj is IList list)
                     {
-                        modifier(row, ref indexer);
-                        return;
-                    }
-
-                    Parent.PropagateInternal(row, ref indexer, (object obj, ref List<object>.Enumerator idxer) =>
-                    {
-                        if (obj == null)
-                            return;
-
-                        var value = Property.GetValue(obj);
-
-                        if (value == null)
-                        {
-                            value = Activator.CreateInstance(Element);
-                            Property.SetValue(obj, value);
-                        }
-
-                        modifier(value, ref idxer);
-
-                        // incase of value-type struct, set back to original variable
-                        if (Element.IsValueType)
-                            Property.SetValue(obj, value);
-                    });
-                }
-                else if (NodeType == NodeType.List)
-                {
-                    void listModifier(object obj, ref List<object>.Enumerator idxer)
-                    {
-                        if (obj == null)
-                            return;
-
-                        var list = Property.GetValue(obj) as IList;
-
-                        if (list == null)
-                        {
-                            list = Activator.CreateInstance(Property.PropertyType) as IList;
-                            Property.SetValue(obj, list);
-                        }
-
-                        idxer.MoveNext();
-
                         // convert 1-base to 0-base
-                        var idx = (int)idxer.Current - 1;
+                        int idx = (int)key - 1;
 
-                        // create value
-                        while (list.Count <= idx)
-                            list.Add(Activator.CreateInstance(Element));
-
-                        var value = list[idx] ?? Activator.CreateInstance(Element);
-                        modifier(value, ref idxer);
-
-                        if (Element.IsValueType)
-                            list[idx] = value;
+                        if (idx < list.Count)
+                            return list[idx];
                     }
 
-                    if (Parent == null)
-                        listModifier(row, ref indexer);
-                    else
-                        Parent.PropagateInternal(row, ref indexer, listModifier);
-                }
-                else if (NodeType == NodeType.Dictionary)
+                    return null;
+                };
+
+                child.Setter = (obj, key, value) =>
                 {
-                    void dictModifier(object obj, ref List<object>.Enumerator idxer)
+                    if (obj is IList list)
                     {
-                        if (obj == null)
-                            return;
-
-                        var dict = Property.GetValue(obj) as IDictionary;
-
-                        if (dict == null)
-                        {
-                            dict = Activator.CreateInstance(Property.PropertyType) as IDictionary;
-                            Property.SetValue(obj, dict);
-                        }
-
-                        idxer.MoveNext();
-
-                        object key = idxer.Current;
-
-                        // create value
-                        if (!dict.Contains(key) || dict[key] == null)
-                            dict[key] = Activator.CreateInstance(Element);
-
-                        var value = dict[key] ?? Activator.CreateInstance(Element);
-                        modifier(value, ref idxer);
-
-                        if (Element.IsValueType)
-                            dict[key] = value;
-                    }
-
-                    if (Parent == null)
-                        dictModifier(row, ref indexer);
-                    else
-                        Parent.PropagateInternal(row, ref indexer, dictModifier);
-                }
-            }
-
-            public void Set(ISheetRow row, List<object> indexes, object value)
-            {
-                var indexer = indexes.GetEnumerator();
-
-                Parent.PropagateInternal(row, ref indexer, (object obj, ref List<object>.Enumerator idxer) =>
-                {
-                    if (NodeType == NodeType.Object)
-                    {
-                        Property.SetValue(obj, value);
-                    }
-                    else if (NodeType == NodeType.List)
-                    {
-                        var list = Property.GetValue(obj) as IList;
-
-                        if (list == null)
-                        {
-                            list = Activator.CreateInstance(Property.PropertyType) as IList;
-                            Property.SetValue(obj, list);
-                        }
-
-                        idxer.MoveNext();
-
                         // convert 1-base to 0-base
-                        int idx = (int)idxer.Current - 1;
+                        int idx = (int)key - 1;
 
-                        // set null for default since some of class like string does not have default constructor
                         while (list.Count <= idx)
-                            list.Add(Element.IsValueType ? Activator.CreateInstance(Element) : null);
+                            list.Add(elementType.IsValueType ? Activator.CreateInstance(elementType) : null);
 
                         list[idx] = value;
                     }
-                    else if (NodeType == NodeType.Dictionary)
-                    {
-                        var dict = Property.GetValue(obj) as IDictionary;
+                };
 
-                        if (dict == null)
-                        {
-                            dict = Activator.CreateInstance(Property.PropertyType) as IDictionary;
-                            Property.SetValue(obj, dict);
-                        }
+                child.AttributesGetter = AttributesGetter;
 
-                        idxer.MoveNext();
+                child.GenerateChildren(isLeaf, depth + 1);
 
-                        object key = idxer.Current;
-
-                        dict[key] = value;
-                    }
-                });
+                Child = child;
             }
+        }
 
-            public object Get(ISheetRow row, List<object> indexes)
+        public class NodeDictionary : Node
+        {
+            private Node Child { get; set; }
+
+            private HashSet<object> PossibleKeys { get; set; }
+
+            public override Node GetChild(string subpath) => Child;
+
+            public override void UpdateIndex(object obj)
             {
-                var indexer = indexes.GetEnumerator();
-                return GetInternal(row, ref indexer);
+                if (PossibleKeys == null)
+                    PossibleKeys = new HashSet<object>();
+
+                if (obj is IDictionary dict)
+                {
+                    foreach (var key in dict.Keys)
+                        PossibleKeys.Add(key);
+
+                    foreach (var elem in dict.Values)
+                        Child.UpdateIndex(elem);
+                }
             }
+
+            public override IEnumerable<Node> TraverseChildren(List<object> indexes)
+            {
+                if (PossibleKeys == null)
+                    yield break;
+
+                int current = indexes.Count;
+                indexes.Add(null);
+
+                foreach (var key in PossibleKeys)
+                {
+                    indexes[current] = key;
+
+                    foreach (var node in Child.TraverseChildren(indexes))
+                        yield return node;
+                }
+
+                indexes.RemoveAt(current);
+            }
+
+            public override void GenerateChildren(Func<Type, bool> isLeaf, int depth)
+            {
+                var arguments = GetGenericArgument(ValueType, typeof(IDictionary<,>));
+                var keyType = arguments[0];
+                var elementType = arguments[1];
+
+                IndexType = keyType;
+
+                var child = CreateNode(elementType);
+
+                child.Parent = this;
+                child.ValueType = elementType;
+                child.FullPath = AppendIndex(depth);
+
+                child.Getter = (obj, key) =>
+                {
+                    if (obj is IDictionary dict)
+                        return dict[key];
+                    return null;
+                };
+
+                child.Setter = (obj, key, value) =>
+                {
+                    if (obj is IDictionary dict)
+                        dict[key] = value;
+                };
+
+                child.AttributesGetter = AttributesGetter;
+
+                child.GenerateChildren(isLeaf, depth + 1);
+
+                Child = child;
+            }
+        }
+
+        private static Node CreateNode(Type type)
+        {
+            if (typeof(IList).IsAssignableFrom(type))
+            {
+                return new NodeList();
+            }
+            else if (typeof(IDictionary).IsAssignableFrom(type))
+            {
+                return new NodeDictionary();
+            }
+            else
+            {
+                return new NodeObject();
+            }
+        }
+
+        private static bool ShouldInclude(PropertyInfo propertyInfo)
+        {
+            if (propertyInfo.GetCustomAttribute<NonSerializedAttribute>() != null)
+                return false;
+
+            if (propertyInfo.SetMethod == null)
+                return false;
+
+            return true;
         }
 
         private const BindingFlags BindingFlag = BindingFlags.Public | BindingFlags.Instance;
 
-        private Node Root { get; set; }
-        private Node Arr { get; set; }
+        private NodeObject Root { get; set; }
+        private NodeList Arr { get; set; }
 
         private SheetConvertingContext _context;
 
@@ -300,18 +402,7 @@ namespace Cathei.BakingSheet.Internal
             yield return path.Substring(idx);
         }
 
-        private bool ShouldInclude(PropertyInfo propertyInfo)
-        {
-            if (propertyInfo.GetCustomAttribute<NonSerializedAttribute>() != null)
-                return false;
-
-            if (propertyInfo.SetMethod == null)
-                return false;
-
-            return true;
-        }
-
-        private Type[] GetGenericArgument(Type type, Type baseType)
+        private static Type[] GetGenericArgument(Type type, Type baseType)
         {
             if (baseType.IsInterface)
             {
@@ -341,101 +432,32 @@ namespace Cathei.BakingSheet.Internal
 
             Type rowType = GetGenericArgument(sheetType, typeof(Sheet<,>))[1];
 
-            Root = new Node
+            Root = new NodeObject
             {
                 FullPath = null,
-                Property = null,
-                Element = rowType,
-                NodeType = NodeType.Object,
-                FormatIndex = 0,
+                ValueType = rowType,
+                Getter = (obj, key) => obj,
+                Setter = null,
+                AttributesGetter = _ => Enumerable.Empty<Attribute>(),
             };
 
-            GenerateChildren(Root, isLeaf);
+            Root.GenerateChildren(isLeaf, 0);
 
             if (typeof(ISheetRowArray).IsAssignableFrom(rowType))
             {
                 Type arrElementType = GetGenericArgument(rowType, typeof(SheetRowArray<,>))[1];
                 PropertyInfo arrPropertyInfo = rowType.GetProperty(nameof(ISheetRowArray.Arr));
 
-                Arr = new Node
+                Arr = new NodeList
                 {
                     FullPath = null,
-                    Property = arrPropertyInfo,
-                    Element = arrElementType,
-                    NodeType = NodeType.List,
-                    FormatIndex = 1,
+                    ValueType = arrPropertyInfo.PropertyType,
+                    Getter = (obj, key) => arrPropertyInfo.GetValue(obj),
+                    Setter = null,
+                    AttributesGetter = _ => Enumerable.Empty<Attribute>(),
                 };
 
-                GenerateChildren(Arr, isLeaf);
-            }
-        }
-
-        private void GenerateChildren(Node parent, Func<Type, bool> isLeaf)
-        {
-            // TODO: Prevent cycle!
-
-
-
-
-            foreach (PropertyInfo propertyInfo in parent.Element.GetProperties(BindingFlag))
-            {
-                if (!ShouldInclude(propertyInfo))
-                    continue;
-
-                Type propertyType = propertyInfo.PropertyType;
-                Node node = null;
-
-                string fullPath = parent.FullPath == null ? propertyInfo.Name : $"{parent.FullPath}{Config.Delimiter}{propertyInfo.Name}";
-
-                if (typeof(IList).IsAssignableFrom(propertyType))
-                {
-                    if (propertyType.IsArray)
-                    {
-                        _context.Logger.LogError("Array is not supported! Use List instead.");
-                        continue;
-                    }
-
-                    Type elementType = GetGenericArgument(propertyType, typeof(IList<>))[0];
-
-                    node = new Node
-                    {
-                        FullPath = $"{fullPath}{Config.Delimiter}{{{parent.FormatIndex}}}",
-                        Property = propertyInfo,
-                        Element = elementType,
-                        NodeType = NodeType.List,
-                        FormatIndex = parent.FormatIndex + 1
-                    };
-                }
-                else if (typeof(IDictionary).IsAssignableFrom(propertyType))
-                {
-                    Type[] genericArguments = GetGenericArgument(propertyType, typeof(IDictionary<,>));
-
-                    node = new Node
-                    {
-                        FullPath = $"{fullPath}{Config.Delimiter}{{{parent.FormatIndex}}}",
-                        Property = propertyInfo,
-                        Key = genericArguments[0],
-                        Element = genericArguments[1],
-                        NodeType = NodeType.Dictionary,
-                        FormatIndex = parent.FormatIndex + 1
-                    };
-                }
-                else
-                {
-                    node = new Node
-                    {
-                        FullPath = fullPath,
-                        Property = propertyInfo,
-                        Element = propertyType,
-                        NodeType = NodeType.Object,
-                        FormatIndex = parent.FormatIndex
-                    };
-                }
-
-                parent.Add(propertyInfo.Name, node);
-
-                if (!isLeaf(node.Element))
-                    GenerateChildren(node, isLeaf);
+                Arr.GenerateChildren(isLeaf, 0);
             }
         }
 
@@ -444,7 +466,6 @@ namespace Cathei.BakingSheet.Internal
         public void SetValue(ISheetRow row, int arrIndex, string path, string value, Func<Type, string, object> converter)
         {
             Node node = null;
-            bool checkIndex = false;
 
             _indexes.Clear();
 
@@ -452,7 +473,7 @@ namespace Cathei.BakingSheet.Internal
             {
                 if (node == null)
                 {
-                    if (Root.Children.ContainsKey(subpath))
+                    if (Root.HasSubpath(subpath))
                     {
                         if (arrIndex != 0)
                         {
@@ -464,55 +485,35 @@ namespace Cathei.BakingSheet.Internal
                     }
                     else
                     {
-                        if (Arr == null || !Arr.Children.ContainsKey(subpath))
+                        if (Arr == null || !Arr.Child.HasSubpath(subpath))
                         {
                             _context.Logger.LogError("Column name is invalid", path);
                             return;
                         }
 
-                        node = Arr;
+                        node = Arr.Child;
 
                         // convert 0-base to 1-base
                         _indexes.Add(arrIndex + 1);
                     }
                 }
 
-                if (checkIndex)
+                if (node.IndexType != null)
                 {
-                    if (node.NodeType == NodeType.List)
-                    {
-                        if (!int.TryParse(subpath, NumberStyles.Integer, CultureInfo.InvariantCulture, out var index))
-                        {
-                            _context.Logger.LogError("Failed to parse {Index} as List index", subpath);
-                            return;
-                        }
-
-                        _indexes.Add(index);
-                    }
-                    else if (node.NodeType == NodeType.Dictionary)
-                    {
-                        object key = converter(node.Key, subpath);
-
-                        _indexes.Add(key);
-                    }
-
-                    checkIndex = false;
-                    continue;
+                    object index = converter(node.IndexType, subpath);
+                    _indexes.Add(index);
                 }
 
-                node = node.Children[subpath];
-
-                if (node.NodeType == NodeType.List || node.NodeType == NodeType.Dictionary)
-                    checkIndex = true;
+                node = node.GetChild(subpath);
             }
 
             try
             {
-                node.Set(row, _indexes, converter(node.Element, value));
+                node.SetValue(row, _indexes.GetEnumerator(), converter(node.ValueType, value));
             }
             catch (Exception ex)
             {
-                _context.Logger.LogError(ex, "Failed to convert value \"{CellValue}\" of type {PropertyType}", value, node.Element);
+                _context.Logger.LogError(ex, "Failed to convert value \"{CellValue}\" of type {PropertyType}", value, node.ValueType);
             }
         }
 
@@ -520,83 +521,10 @@ namespace Cathei.BakingSheet.Internal
         {
             foreach (var row in sheet)
             {
-                UpdateIndexInternal(Root, row);
+                Root.UpdateIndex(row);
 
-                if (Arr != null)
-                    UpdateIndexInternal(Arr, row);
-            }
-        }
-
-        private void UpdateIndexInternal(Node node, object obj)
-        {
-            if (node.NodeType == NodeType.List)
-            {
-                IList list = node.Property.GetValue(obj) as IList;
-
-                if (list == null)
-                    return;
-
-                // root array count is meant to vary per row
-                // so we will keep max count as 1 here
-                if (node.Parent != null)
-                    node.MaxCount = Math.Max(node.MaxCount, list.Count);
-
-                if (node.Children == null)
-                    return;
-
-                foreach (object elem in list)
-                {
-                    if (elem == null)
-                        continue;
-
-                    foreach (var child in node.Children.Values)
-                    {
-                        UpdateIndexInternal(child, elem);
-                    }
-                }
-            }
-            else if (node.NodeType == NodeType.Dictionary)
-            {
-                IDictionary dict = node.Property.GetValue(obj) as IDictionary;
-
-                if (dict == null)
-                    return;
-
-                if (node.PossibleKeys == null)
-                    node.PossibleKeys = new HashSet<object>();
-
-                foreach (var key in dict.Keys)
-                    node.PossibleKeys.Add(key);
-
-                if (node.Children == null)
-                    return;
-
-                foreach (object elem in dict)
-                {
-                    if (elem == null)
-                        continue;
-
-                    foreach (var child in node.Children.Values)
-                    {
-                        UpdateIndexInternal(child, elem);
-                    }
-                }
-            }
-            else
-            {
-                if (node.Children == null)
-                    return;
-
-                if (node.Property != null)
-                    obj = node.Property.GetValue(obj);
-
-                if (obj == null)
-                    return;
-
-                foreach (Node child in node.Children.Values)
-                {
-                    UpdateIndexInternal(child, obj);
-                }
+                if (row is ISheetRowArray rowArray)
+                    Arr.UpdateIndex(rowArray.Arr);
             }
         }
 
@@ -606,87 +534,13 @@ namespace Cathei.BakingSheet.Internal
         {
             _indexes.Clear();
 
-            foreach (var node in TraverseInternal(Root))
+            foreach (var node in Root.TraverseChildren(_indexes))
                 yield return (node, false, _indexes);
 
             if (Arr != null)
             {
-                foreach (var node in TraverseInternal(Arr))
+                foreach (var node in Arr.TraverseChildren(_indexes))
                     yield return (node, true, _indexes);
-            }
-        }
-
-        private IEnumerable<Node> TraverseInternal(Node node)
-        {
-            bool isLeaf = node.Children == null;
-
-            if (node.NodeType == NodeType.List)
-            {
-                int current = _indexes.Count;
-
-                _indexes.Add(null);
-
-                for (int i = 0; i < node.MaxCount; ++i)
-                {
-                    // convert 0-base to 1-base
-                    _indexes[current] = i + 1;
-
-                    if (isLeaf)
-                    {
-                        yield return node;
-                    }
-                    else
-                    {
-                        foreach (Node child in node.Children.Values)
-                        {
-                            foreach (Node result in TraverseInternal(child))
-                                yield return result;
-                        }
-                    }
-                }
-
-                _indexes.RemoveAt(current);
-            }
-            else if (node.NodeType == NodeType.Dictionary)
-            {
-                int current = _indexes.Count;
-
-                _indexes.Add(null);
-
-                foreach (object key in node.PossibleKeys)
-                {
-                    _indexes[current] = key;
-
-                    if (isLeaf)
-                    {
-                        yield return node;
-                    }
-                    else
-                    {
-                        foreach (Node child in node.Children.Values)
-                        {
-                            foreach (Node result in TraverseInternal(child))
-                                yield return result;
-                        }
-                    }
-                }
-
-                _indexes.RemoveAt(current);
-            }
-            else
-            {
-                if (isLeaf)
-                {
-                    yield return node;
-                }
-                else
-                {
-                    foreach (Node child in node.Children.OrderByDescending(x => x.Key == "Id").Select(x => x.Value))
-                    {
-                        foreach (Node result in TraverseInternal(child))
-                            yield return result;
-                    }
-                }
             }
         }
     }
