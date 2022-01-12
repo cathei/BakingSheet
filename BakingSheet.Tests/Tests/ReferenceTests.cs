@@ -62,11 +62,16 @@ namespace Cathei.BakingSheet.Tests
 
             _container.Refers.Add(referRow);
 
-            var referElem = new TestReferenceSheet.Elem();
+            var referElem1 = new TestReferenceSheet.Elem();
 
-            referElem.NestedReferColumn = new TestSheet.Reference("Test2");
+            referElem1.NestedReferColumn = new TestSheet.Reference("Test2");
 
-            referRow.Arr.Add(referElem);
+            var referElem2 = new TestReferenceSheet.Elem();
+
+            referElem2.NestedReferColumn = new TestSheet.Reference("Test1");
+
+            referRow.Arr.Add(referElem1);
+            referRow.Arr.Add(referElem2);
 
             var testRow1 = new TestSheet.Row();
 
@@ -88,6 +93,7 @@ namespace Cathei.BakingSheet.Tests
 
             Assert.Equal("Content1", _container.Refers["Refer"].ReferColumn.Ref.Content);
             Assert.Equal("Content2", _container.Refers["Refer"][0].NestedReferColumn.Ref.Content);
+            Assert.Equal("Content1", _container.Refers["Refer"][1].NestedReferColumn.Ref.Content);
         }
 
         [Fact]

@@ -116,5 +116,60 @@ namespace Cathei.BakingSheet.Tests
 
             _fileSystem.VerifyTestData(Path.Combine("testdata", "Nested.json"), "[{\"Struct\":{\"XInt\":0,\"YFloat\":0.0,\"ZList\":null},\"StructList\":[],\"Arr\":[{\"IntList\":[1,2,3]},{\"IntList\":[4,5,6,7,8]}],\"Id\":\"Row1\"},{\"Struct\":{\"XInt\":10,\"YFloat\":50.42,\"ZList\":[\"x\",\"y\"]},\"StructList\":null,\"Arr\":[],\"Id\":\"Row2\"},{\"Struct\":{\"XInt\":0,\"YFloat\":0.0,\"ZList\":null},\"StructList\":[{\"XInt\":1,\"YFloat\":0.124,\"ZList\":[\"a\",\"b\"]},{\"XInt\":2,\"YFloat\":20.0,\"ZList\":[\"c\"]}],\"Arr\":[{\"IntList\":null}],\"Id\":\"Row3\"}]");
         }
+
+        [Fact]
+        public async Task TestExportDictJson()
+        {
+            _container.Dict = new TestDictSheet();
+
+            var row1 = new TestDictSheet.Row {
+                Id = "Dict1",
+                Dict = new Dictionary<string, float> {
+                    { "A", 10.0f }, { "B", 20.0f }
+                }
+            };
+
+            var row2 = new TestDictSheet.Row {
+                Id = "Dict2",
+                Dict = new Dictionary<string, float> {
+                    { "C", 10.0f }, { "B", 20.0f }
+                }
+            };
+
+            var row3 = new TestDictSheet.Row {
+                Id = "Empty",
+            };
+
+            var elem1 = new TestDictSheet.Elem {
+                NestedDict = new Dictionary<int, List<string>> {
+                    { 2034, new List<string> { "X", "YYY", "ZZZZZ" } }
+                }
+            };
+
+            var elem2 = new TestDictSheet.Elem {
+                Value = 8
+            };
+
+            var elem3 = new TestDictSheet.Elem {
+                Value = 65
+            };
+
+            row1.Arr.Add(elem1);
+
+            row3.Arr.Add(elem2);
+            row3.Arr.Add(elem3);
+
+            _container.Dict.Add(row1);
+            _container.Dict.Add(row2);
+            _container.Dict.Add(row3);
+
+            _container.PostLoad();
+
+            var result = await _container.Store(_converter);
+
+            _logger.VerifyNoError();
+
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.json"), "[{\"Dict\":{\"A\":10.0,\"B\":20.0},\"Arr\":[{\"NestedDict\":{\"2034\":[\"X\",\"YYY\",\"ZZZZZ\"]},\"Value\":0}],\"Id\":\"Dict1\"},{\"Dict\":{\"C\":10.0,\"B\":20.0},\"Arr\":[],\"Id\":\"Dict2\"},{\"Dict\":null,\"Arr\":[{\"NestedDict\":null,\"Value\":8},{\"NestedDict\":null,\"Value\":65}],\"Id\":\"Empty\"}]");
+        }
     }
 }

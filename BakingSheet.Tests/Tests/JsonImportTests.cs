@@ -121,5 +121,25 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal("b", _container.Nested["Row3"].StructList[0].ZList[1]);
             Assert.Empty(_container.Nested["Row1"].StructList);
         }
+
+        [Fact]
+        public async Task TestImportDictJson()
+        {
+            _fileSystem.SetTestData(Path.Combine("testdata", "Dict.json"), "[{\"Dict\":{\"A\":10.0,\"B\":20.0},\"Arr\":[{\"NestedDict\":{\"2034\":[\"X\",\"YYY\",\"ZZZZZ\"]},\"Value\":0}],\"Id\":\"Dict1\"},{\"Dict\":{\"C\":10.0,\"B\":20.0},\"Arr\":[],\"Id\":\"Dict2\"},{\"Dict\":null,\"Arr\":[{\"NestedDict\":null,\"Value\":8},{\"NestedDict\":null,\"Value\":65}],\"Id\":\"Empty\"}]");
+
+            var result = await _container.Bake(_converter);
+
+            _logger.VerifyNoError();
+
+            Assert.True(result);
+            Assert.Equal(3, _container.Dict.Count);
+            Assert.Equal(1, _container.Dict["Dict1"].Count);
+            Assert.Equal(0, _container.Dict["Dict2"].Count);
+            Assert.Equal(2, _container.Dict["Dict1"].Dict.Count);
+            Assert.Equal(10.0f, _container.Dict["Dict2"].Dict["C"]);
+            Assert.Equal(3, _container.Dict["Dict1"][0].NestedDict[2034].Count);
+            Assert.Equal("YYY", _container.Dict["Dict1"][0].NestedDict[2034][1]);
+            Assert.Null(_container.Dict["Empty"].Dict);
+        }
     }
 }
