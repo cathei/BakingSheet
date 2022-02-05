@@ -14,5 +14,7 @@ namespace Cathei.BakingSheet.Examples
         public HeroSheet Heroes { get; private set; }
         public ItemSheet Items { get; private set; }
         public MonsterSheet Monsters { get; private set; }
+        public DungeonSheet Dungeons { get; private set; }
+        public NpcSheet Npcs { get; private set; }
     }
 }

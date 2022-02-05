@@ -1,0 +1,1 @@
+[{"Name":"Easy Field","Monsters":["MONSTER001"],"Items":["ITEM_POTION001","ITEM_LVUP001"],"Id":"DUNGEON001"},{"Name":"Expert Zone","Monsters":["MONSTER001","MONSTER002"],"Items":["ITEM_POTION002","ITEM_LVUP002"],"Id":"DUNGEON002"},{"Name":"Dragon’s Nest","Monsters":["MONSTER003","MONSTER004","MONSTER005"],"Items":["ITEM_LVUP003"],"Id":"DUNGEON003"}]

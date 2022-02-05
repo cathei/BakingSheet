@@ -13,14 +13,14 @@ BakingSheet's core concept is controlling datasheet schema from C# code, make th
 Also, it helps to avoid having source datasheet files or parsing libraries for production applications. BakingSheet supports JSON serialization by default.
 
 ## First Step
-BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Items.xlsx`.
-| Id             | Name              | Price |
-|----------------|-------------------|-------|
-| ITEM_LVUP001   | Warrior's Shield  | 10000 |
-| ITEM_LVUP002   | Mage's Staff      | 10000 |
-| ITEM_LVUP003   | Assassin's Dagger | 10000 |
-| ITEM_POTION001 | Health Potion     | 30    |
-| ITEM_POTION002 | Mana Potion       | 50    |
+BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Items.xlsx`. Also, any column starts with $ will be considered as comment and ignored.
+| Id             | Name              | Price | $Comment   |
+|----------------|-------------------|-------|------------|
+| ITEM_LVUP001   | Warrior's Shield  | 10000 | Warrior Lv up material |
+| ITEM_LVUP002   | Mage's Staff      | 10000 | Mage Lv up material |
+| ITEM_LVUP003   | Assassin's Dagger | 10000 | Assassin Lv up material |
+| ITEM_POTION001 | Health Potion     | 30    | Heal 20 Hp |
+| ITEM_POTION002 | Mana Potion       | 50    | Heal 20 Mp |
 
 Code below is corresponding BakingSheet class.
 ```csharp
@@ -169,8 +169,87 @@ public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
 ```
 Note that properties without setter are not serialized. Alternatively you can use `[NonSerialized]` attribute.
 
+## Using List Column
+List columns are used for simple array.
+| Id         | Name          | Monsters:1 | Monsters:2 | Monsters:3 | Items:1        | Items:2      |
+| ---------- | ------------- | ---------- | ---------- | ---------- | -------------- | ------------ |
+| DUNGEON001 | Easy Field    | MONSTER001 |            |            | ITEM_POTION001 | ITEM_LVUP001 |
+| DUNGEON002 | Expert Zone   | MONSTER001 | MONSTER002 |            | ITEM_POTION002 | ITEM_LVUP002 |
+| DUNGEON003 | Dragon’s Nest | MONSTER003 | MONSTER004 | MONSTER005 | ITEM_LVUP003   |              |
+
+```csharp
+public class DungeonSheet : Sheet<DungeonSheet.Row>
+{
+    public class Row : SheetRow
+    {
+        public string Name { get; private set; }
+
+        public List<MonsterSheet.Reference> Monsters { get; private set; }
+        public List<ItemSheet.Reference> Items { get; private set; }
+    }
+}
+```
+Use it as simple as just including a column has type implmenting `IList<T>`.
+Since spreadsheet is designer's area, index on sheet is 1-based. So be aware when you access it from code.
+
+## Using Dictionary Column
+Dictionary columns are used when key-based access of value is needed.
+| Id     | Name          | Texts:Greeting    | Texts:Purchasing | Texts:Leaving     |
+| ------ | ------------- | ----------------- | ---------------- | ----------------- |
+| NPC001 | Fat Baker     | Morning traveler! | Thank you!       | Come again!       |
+| NPC002 | Blacksmith    | G'day!            | Good choice.     | Take care.        |
+| NPC003 | Potion Master | What do you want? | Take it already. | Don't come again. |
+
+```csharp
+public enum Situation
+{
+    Greeting,
+    Purchasing,
+    Leaving
+}
+
+public class NpcSheet : Sheet<NpcSheet.Row>
+{
+    public class Row : SheetRow
+    {
+        public string Name { get; private set; }
+
+        public Dictionary<Situation, string> Texts { get; private set; }
+    }
+}
+```
+Use it as simple as just including a column has type implmenting `IDictionary<TKey, TValue>`.
+
+## Using Nested Type Column
+Nested type columns are used for complex structure.
+| Id     | Name          | Texts:Greeting    | Texts:Purchasing | Texts:Leaving     |
+| ------ | ------------- | ----------------- | ---------------- | ----------------- |
+| NPC001 | Fat Baker     | Morning traveler! | Thank you!       | Come again!       |
+| NPC002 | Blacksmith    | G'day!            | Good choice.     | Take care.        |
+| NPC003 | Potion Master | What do you want? | Take it already. | Don't come again. |
+
+```csharp
+public struct SituationText
+{
+    public string Greeting { get; private set; }
+    public string Purchasing { get; private set; }
+    public string Leaving { get; private set; }
+}
+
+public class NpcSheet : Sheet<NpcSheet.Row>
+{
+    public class Row : SheetRow
+    {
+        public string Name { get; private set; }
+
+        public SituationText Texts { get; private set; }
+    }
+}
+```
+Note that the content of datasheet is just same as when using Dictionary column. The data type of column determines how BakingSheet reads the column.
+
 ## Using Row Array
-Row arrays are used for simple nested structure. Below is example content of file `Heroes.xlsx`.
+Row arrays are used for 2-dimentional structure. Below is example content of file `Heroes.xlsx`.
 | Id      | Name     | Strength | Inteligence | Vitality | StatMultiplier | RequiredExp | RequiredItem |
 |---------|----------|----------|-------------|----------|----------------|-------------|--------------|
 | HERO001 | Warrior  | 100      | 80          | 140      | 1              | 0           |              |

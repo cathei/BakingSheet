@@ -463,6 +463,8 @@ namespace Cathei.BakingSheet.Internal
 
         private List<object> _indexes = new List<object>();
 
+        private HashSet<string> _warned = null;
+
         public void SetValue(ISheetRow row, int arrIndex, string path, string value, Func<Type, string, object> converter)
         {
             Node node = null;
@@ -477,7 +479,7 @@ namespace Cathei.BakingSheet.Internal
                     {
                         if (arrIndex != 0)
                         {
-                            _context.Logger.LogError("There is multiple value for a single column");
+                            _context.Logger.LogError("There is multiple value for a non-array column");
                             return;
                         }
 
@@ -487,7 +489,14 @@ namespace Cathei.BakingSheet.Internal
                     {
                         if (Arr == null || !Arr.Child.HasSubpath(subpath))
                         {
-                            _context.Logger.LogError("Column name is invalid", path);
+                            _warned = _warned ?? new HashSet<string>();
+
+                            if (!_warned.Contains(path))
+                            {
+                                _context.Logger.LogError("Column name is invalid");
+                                _warned.Add(path);
+                            }
+
                             return;
                         }
 
