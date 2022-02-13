@@ -6,6 +6,8 @@
     <PackageDescription>BakingSheet importer for Google Sheet</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>../README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>

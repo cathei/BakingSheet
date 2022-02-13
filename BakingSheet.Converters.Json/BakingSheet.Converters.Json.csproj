@@ -6,6 +6,8 @@
     <PackageDescription>BakingSheet converter for Json files</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>../README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
