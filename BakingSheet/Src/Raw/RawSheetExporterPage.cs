@@ -37,6 +37,9 @@ namespace Cathei.BakingSheet.Raw
 
             List<string> headerRows = new List<string>();
 
+            // TODO: in .net standard 2.1 this is not needed
+            var delimiter = new string[] { Config.Delimiter };
+
             foreach ((var node, bool array, var indexes) in leafs)
             {
                 var arguments = indexes.Select(x => exporter.ValueToString(x.GetType(), x)).ToArray();
@@ -46,7 +49,7 @@ namespace Cathei.BakingSheet.Raw
                 {
                     int tempRow = 0;
 
-                    foreach (var path in columnName.Split(Config.Delimiter))
+                    foreach (var path in columnName.Split(delimiter, StringSplitOptions.None))
                     {
                         while (headerRows.Count <= tempRow)
                             headerRows.Add(null);

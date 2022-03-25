@@ -65,8 +65,6 @@ namespace Cathei.BakingSheet.Raw
             for (int pageRow = 0; pageRow == 0 || (page.IsEmptyCell(0, pageRow) && !page.IsEmptyRow(pageRow)); ++pageRow)
                 headerRows.Add(null);
 
-            StringBuilder builder = new StringBuilder();
-
             for (int pageColumn = 0; ; ++pageColumn)
             {
                 int lastValidRow = -1;
@@ -83,10 +81,7 @@ namespace Cathei.BakingSheet.Raw
                 if (lastValidRow == -1)
                     break;
 
-                builder.Clear();
-                builder.AppendJoin(Config.Delimiter, headerRows.Take(lastValidRow + 1));
-
-                columnNames.Add(builder.ToString());
+                columnNames.Add(string.Join(Config.Delimiter, headerRows.Take(lastValidRow + 1)));
             }
 
             PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), Config.IsConvertable);

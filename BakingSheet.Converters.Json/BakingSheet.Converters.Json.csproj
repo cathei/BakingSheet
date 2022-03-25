@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>BakingSheet.Converters.Json</PackageId>
     <PackageDescription>BakingSheet converter for Json files</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
