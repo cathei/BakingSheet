@@ -212,7 +212,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestExportDictSplitCsv()
         {
-            _converter.SplitColumn = true;
+            _converter.SplitHeader = true;
 
             _container.Dict = new TestDictSheet();
 

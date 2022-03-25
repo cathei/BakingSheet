@@ -35,25 +35,25 @@ namespace Cathei.BakingSheet.Raw
 
             int pageColumn = 0;
 
-            List<string> metaRows = new List<string>();
+            List<string> headerRows = new List<string>();
 
             foreach ((var node, bool array, var indexes) in leafs)
             {
                 var arguments = indexes.Select(x => exporter.ValueToString(x.GetType(), x)).ToArray();
                 var columnName = string.Format(node.FullPath, arguments);
 
-                if (exporter.SplitColumn)
+                if (exporter.SplitHeader)
                 {
                     int tempRow = 0;
 
                     foreach (var path in columnName.Split(Config.Delimiter))
                     {
-                        while (metaRows.Count <= tempRow)
-                            metaRows.Add(null);
+                        while (headerRows.Count <= tempRow)
+                            headerRows.Add(null);
 
-                        if (metaRows[tempRow] != path)
+                        if (headerRows[tempRow] != path)
                         {
-                            metaRows[tempRow] = path;
+                            headerRows[tempRow] = path;
                             page.SetCell(pageColumn, tempRow, path);
                         }
 
@@ -68,7 +68,7 @@ namespace Cathei.BakingSheet.Raw
                 pageColumn++;
             }
 
-            int pageRow = exporter.SplitColumn ? metaRows.Count : 1;
+            int pageRow = exporter.SplitHeader ? headerRows.Count : 1;
 
             foreach (ISheetRow sheetRow in sheet)
             {

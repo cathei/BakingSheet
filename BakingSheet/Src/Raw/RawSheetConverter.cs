@@ -7,14 +7,14 @@ namespace Cathei.BakingSheet.Raw
 {
     public abstract class RawSheetConverter : RawSheetImporter, ISheetConverter
     {
-        public bool SplitColumn { get; set; }
+        public bool SplitHeader { get; set; }
 
         protected abstract Task<bool> SaveData();
         protected abstract IRawSheetExporterPage CreatePage(string sheetName);
 
-        protected RawSheetConverter(TimeZoneInfo timeZoneInfo, bool splitColumn = false) : base(timeZoneInfo)
+        protected RawSheetConverter(TimeZoneInfo timeZoneInfo, bool splitHeader = false) : base(timeZoneInfo)
         {
-            SplitColumn = splitColumn;
+            SplitHeader = splitHeader;
         }
 
         public async Task<bool> Export(SheetConvertingContext context)

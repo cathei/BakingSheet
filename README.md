@@ -174,11 +174,26 @@ Note that properties without setter are not serialized. Alternatively you can us
 
 ## Using List Column
 List columns are used for simple array.
+<details open>
+<summary>Flat header</summary>
+
 | Id         | Name          | Monsters:1 | Monsters:2 | Monsters:3 | Items:1        | Items:2      |
 | ---------- | ------------- | ---------- | ---------- | ---------- | -------------- | ------------ |
 | DUNGEON001 | Easy Field    | MONSTER001 |            |            | ITEM_POTION001 | ITEM_LVUP001 |
 | DUNGEON002 | Expert Zone   | MONSTER001 | MONSTER002 |            | ITEM_POTION002 | ITEM_LVUP002 |
 | DUNGEON003 | Dragon’s Nest | MONSTER003 | MONSTER004 | MONSTER005 | ITEM_LVUP003   |              |
+</details>
+
+<details>
+<summary>Splitted header</summary>
+
+| Id         | Name          | Monsters   |            |            | Items          |              |
+|------------|---------------|------------|------------|------------|----------------|--------------|
+|            |               | 1          | 2          | 3          | 1              | 2            |
+| DUNGEON001 | Easy Field    | MONSTER001 |            |            | ITEM_POTION001 | ITEM_LVUP001 |
+| DUNGEON002 | Expert Zone   | MONSTER001 | MONSTER002 |            | ITEM_POTION002 | ITEM_LVUP002 |
+| DUNGEON003 | Dragon’s Nest | MONSTER003 | MONSTER004 | MONSTER005 | ITEM_LVUP003   |              |
+</details>
 
 ```csharp
 public class DungeonSheet : Sheet<DungeonSheet.Row>
@@ -197,11 +212,27 @@ Since spreadsheet is designer's area, index on sheet is 1-based. So be aware whe
 
 ## Using Dictionary Column
 Dictionary columns are used when key-based access of value is needed.
+
+<details open>
+<summary>Flat header</summary>
+
 | Id     | Name          | Texts:Greeting    | Texts:Purchasing | Texts:Leaving     |
 | ------ | ------------- | ----------------- | ---------------- | ----------------- |
 | NPC001 | Fat Baker     | Morning traveler! | Thank you!       | Come again!       |
 | NPC002 | Blacksmith    | G'day!            | Good choice.     | Take care.        |
 | NPC003 | Potion Master | What do you want? | Take it already. | Don't come again. |
+</details>
+
+<details>
+<summary>Splitted header</summary>
+
+| Id     | Name          | Texts             |                  |                   |
+|--------|---------------|-------------------|------------------|-------------------|
+|        |               | Greeting          | Purchasing       | Leaving           |
+| NPC001 | Fat Baker     | Morning traveler! | Thank you!       | Come again!       |
+| NPC002 | Blacksmith    | G'day!            | Good choice.     | Take care.        |
+| NPC003 | Potion Master | What do you want? | Take it already. | Don't come again. |
+</details>
 
 ```csharp
 public enum Situation
@@ -225,11 +256,26 @@ Use it as simple as just including a column has type implmenting `IDictionary<TK
 
 ## Using Nested Type Column
 Nested type columns are used for complex structure.
+<details open>
+<summary>Flat header</summary>
+
 | Id     | Name          | Texts:Greeting    | Texts:Purchasing | Texts:Leaving     |
 | ------ | ------------- | ----------------- | ---------------- | ----------------- |
 | NPC001 | Fat Baker     | Morning traveler! | Thank you!       | Come again!       |
 | NPC002 | Blacksmith    | G'day!            | Good choice.     | Take care.        |
 | NPC003 | Potion Master | What do you want? | Take it already. | Don't come again. |
+</details>
+
+<details>
+<summary>Splitted header</summary>
+
+| Id     | Name          | Texts             |                  |                   |
+|--------|---------------|-------------------|------------------|-------------------|
+|        |               | Greeting          | Purchasing       | Leaving           |
+| NPC001 | Fat Baker     | Morning traveler! | Thank you!       | Come again!       |
+| NPC002 | Blacksmith    | G'day!            | Good choice.     | Take care.        |
+| NPC003 | Potion Master | What do you want? | Take it already. | Don't come again. |
+</details>
 
 ```csharp
 public struct SituationText

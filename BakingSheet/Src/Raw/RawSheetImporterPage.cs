@@ -60,10 +60,10 @@ namespace Cathei.BakingSheet.Raw
             }
 
             var columnNames = new List<string>();
-            var metaRows = new List<string>();
+            var headerRows = new List<string>();
 
             for (int pageRow = 0; pageRow == 0 || (page.IsEmptyCell(0, pageRow) && !page.IsEmptyRow(pageRow)); ++pageRow)
-                metaRows.Add(null);
+                headerRows.Add(null);
 
             StringBuilder builder = new StringBuilder();
 
@@ -71,12 +71,12 @@ namespace Cathei.BakingSheet.Raw
             {
                 int lastValidRow = -1;
 
-                for (int pageRow = 0; pageRow < metaRows.Count; ++pageRow)
+                for (int pageRow = 0; pageRow < headerRows.Count; ++pageRow)
                 {
                     if (!page.IsEmptyCell(pageColumn, pageRow))
                     {
                         lastValidRow = pageRow;
-                        metaRows[pageRow] = page.GetCell(pageColumn, pageRow);
+                        headerRows[pageRow] = page.GetCell(pageColumn, pageRow);
                     }
                 }
 
@@ -84,7 +84,7 @@ namespace Cathei.BakingSheet.Raw
                     break;
 
                 builder.Clear();
-                builder.AppendJoin(Config.Delimiter, metaRows.Take(lastValidRow + 1));
+                builder.AppendJoin(Config.Delimiter, headerRows.Take(lastValidRow + 1));
 
                 columnNames.Add(builder.ToString());
             }
@@ -95,7 +95,7 @@ namespace Cathei.BakingSheet.Raw
             string rowId = null;
             int sameRow = 0;
 
-            for (int pageRow = metaRows.Count; !page.IsEmptyRow(pageRow); ++pageRow)
+            for (int pageRow = headerRows.Count; !page.IsEmptyRow(pageRow); ++pageRow)
             {
                 string idCellValue = page.GetCell(0, pageRow);
 
