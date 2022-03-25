@@ -185,7 +185,7 @@ List columns are used for simple array.
 </details>
 
 <details>
-<summary>Splitted header</summary>
+<summary>Split header</summary>
 
 | Id         | Name          | Monsters   |            |            | Items          |              |
 |------------|---------------|------------|------------|------------|----------------|--------------|
@@ -224,7 +224,7 @@ Dictionary columns are used when key-based access of value is needed.
 </details>
 
 <details>
-<summary>Splitted header</summary>
+<summary>Split header</summary>
 
 | Id     | Name          | Texts             |                  |                   |
 |--------|---------------|-------------------|------------------|-------------------|
@@ -267,7 +267,7 @@ Nested type columns are used for complex structure.
 </details>
 
 <details>
-<summary>Splitted header</summary>
+<summary>Split header</summary>
 
 | Id     | Name          | Texts             |                  |                   |
 |--------|---------------|-------------------|------------------|-------------------|
