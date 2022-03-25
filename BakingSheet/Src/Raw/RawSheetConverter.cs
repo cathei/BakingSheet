@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -6,12 +7,14 @@ namespace Cathei.BakingSheet.Raw
 {
     public abstract class RawSheetConverter : RawSheetImporter, ISheetConverter
     {
+        public bool SplitColumn { get; set; }
+
         protected abstract Task<bool> SaveData();
         protected abstract IRawSheetExporterPage CreatePage(string sheetName);
 
-        protected RawSheetConverter(TimeZoneInfo timeZoneInfo) : base(timeZoneInfo)
+        protected RawSheetConverter(TimeZoneInfo timeZoneInfo, bool splitColumn = false) : base(timeZoneInfo)
         {
-
+            SplitColumn = splitColumn;
         }
 
         public async Task<bool> Export(SheetConvertingContext context)

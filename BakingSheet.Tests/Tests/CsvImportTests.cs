@@ -143,5 +143,25 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal("YYY", _container.Dict["Dict1"][0].NestedDict[2034][1]);
             Assert.Null(_container.Dict["Empty"].Dict);
         }
+
+        [Fact]
+        public async Task TestImportDictCsvSplit()
+        {
+            _fileSystem.SetTestData(Path.Combine("testdata", "Dict.csv"), "Id,Dict,,,NestedDict,,,Value\r\n,A,B,C,2034,,,,\r\n,,,,1,2,3,\r\nDict1,10,20,,X,YYY,ZZZZZ,0\r\nDict2,,20,10\r\nEmpty,,,,,,,8\r\n,,,,,,,65\r\n");
+
+            var result = await _container.Bake(_converter);
+
+            _logger.VerifyNoError();
+
+            Assert.True(result);
+            Assert.Equal(3, _container.Dict.Count);
+            Assert.Equal(1, _container.Dict["Dict1"].Count);
+            Assert.Equal(0, _container.Dict["Dict2"].Count);
+            Assert.Equal(2, _container.Dict["Dict1"].Dict.Count);
+            Assert.Equal(10.0f, _container.Dict["Dict2"].Dict["C"]);
+            Assert.Equal(3, _container.Dict["Dict1"][0].NestedDict[2034].Count);
+            Assert.Equal("YYY", _container.Dict["Dict1"][0].NestedDict[2034][1]);
+            Assert.Null(_container.Dict["Empty"].Dict);
+        }
     }
 }

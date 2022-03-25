@@ -27,8 +27,8 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public CsvSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string extension = "csv", IFileSystem fileSystem = null)
-            : base(timeZoneInfo)
+        public CsvSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo, string extension = "csv", IFileSystem fileSystem = null, bool splitColumn = false)
+            : base(timeZoneInfo, splitColumn)
         {
             _loadPath = loadPath;
             _extension = extension;
