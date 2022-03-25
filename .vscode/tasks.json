@@ -22,7 +22,7 @@
             "command": "dotnet",
             "args": [
                 "publish", "-c", "Release",
-                "-o", "UnityProject/Assets/Plugins/BakingSheet",
+                "-o", "UnityProject/Assets/Plugins/BakingSheet/Core",
                 "BakingSheet" ],
             "problemMatcher": [ "$tsc" ],
         },
