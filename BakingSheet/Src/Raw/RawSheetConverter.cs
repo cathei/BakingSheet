@@ -54,10 +54,10 @@ namespace Cathei.BakingSheet.Raw
                 return ValueToString(reference.IdType, reference.Id);
             }
 
-            if (value is DateTime)
+            if (value is DateTime dt)
             {
-                var local = TimeZoneInfo.ConvertTimeFromUtc((DateTime)value, TimeZoneInfo);
-                return local.ToString();
+                var local = TimeZoneInfo.ConvertTimeFromUtc(dt, TimeZoneInfo);
+                return local.ToString(CultureInfo.InvariantCulture);
             }
 
             return value.ToString();

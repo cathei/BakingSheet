@@ -78,8 +78,8 @@ namespace Cathei.BakingSheet.Tests
 
         public static IEnumerable<object[]> GetDateTimeToStringTestData()
         {
-            yield return new object[] { typeof(DateTime), new DateTime(2020, 01, 01), "1/1/2020 12:00:00 AM", TimeZoneInfo.Utc };
-            yield return new object[] { typeof(DateTime), new DateTime(1994, 8, 22, 22, 34, 12), "8/22/1994 10:34:12 PM", TimeZoneInfo.Utc };
+            yield return new object[] { typeof(DateTime), new DateTime(2020, 01, 01), "01/01/2020 00:00:00", TimeZoneInfo.Utc };
+            yield return new object[] { typeof(DateTime), new DateTime(1994, 8, 22, 22, 34, 12), "08/22/1994 22:34:12", TimeZoneInfo.Utc };
         }
 
         [Theory]
