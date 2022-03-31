@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "Health Potion",
+    "Price": 100,
+    "Id": "Potion001"
+  },
+  {
+    "Name": "Mana Potion",
+    "Price": 200,
+    "Id": "Potion002"
+  },
+  {
+    "Name": "Fire Material",
+    "Price": 20,
+    "Id": "Material001"
+  },
+  {
+    "Name": "Water Material",
+    "Price": 40,
+    "Id": "Material002"
+  }
+]

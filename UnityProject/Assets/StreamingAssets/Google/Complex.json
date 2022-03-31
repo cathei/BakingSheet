@@ -1,0 +1,110 @@
+[
+  {
+    "Name": "Warrior",
+    "Arr": [
+      {
+        "Level": 1,
+        "RequiredItem": null,
+        "Stat": {
+          "Hp": 100,
+          "Attack": 5,
+          "Defense": 5,
+          "Speed": 5
+        }
+      },
+      {
+        "Level": 2,
+        "RequiredItem": "Material001",
+        "Stat": {
+          "Hp": 200,
+          "Attack": 10,
+          "Defense": 10,
+          "Speed": 10
+        }
+      },
+      {
+        "Level": 3,
+        "RequiredItem": "Material002",
+        "Stat": {
+          "Hp": 300,
+          "Attack": 15,
+          "Defense": 15,
+          "Speed": 15
+        }
+      }
+    ],
+    "Id": "Character001"
+  },
+  {
+    "Name": "Mage",
+    "Arr": [
+      {
+        "Level": 1,
+        "RequiredItem": null,
+        "Stat": {
+          "Hp": 50,
+          "Attack": 10,
+          "Defense": 2,
+          "Speed": 5
+        }
+      },
+      {
+        "Level": 2,
+        "RequiredItem": "Material001",
+        "Stat": {
+          "Hp": 100,
+          "Attack": 20,
+          "Defense": 4,
+          "Speed": 10
+        }
+      },
+      {
+        "Level": 3,
+        "RequiredItem": "Material002",
+        "Stat": {
+          "Hp": 150,
+          "Attack": 30,
+          "Defense": 6,
+          "Speed": 15
+        }
+      }
+    ],
+    "Id": "Character002"
+  },
+  {
+    "Name": "Rogue",
+    "Arr": [
+      {
+        "Level": 1,
+        "RequiredItem": null,
+        "Stat": {
+          "Hp": 80,
+          "Attack": 8,
+          "Defense": 4,
+          "Speed": 10
+        }
+      },
+      {
+        "Level": 2,
+        "RequiredItem": "Material001",
+        "Stat": {
+          "Hp": 160,
+          "Attack": 16,
+          "Defense": 8,
+          "Speed": 20
+        }
+      },
+      {
+        "Level": 3,
+        "RequiredItem": "Material002",
+        "Stat": {
+          "Hp": 240,
+          "Attack": 24,
+          "Defense": 12,
+          "Speed": 30
+        }
+      }
+    ],
+    "Id": "Character003"
+  }
+]
