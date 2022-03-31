@@ -15,6 +15,9 @@ Before you start, I want to mention that if you have problem or need help, you c
 BakingSheet's core concept is controlling datasheet schema from C# code, make things flexible while supporting multiple sources like .xlsx or Google sheets.
 Also, it helps to avoid having source datasheet files or parsing libraries for production applications. BakingSheet supports JSON serialization by default.
 
+![Sample1](.github/images/sample_simple.jpg)
+![Sample2](.github/images/sample_complex.jpg)
+
 ## First Step
 BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Items.xlsx`. Also, any column starts with $ will be considered as comment and ignored.
 | Id             | Name              | Price | $Comment   |

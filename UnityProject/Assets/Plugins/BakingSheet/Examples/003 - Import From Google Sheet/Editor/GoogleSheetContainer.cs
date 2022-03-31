@@ -4,8 +4,6 @@ using UnityEngine;
 
 namespace Cathei.BakingSheet.Examples.Google
 {
-    public enum StatType { Hp, Attack, Defense, Speed }
-
     public class ItemSheet : Sheet<ItemSheet.Row>
     {
         public class Row : SheetRow
@@ -14,6 +12,8 @@ namespace Cathei.BakingSheet.Examples.Google
             public int Price { get; set; }
         }
     }
+
+    public enum StatType { Hp, Attack, Defense, Speed }
 
     public class CharacterSheet : Sheet<CharacterSheet.Row>
     {
