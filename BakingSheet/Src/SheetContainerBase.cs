@@ -32,7 +32,7 @@ namespace Cathei.BakingSheet
             return _sheetProperties;
         }
 
-        public async Task<bool> Bake(ISheetImporter importer)
+        public async Task<bool> Bake(params ISheetImporter[] importers)
         {
             var context = new SheetConvertingContext
             {
@@ -40,10 +40,13 @@ namespace Cathei.BakingSheet
                 Logger = _logger,
             };
 
-            var success = await importer.Import(context);
+            foreach (var importer in importers)
+            {
+                var success = await importer.Import(context);
 
-            if (!success)
-                return false;
+                if (!success)
+                    return false;
+            }
 
             PostLoad();
 
