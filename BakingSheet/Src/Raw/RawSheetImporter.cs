@@ -33,11 +33,9 @@ namespace Cathei.BakingSheet.Raw
                 using (context.Logger.BeginScope(prop.Name))
                 {
                     var page = GetPage(prop.Name);
+
                     if (page == null)
-                    {
-                        context.Logger.LogError("Failed to find sheet: {SheetName}", prop.Name);
                         continue;
-                    }
 
                     var sheet = Activator.CreateInstance(prop.PropertyType) as ISheet;
 

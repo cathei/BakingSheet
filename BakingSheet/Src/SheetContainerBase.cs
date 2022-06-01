@@ -80,6 +80,10 @@ namespace Cathei.BakingSheet
                     sheet.Name = prop.Name;
                     sheet.PostLoad(context);
                 }
+                else
+                {
+                    context.Logger.LogError("Failed to find sheet: {SheetName}", prop.Name);
+                }
             }
         }
 
