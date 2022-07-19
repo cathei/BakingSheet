@@ -32,6 +32,14 @@ namespace Cathei.BakingSheet
 
             settings.Error = (sender, err) =>
             {
+                if (err.ErrorContext.Member?.ToString() == nameof(ISheetRow.Id) &&
+                    err.ErrorContext.OriginalObject is ISheetRow &&
+                    !(err.CurrentObject is ISheet))
+                {
+                    // if Id has error, the error must be handled on the sheet level
+                    return;
+                }
+
                 using (logError.BeginScope(err.ErrorContext.Path))
                     logError.LogError(err.ErrorContext.Error, err.ErrorContext.Error.Message);
 
