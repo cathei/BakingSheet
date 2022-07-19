@@ -75,7 +75,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportWrongEnum()
         {
-            _fileSystem.SetTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn\nWrongEnum,1");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn\nWrongEnum,1\nAlpha,2");
 
             var result = await _container.Bake(_converter);
 
@@ -83,7 +83,7 @@ namespace Cathei.BakingSheet.Tests
             Assert.Single(_container.Types);
 
             _logger.VerifyLog(LogLevel.Error,
-                "Failed to convert value \"WrongEnum\" of type Cathei.BakingSheet.Tests.TestEnum",
+                "Failed to set id \"WrongEnum\"",
                 new [] { "Types", "WrongEnum", "Id" });
         }
 

@@ -89,6 +89,7 @@ namespace Cathei.BakingSheet.Raw
             ISheetRow sheetRow = null;
             string rowId = null;
             int sameRow = 0;
+            bool skipRow = false;
 
             for (int pageRow = headerRows.Count; !page.IsEmptyRow(pageRow); ++pageRow)
             {
@@ -103,31 +104,23 @@ namespace Cathei.BakingSheet.Raw
                     sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
                     sameRow = 0;
                 }
+                else if (skipRow)
+                {
+                    // skipping this row
+                    continue;
+                }
 
                 using (context.Logger.BeginScope(rowId))
                 {
-                    for (int pageColumn = 0; pageColumn < columnNames.Count; ++pageColumn)
+                    try
                     {
-                        string columnValue = columnNames[pageColumn];
-
-                        if (columnValue.StartsWith(Config.Comment))
-                            continue;
-
-                        using (context.Logger.BeginScope(columnValue))
-                        {
-                            string cellValue = page.GetCell(pageColumn, pageRow);
-                            if (string.IsNullOrEmpty(cellValue))
-                                continue;
-
-                            try
-                            {
-                                propertyMap.SetValue(sheetRow, sameRow, columnValue, cellValue, importer.StringToValue);
-                            }
-                            catch (Exception ex)
-                            {
-                                context.Logger.LogError(ex, "Failed to set value {CellValue}", cellValue);
-                            }
-                        }
+                        ImportRow(page, importer, context, sheetRow, propertyMap, columnNames, sameRow, pageRow);
+                    }
+                    catch
+                    {
+                        // failed to convert, skip this row
+                        skipRow = true;
+                        continue;
                     }
 
                     if (sameRow == 0)
@@ -143,6 +136,41 @@ namespace Cathei.BakingSheet.Raw
                     }
 
                     sameRow++;
+                }
+            }
+        }
+
+        private static void ImportRow(IRawSheetImporterPage page, RawSheetImporter importer, SheetConvertingContext context,
+            ISheetRow sheetRow, PropertyMap propertyMap, List<string> columnNames, int arrIndex, int pageRow)
+        {
+            for (int pageColumn = 0; pageColumn < columnNames.Count; ++pageColumn)
+            {
+                string columnValue = columnNames[pageColumn];
+
+                if (columnValue.StartsWith(Config.Comment))
+                    continue;
+
+                using (context.Logger.BeginScope(columnValue))
+                {
+                    string cellValue = page.GetCell(pageColumn, pageRow);
+                    if (string.IsNullOrEmpty(cellValue))
+                        continue;
+
+                    try
+                    {
+                        propertyMap.SetValue(sheetRow, arrIndex, columnValue, cellValue, importer.StringToValue);
+                    }
+                    catch (Exception ex)
+                    {
+                        // for Id column, throw and exclude whole column
+                        if (pageColumn == 0)
+                        {
+                            context.Logger.LogError(ex, "Failed to set id \"{CellValue}\"", cellValue);
+                            throw;
+                        }
+
+                        context.Logger.LogError(ex, "Failed to set value \"{CellValue}\"", cellValue);
+                    }
                 }
             }
         }

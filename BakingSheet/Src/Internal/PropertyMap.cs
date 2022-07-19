@@ -516,14 +516,7 @@ namespace Cathei.BakingSheet.Internal
                 node = node.GetChild(subpath);
             }
 
-            try
-            {
-                node.SetValue(row, _indexes.GetEnumerator(), converter(node.ValueType, value));
-            }
-            catch (Exception ex)
-            {
-                _context.Logger.LogError(ex, "Failed to convert value \"{CellValue}\" of type {PropertyType}", value, node.ValueType);
-            }
+            node.SetValue(row, _indexes.GetEnumerator(), converter(node.ValueType, value));
         }
 
         public void UpdateIndex(ISheet sheet)
