@@ -19,7 +19,6 @@ namespace Cathei.BakingSheet
     }
 
     public interface ISheet<TKey, out TValue> : ISheet, IReadOnlyList<TValue>
-        where TValue : SheetRow<TKey>
     {
         TValue this[TKey key] { get; }
         TValue Find(TKey key);
