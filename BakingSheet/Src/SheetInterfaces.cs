@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Cathei.BakingSheet
@@ -15,6 +16,16 @@ namespace Cathei.BakingSheet
 
         void PostLoad(SheetConvertingContext context);
         void VerifyAssets(SheetConvertingContext context);
+    }
+
+    public interface ISheet<TKey, out TValue> : ISheet, IReadOnlyList<TValue>
+        where TValue : SheetRow<TKey>
+    {
+        TValue this[TKey key] { get; }
+        TValue Find(TKey key);
+
+        bool Contains(TKey key);
+        bool Remove(TKey key);
     }
 
     public interface ISheetRow

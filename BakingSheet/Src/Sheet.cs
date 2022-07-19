@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
-    public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet
+    public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet<TKey, TValue>
         where TValue : SheetRow<TKey>, new()
     {
         public string Name { get; set; }
