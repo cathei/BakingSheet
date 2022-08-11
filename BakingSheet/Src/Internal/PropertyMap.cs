@@ -201,10 +201,6 @@ namespace Cathei.BakingSheet.Internal
             {
                 if (obj is IList list)
                 {
-                    // for root array size varies, so keep 1 as max count
-                    if (Parent != null)
-                        MaxCount = Math.Max(MaxCount, list.Count);
-
                     foreach (var elem in list)
                         Child.UpdateIndex(elem);
                 }
@@ -273,6 +269,15 @@ namespace Cathei.BakingSheet.Internal
 
                 Child = child;
             }
+        }
+
+        public class NodeVerticalList : NodeList
+        {
+            public override void UpdateIndex(object obj)
+            {
+                // do nothing
+            }
+
         }
 
         public class NodeDictionary : Node
@@ -532,17 +537,20 @@ namespace Cathei.BakingSheet.Internal
 
         // UpdateCount is required to get correct result
         // index list are returned just to feed back, only valid on enumeration loop
-        public IEnumerable<(Node, bool, List<object>)> TraverseLeaf()
+        public IEnumerable<(Node, List<object>)> TraverseLeaf()
         {
             _indexes.Clear();
 
+            // first index is vertical position
+            _indexes.Add(null);
+
             foreach (var node in Root.TraverseChildren(_indexes))
-                yield return (node, false, _indexes);
+                yield return (node, _indexes);
 
             if (Arr != null)
             {
                 foreach (var node in Arr.TraverseChildren(_indexes))
-                    yield return (node, true, _indexes);
+                    yield return (node, _indexes);
             }
         }
     }

@@ -40,7 +40,7 @@ namespace Cathei.BakingSheet.Raw
             // TODO: in .net standard 2.1 this is not needed
             var delimiter = new string[] { Config.Delimiter };
 
-            foreach ((var node, bool array, var indexes) in leafs)
+            foreach ((var node, var indexes) in leafs)
             {
                 var arguments = indexes.Select(x => exporter.ValueToString(x.GetType(), x)).ToArray();
                 var columnName = string.Format(node.FullPath, arguments);
@@ -73,16 +73,25 @@ namespace Cathei.BakingSheet.Raw
 
             int pageRow = exporter.SplitHeader ? headerRows.Count : 1;
 
-            foreach (ISheetRow sheetRow in sheet)
+            foreach ((var node, var indexes) in leafs)
             {
-                pageColumn = 0;
-
-                var sheetRowArray = sheetRow as ISheetRowArray;
-
-                using (context.Logger.BeginScope(sheetRow.Id))
+                foreach (ISheetRow sheetRow in sheet)
                 {
-                    foreach ((var node, bool isArray, var indexes) in leafs)
+                    pageColumn = 0;
+
+                    // var sheetRowArray = sheetRow as ISheetRowArray;
+
+                    using (context.Logger.BeginScope(sheetRow.Id))
                     {
+                        int verticalCount = node.GetVerticalCount(sheetRow);
+
+                        for (int i = 1; i <= verticalCount; ++i)
+                        {
+
+                        }
+
+
+
                         if (!isArray)
                         {
                             object value = node.GetValue(sheetRow, indexes.GetEnumerator());

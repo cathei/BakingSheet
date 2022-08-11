@@ -41,38 +41,28 @@ namespace Cathei.BakingSheet
 
                 propertyMap.UpdateIndex(this);
 
-                foreach ((var node, bool isArray, var indexes) in propertyMap.TraverseLeaf())
+                foreach ((var node, var indexes) in propertyMap.TraverseLeaf())
                 {
-                    if (typeof(ISheetReference).IsAssignableFrom(node.ValueType))
+                    if (!typeof(ISheetReference).IsAssignableFrom(node.ValueType))
+                        continue;
+
+                    foreach (var row in Items)
                     {
-                        foreach (var row in Items)
+                        int verticalSize = node.GetVerticalSize(row);
+
+                        for (int i = 1; i <= verticalSize; ++i)
                         {
-                            void mapReference()
-                            {
-                                using (context.Logger.BeginScope(row.Id))
-                                using (context.Logger.BeginScope(node.FullPath, indexes))
-                                {
-                                    var obj = node.GetValue(row, indexes.GetEnumerator());
+                            indexes[0] = i;
 
-                                    if (obj is ISheetReference refer)
-                                    {
-                                        refer.Map(context);
-                                        node.SetValue(row, indexes.GetEnumerator(), refer);
-                                    }
-                                }
-                            }
+                            using (context.Logger.BeginScope(row.Id))
+                            using (context.Logger.BeginScope(node.FullPath, indexes))
+                            {
+                                var obj = node.GetValue(row, indexes.GetEnumerator());
 
-                            if (!isArray)
-                            {
-                                mapReference();
-                            }
-                            else if (row is ISheetRowArray rowArray)
-                            {
-                                for (int i = 0; i < rowArray.Arr.Count; ++i)
+                                if (obj is ISheetReference refer)
                                 {
-                                    // use 1-base for index
-                                    indexes[0] = i + 1;
-                                    mapReference();
+                                    refer.Map(context);
+                                    node.SetValue(row, indexes.GetEnumerator(), refer);
                                 }
                             }
                         }

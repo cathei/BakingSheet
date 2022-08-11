@@ -18,10 +18,15 @@ namespace Cathei.BakingSheet
         void VerifyAssets(SheetConvertingContext context);
     }
 
-    public interface ISheet<TKey, out TValue> : ISheet, IReadOnlyList<TValue>
+    public interface ISheet<out TRow> : ISheet, IReadOnlyList<TRow>
+        where TRow : ISheetRow
+    { }
+
+    public interface ISheet<TKey, out TRow> : ISheet<TRow>
+        where TRow : ISheetRow
     {
-        TValue this[TKey key] { get; }
-        TValue Find(TKey key);
+        TRow this[TKey key] { get; }
+        TRow Find(TKey key);
 
         bool Contains(TKey key);
         bool Remove(TKey key);
@@ -32,6 +37,11 @@ namespace Cathei.BakingSheet
         object Id { get; }
     }
 
+    public interface ISheetRow<TKey> : ISheetRow
+    {
+        new TKey Id { get; }
+    }
+
     public interface ISheetRowElem
     {
         int Index { get; }
@@ -39,8 +49,14 @@ namespace Cathei.BakingSheet
 
     public interface ISheetRowArray
     {
-        IList Arr { get; }
+        IReadOnlyList<object> Arr { get; }
         Type ElemType { get; }
+    }
+
+    public interface ISheetRowArray<out TElem> : ISheetRowArray, IReadOnlyList<TElem>
+        where TElem : ISheetRowElem
+    {
+        new IReadOnlyList<TElem> Arr { get; }
     }
 
     public interface ISheetReference

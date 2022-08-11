@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Cathei.BakingSheet
 {
-    public abstract class SheetRow<TKey> : ISheetRow
+    public abstract class SheetRow<TKey> : ISheetRow<TKey>
     {
         public TKey Id { get; set; }
 
@@ -23,15 +23,16 @@ namespace Cathei.BakingSheet
         public virtual void VerifyAssets(SheetConvertingContext context) { }
     }
 
-    public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, IEnumerable<TElem>, ISheetRowArray
+    public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, ISheetRowArray<TElem>
         where TElem : SheetRowElem, new()
     {
         // setter is necessary for reflection
-        public List<TElem> Arr { get; private set; } = new List<TElem>();
+        public VerticalList<TElem> Arr { get; private set; } = new VerticalList<TElem>();
 
-        IList ISheetRowArray.Arr => Arr;
+        IReadOnlyList<object> ISheetRowArray.Arr => Arr;
         public Type ElemType => typeof(TElem);
 
+        IReadOnlyList<TElem> ISheetRowArray<TElem>.Arr => Arr;
         public int Count => Arr.Count;
         public TElem this[int idx] => Arr[idx];
 
