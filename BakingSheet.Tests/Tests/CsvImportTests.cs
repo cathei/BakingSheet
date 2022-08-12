@@ -163,5 +163,28 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal("YYY", _container.Dict["Dict1"][0].NestedDict[2034][1]);
             Assert.Null(_container.Dict["Empty"].Dict);
         }
+
+        [Fact]
+        public async Task TestImportVerticalCsv()
+        {
+            _fileSystem.SetTestData(Path.Combine("testdata", "Vertical.csv"), "Id,Coord:X,Coord:Y,Levels:1,Levels:2,Value\nVertical1,1,2,1,4,\n,2,3,2,5\n,,,3\nVertical2,1,2,,4,Elem1\n,,,,5,Elem2\n,,,,,Elem3\n");
+
+            var result = await _container.Bake(_converter);
+
+            _logger.VerifyNoError();
+
+            Assert.Equal(2, _container.Vertical.Count);
+
+            Assert.Empty(_container.Vertical["Vertical1"]);
+            Assert.Equal(2, _container.Vertical["Vertical1"].Coord.Count);
+            Assert.Equal(1, _container.Vertical["Vertical1"].Coord[0].X);
+            Assert.Equal(3, _container.Vertical["Vertical1"].Coord[1].Y);
+
+            Assert.Single(_container.Vertical["Vertical2"].Coord);
+            Assert.Equal(2, _container.Vertical["Vertical2"].Levels.Count);
+            Assert.Null(_container.Vertical["Vertical2"].Levels[0]);
+            Assert.Equal(5, _container.Vertical["Vertical2"].Levels[1][1]);
+            Assert.Equal("Elem3", _container.Vertical["Vertical2"][2].Value);
+        }
     }
 }

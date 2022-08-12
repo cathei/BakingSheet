@@ -265,5 +265,55 @@ namespace Cathei.BakingSheet.Tests
 
             _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.csv"), "Id,Dict,,,NestedDict,,,Value\n,A,B,C,2034\n,,,,1,2,3\nDict1,10,20,,X,YYY,ZZZZZ,0\nDict2,,20,10,,,,\nEmpty,,,,,,,8\n,,,,,,,65\n");
         }
+
+        [Fact]
+        public async Task TestExportVerticalCsv()
+        {
+            _container.Vertical = new TestVerticalSheet();
+
+            var row1 = new TestVerticalSheet.Row()
+            {
+                Id = "Vertical1",
+                Coord = new()
+                {
+                    new() { X = 1, Y = 2 },
+                    new() { X = 2, Y = 3 },
+                },
+                Levels = new()
+                {
+                    new() { 1, 2, 3 },
+                    new() { 4, 5 }
+                }
+            };
+
+            var row2 = new TestVerticalSheet.Row()
+            {
+                Id = "Vertical2",
+                Coord = new()
+                {
+                    new() { X = 1, Y = 2 },
+                },
+                Levels = new()
+                {
+                    null,
+                    new() { 4, 5 }
+                }
+            };
+
+            row2.Arr.Add(new() { Value = "Elem1" });
+            row2.Arr.Add(new() { Value = "Elem2" });
+            row2.Arr.Add(new() { Value = "Elem3" });
+
+            _container.Vertical.Add(row1);
+            _container.Vertical.Add(row2);
+
+            _container.PostLoad();
+
+            var result = await _container.Store(_converter);
+
+            _logger.VerifyNoError();
+
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Vertical.csv"), "Id,Coord:X,Coord:Y,Levels:1,Levels:2,Value\nVertical1,1,2,1,4,\n,2,3,2,5\n,,,3\nVertical2,1,2,,4,Elem1\n,,,,5,Elem2\n,,,,,Elem3\n");
+        }
     }
 }

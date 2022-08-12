@@ -29,10 +29,9 @@ namespace Cathei.BakingSheet.Internal
             public AttributesGetterDelegate AttributesGetter { get; set; }
 
             public virtual bool IsLeaf => false;
+            public virtual bool IsVertical => false;
             public abstract Node GetChild(string subpath);
             public virtual bool HasSubpath(string subpath) => false;
-
-            public virtual bool SupportVertical => Parent?.SupportVertical ?? false;
 
             // can be used when parent and child shares same column name
             public virtual Node ColumnNode => this;
@@ -206,7 +205,7 @@ namespace Cathei.BakingSheet.Internal
 
             private readonly bool _isVertical;
 
-            public override bool SupportVertical => _isVertical;
+            public override bool IsVertical => _isVertical;
             public override Node ColumnNode => _isVertical ? _child.ColumnNode : this;
             public override Node GetChild(string subpath) => _child;
 
@@ -526,6 +525,8 @@ namespace Cathei.BakingSheet.Internal
 
             _indexes.Clear();
 
+            bool isVertical = false;;
+
             foreach (var subpath in ParseFlattenPath(path))
             {
                 if (node == null)
@@ -537,6 +538,7 @@ namespace Cathei.BakingSheet.Internal
                     else if (Arr != null && Arr.ColumnNode.HasSubpath(subpath))
                     {
                         node = Arr.ColumnNode;
+                        isVertical = true;
                     }
                     else
                     {
@@ -549,12 +551,6 @@ namespace Cathei.BakingSheet.Internal
                         }
                         return;
                     }
-
-                    if (!node.SupportVertical && vindex != 0)
-                    {
-                        _context.Logger.LogError("There is multiple value for a non-vertical column");
-                        return;
-                    }
                 }
 
                 if (node.IndexType != null)
@@ -563,7 +559,26 @@ namespace Cathei.BakingSheet.Internal
                     _indexes.Add(index);
                 }
 
-                node = node.GetChild(subpath).ColumnNode;
+                node = node.GetChild(subpath);
+
+                if (node.IsVertical)
+                {
+                    if (isVertical)
+                    {
+                        _context.Logger.LogError("Nested vertical list is not supported");
+                        return;
+                    }
+
+                    isVertical = true;
+                }
+
+                node = node.ColumnNode;
+            }
+
+            if (!isVertical && vindex != 0)
+            {
+                _context.Logger.LogError("There is multiple value for a non-vertical column");
+                return;
             }
 
             node.SetValue(row, vindex, _indexes.GetEnumerator(), converter(node.ValueType, value));
@@ -582,7 +597,7 @@ namespace Cathei.BakingSheet.Internal
 
         // UpdateCount is required to get correct result
         // index list are returned just to feed back, only valid on enumeration loop
-        public IEnumerable<(Node, List<object>)> TraverseLeaf()
+        public IEnumerable<(Node, IEnumerable<object>)> TraverseLeaf()
         {
             _indexes.Clear();
 

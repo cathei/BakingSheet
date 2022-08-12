@@ -95,6 +95,26 @@ namespace Cathei.BakingSheet.Tests
         }
     }
 
+    public class TestVerticalSheet : Sheet<TestVerticalSheet.Row>
+    {
+        public class Elem : SheetRowElem
+        {
+            public string Value { get; set; }
+        }
+
+        public struct NestedStruct
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+        }
+
+        public class Row : SheetRowArray<Elem>
+        {
+            public VerticalList<NestedStruct> Coord { get; set; }
+            public List<VerticalList<int>> Levels { get; set; }
+        }
+    }
+
 
     public class TestSheetContainer : SheetContainerBase
     {
@@ -106,5 +126,6 @@ namespace Cathei.BakingSheet.Tests
         public TestReferenceSheet Refers { get; set; }
         public TestNestedSheet Nested { get; set; }
         public TestDictSheet Dict { get; set; }
+        public TestVerticalSheet Vertical { get; set; }
     }
 }
