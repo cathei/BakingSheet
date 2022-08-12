@@ -3,20 +3,38 @@
 # BakingSheet
 Easy datasheet management for C# and Unity. Supports Excel, Google Sheet, JSON and CSV format. It has been used for several mobile games that released on Google Play and AppStore.
 
+## Concept
+Throughout all stage of game development, you'll need to deal with various data. Characters, stats, stages, currencies and so on! If you're using Unity, scriptable object and inspector is not good enough for mass edition and lacks of features like functions or fill up. With BakingSheet your designers can use existing spreadsheet editor, while you, the programmer, can directly use C# object without messy parsing logics.
+
+![Concept](.github/images/concept.png)
+
+BakingSheet's core concept is controlling datasheet schema from C# code, make things flexible while supporting multiple sources like .xlsx or Google sheets. Also, you won't have to include source .xlsx files or parsing libraries for production builds. BakingSheet supports JSON serialization by default, you can ship your build with JSON or your custom format.
+
+BakingSheet's basic workflow is like this:
+1. Programmers make C# schema that represents Datasheet. (They can provide sample .xlsx or Google Sheet with headers.)
+2. Designers fill up the Datasheet, using any powerful functions and features of spreadsheet.
+3. Edit-time script converts Datasheet to JSON (or any custom format) with your C# schema and validates data.
+4. Runtime script reads from JSON (or any custom format) with your C# schema.
+5. Your business logic directly uses C# instace of your schema.
+6. Profit!
+
+![Sample1](.github/images/sample_simple.jpg)
+![Sample2](.github/images/sample_complex.jpg)
+
+## Features
+* Easy-to-use Datasheet management.
+* Define schema as C# classes - no messy metadata on your datasheet.
+* Supports importing from Excel, Google sheet, CSV and JSON.
+* Supports exporting to CSV and JSON.
+* Supports .NET platforms and all Unity platforms.
+* Powerful Cross-sheet reference feature.
+* Customizable value verification - like checking prefab pathes.
+
 ## Install
 Download with [NuGet](https://www.nuget.org/packages?q=BakingSheet) or download [.unitypackage release](https://github.com/cathei/BakingSheet/releases)
 
 ### Need help?
 Before you start, I want to mention that if you have problem or need help, you can always ask me on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
-
-## Concept
-![Concept](.github/images/concept.png)
-
-BakingSheet's core concept is controlling datasheet schema from C# code, make things flexible while supporting multiple sources like .xlsx or Google sheets.
-Also, it helps to avoid having source datasheet files or parsing libraries for production applications. BakingSheet supports JSON serialization by default.
-
-![Sample1](.github/images/sample_simple.jpg)
-![Sample2](.github/images/sample_complex.jpg)
 
 ## First Step
 BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Items.xlsx`. Also, any column starts with $ will be considered as comment and ignored.
