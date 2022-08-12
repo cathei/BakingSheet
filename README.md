@@ -95,6 +95,9 @@ BakingSheet supports four basic converters. They're included in .unitypackage as
 
 Below code shows how to convert .xlsx files from `Excel/Files/Path` directory.
 ```csharp
+// any ILogger will work, there is built-in UnityLogger
+var logger = new UnityLogger();
+
 // pass logger to receive logs
 var sheetContainer = new SheetContainer(logger);
 
