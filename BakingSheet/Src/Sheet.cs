@@ -41,28 +41,26 @@ namespace Cathei.BakingSheet
 
                 propertyMap.UpdateIndex(this);
 
-                foreach ((var node, var indexes) in propertyMap.TraverseLeaf())
+                foreach (var (node, indexes) in propertyMap.TraverseLeaf())
                 {
                     if (!typeof(ISheetReference).IsAssignableFrom(node.ValueType))
                         continue;
 
                     foreach (var row in Items)
                     {
-                        int verticalSize = node.GetVerticalSize(row);
+                        int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
 
-                        for (int i = 1; i <= verticalSize; ++i)
+                        using (context.Logger.BeginScope(row.Id))
+                        using (context.Logger.BeginScope(node.FullPath, indexes))
                         {
-                            indexes[0] = i;
-
-                            using (context.Logger.BeginScope(row.Id))
-                            using (context.Logger.BeginScope(node.FullPath, indexes))
+                            for (int vindex = 0; vindex < verticalCount; ++vindex)
                             {
-                                var obj = node.GetValue(row, indexes.GetEnumerator());
+                                var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
 
                                 if (obj is ISheetReference refer)
                                 {
                                     refer.Map(context);
-                                    node.SetValue(row, indexes.GetEnumerator(), refer);
+                                    node.SetValue(row, vindex, indexes.GetEnumerator(), refer);
                                 }
                             }
                         }
@@ -87,39 +85,31 @@ namespace Cathei.BakingSheet
 
                 propertyMap.UpdateIndex(this);
 
-                foreach ((var node, bool isArray, var indexes) in propertyMap.TraverseLeaf())
+                foreach (var (node, indexes) in propertyMap.TraverseLeaf())
                 {
                     foreach (var verifier in context.Verifiers)
                     {
                         if (!verifier.TargetType.IsAssignableFrom(node.ValueType))
                             continue;
 
-                        foreach (var att in node.AttributesGetter(verifier.TargetAttribute))
+                        var attributes = node.AttributesGetter(verifier.TargetAttribute);
+
+                        foreach (var row in Items)
                         {
-                            foreach (var row in Items)
+                            using (context.Logger.BeginScope(row.Id))
+                            using (context.Logger.BeginScope(node.FullPath, indexes))
                             {
-                                void verifyAsset()
+                                int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
+
+                                for (int vindex = 0; vindex < verticalCount; ++vindex)
                                 {
-                                    using (context.Logger.BeginScope(row.Id))
-                                    using (context.Logger.BeginScope(node.FullPath, indexes))
+                                    var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
+
+                                    foreach (var att in attributes)
                                     {
-                                        var err = verifier.Verify(att, node.GetValue(row, indexes.GetEnumerator()));
+                                        var err = verifier.Verify(att, obj);
                                         if (err != null)
                                             context.Logger.LogError("Verification: {Error}", err);
-                                    }
-                                }
-
-                                if (!isArray)
-                                {
-                                    verifyAsset();
-                                }
-                                else if (row is ISheetRowArray rowArray)
-                                {
-                                    for (int i = 0; i < rowArray.Arr.Count; ++i)
-                                    {
-                                        // use 1-base for index
-                                        indexes[0] = i + 1;
-                                        verifyAsset();
                                     }
                                 }
                             }

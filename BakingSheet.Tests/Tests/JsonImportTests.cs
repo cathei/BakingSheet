@@ -133,8 +133,8 @@ namespace Cathei.BakingSheet.Tests
 
             Assert.True(result);
             Assert.Equal(3, _container.Dict.Count);
-            Assert.Equal(1, _container.Dict["Dict1"].Count);
-            Assert.Equal(0, _container.Dict["Dict2"].Count);
+            Assert.Single(_container.Dict["Dict1"]);
+            Assert.Empty(_container.Dict["Dict2"]);
             Assert.Equal(2, _container.Dict["Dict1"].Dict.Count);
             Assert.Equal(10.0f, _container.Dict["Dict2"].Dict["C"]);
             Assert.Equal(3, _container.Dict["Dict1"][0].NestedDict[2034].Count);

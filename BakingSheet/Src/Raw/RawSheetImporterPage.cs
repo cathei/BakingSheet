@@ -88,7 +88,7 @@ namespace Cathei.BakingSheet.Raw
 
             ISheetRow sheetRow = null;
             string rowId = null;
-            int sameRow = 0;
+            int vindex = 0;
             bool skipRow = false;
 
             for (int pageRow = headerRows.Count; !page.IsEmptyRow(pageRow); ++pageRow)
@@ -102,7 +102,7 @@ namespace Cathei.BakingSheet.Raw
 
                     rowId = idCellValue;
                     sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
-                    sameRow = 0;
+                    vindex = 0;
                 }
                 else if (skipRow)
                 {
@@ -114,7 +114,7 @@ namespace Cathei.BakingSheet.Raw
                 {
                     try
                     {
-                        ImportRow(page, importer, context, sheetRow, propertyMap, columnNames, sameRow, pageRow);
+                        ImportRow(page, importer, context, sheetRow, propertyMap, columnNames, vindex, pageRow);
                     }
                     catch
                     {
@@ -123,7 +123,7 @@ namespace Cathei.BakingSheet.Raw
                         continue;
                     }
 
-                    if (sameRow == 0)
+                    if (vindex == 0)
                     {
                         if (sheet.Contains(sheetRow.Id))
                         {
@@ -135,13 +135,13 @@ namespace Cathei.BakingSheet.Raw
                         }
                     }
 
-                    sameRow++;
+                    vindex++;
                 }
             }
         }
 
         private static void ImportRow(IRawSheetImporterPage page, RawSheetImporter importer, SheetConvertingContext context,
-            ISheetRow sheetRow, PropertyMap propertyMap, List<string> columnNames, int arrIndex, int pageRow)
+            ISheetRow sheetRow, PropertyMap propertyMap, List<string> columnNames, int vindex, int pageRow)
         {
             for (int pageColumn = 0; pageColumn < columnNames.Count; ++pageColumn)
             {
@@ -158,7 +158,7 @@ namespace Cathei.BakingSheet.Raw
 
                     try
                     {
-                        propertyMap.SetValue(sheetRow, arrIndex, columnValue, cellValue, importer.StringToValue);
+                        propertyMap.SetValue(sheetRow, vindex, columnValue, cellValue, importer.StringToValue);
                     }
                     catch (Exception ex)
                     {

@@ -32,57 +32,55 @@ namespace Cathei.BakingSheet.Internal
             public abstract Node GetChild(string subpath);
             public virtual bool HasSubpath(string subpath) => false;
 
+            public virtual bool SupportVertical => Parent?.SupportVertical ?? false;
+
+            // can be used when parent and child shares same column name
+            public virtual Node ColumnNode => this;
+
             public abstract void UpdateIndex(object obj);
             public abstract IEnumerable<Node> TraverseChildren(List<object> indexes);
             public abstract void GenerateChildren(Func<Type, bool> isLeaf, int depth);
 
-            protected string AppendPath(string subpath)
+            protected virtual object GetChildIndex(int vindex, IEnumerator<object> indexer)
             {
-                if (FullPath == null)
-                    return subpath;
+                if (IndexType == null)
+                    return null;
 
-                return $"{FullPath}{Config.Delimiter}{subpath}";
+                indexer.MoveNext();
+                return indexer.Current;
             }
 
             protected string AppendIndex(int depth)
             {
-                // for root array ignore depth
-                if (Parent == null)
-                    return null;
-
-                if (FullPath == null)
-                    return "{{{depth}}}";
-
                 return $"{FullPath}{Config.Delimiter}{{{depth}}}";
             }
 
-            public object GetValue(ISheetRow row, IEnumerator<object> indexer)
+            public virtual int GetVerticalCount(ISheetRow row, IEnumerator<object> indexer)
+            {
+                return Parent?.GetVerticalCount(row, indexer) ?? 1;
+            }
+
+            public object GetValue(ISheetRow row, int vindex, IEnumerator<object> indexer)
             {
                 object obj = row;
 
                 if (Parent != null)
-                    obj = Parent.GetValue(row, indexer);
-
-                object index = null;
-
-                if (Parent?.IndexType != null)
-                {
-                    indexer.MoveNext();
-                    index = indexer.Current;
-                }
+                    obj = Parent.GetValue(row, vindex, indexer);
 
                 if (obj == null)
                     return null;
 
+                object index = Parent?.GetChildIndex(vindex, indexer);
+
                 return Getter(obj, index);
             }
 
-            public void SetValue(ISheetRow row, IEnumerator<object> indexer, object value)
+            public void SetValue(ISheetRow row, int vindex, IEnumerator<object> indexer, object value)
             {
-                ModifyValue(row, indexer, _ => value);
+                ModifyValue(row, vindex, indexer, _ => value);
             }
 
-            public void ModifyValue(ISheetRow row, IEnumerator<object> indexer, ModifyDelegate modifier)
+            public void ModifyValue(ISheetRow row, int vindex, IEnumerator<object> indexer, ModifyDelegate modifier)
             {
                 object obj = null;
 
@@ -96,18 +94,12 @@ namespace Cathei.BakingSheet.Internal
                     return;
                 }
 
-                Parent.ModifyValue(row, indexer, parentObj =>
+                Parent.ModifyValue(row, vindex, indexer, parentObj =>
                 {
-                    object index = null;
-
-                    if (Parent?.IndexType != null)
-                    {
-                        indexer.MoveNext();
-                        index = indexer.Current;
-                    }
-
                     if (parentObj == null)
                         return null;
+
+                    object index = Parent?.GetChildIndex(vindex, indexer);
 
                     obj = Getter(parentObj, index);
 
@@ -126,20 +118,28 @@ namespace Cathei.BakingSheet.Internal
 
         public class NodeObject : Node
         {
-            private Dictionary<string, Node> Children { get; set; }
+            private Dictionary<string, Node> _children;
 
-            public override bool IsLeaf => Children == null;
+            public override bool IsLeaf => _children == null;
 
-            public override Node GetChild(string subpath) => Children?[subpath];
+            public override Node GetChild(string subpath) => _children?[subpath];
 
-            public override bool HasSubpath(string subpath) => Children?.ContainsKey(subpath) ?? false;
+            public override bool HasSubpath(string subpath) => _children?.ContainsKey(subpath) ?? false;
+
+            private string AppendPath(string subpath)
+            {
+                if (FullPath == null)
+                    return subpath;
+
+                return $"{FullPath}{Config.Delimiter}{subpath}";
+            }
 
             public override void UpdateIndex(object obj)
             {
                 if (IsLeaf)
                     return;
 
-                foreach (var child in Children.Values)
+                foreach (var child in _children.Values)
                 {
                     var elem = child.Getter(obj, null);
                     child.UpdateIndex(elem);
@@ -154,8 +154,18 @@ namespace Cathei.BakingSheet.Internal
                     yield break;
                 }
 
-                foreach (var child in Children.OrderByDescending(x => x.Key == "Id").Select(x => x.Value))
+                // Id column should come first
+                if (_children.TryGetValue(nameof(ISheetRow.Id), out var idChild))
                 {
+                    foreach (var node in idChild.TraverseChildren(indexes))
+                        yield return node;
+                }
+
+                foreach (var child in _children.Values)
+                {
+                    if (child == idChild)
+                        continue;
+
                     foreach (var node in child.TraverseChildren(indexes))
                         yield return node;
                 }
@@ -166,7 +176,7 @@ namespace Cathei.BakingSheet.Internal
                 if (isLeaf(ValueType))
                     return;
 
-                Children = new Dictionary<string, Node>();
+                _children = new Dictionary<string, Node>();
 
                 foreach (PropertyInfo propertyInfo in ValueType.GetProperties(BindingFlag))
                 {
@@ -184,39 +194,84 @@ namespace Cathei.BakingSheet.Internal
 
                     child.GenerateChildren(isLeaf, depth);
 
-                    Children.Add(propertyInfo.Name, child);
+                    _children.Add(propertyInfo.Name, child);
                 }
             }
         }
 
         public class NodeList : Node
         {
-            public Node Child { get; set; }
+            private Node _child;
+            private int _maxCount = 1;
 
-            private int MaxCount { get; set; } = 1;
+            private readonly bool _isVertical;
 
-            public override Node GetChild(string subpath) => Child;
+            public override bool SupportVertical => _isVertical;
+            public override Node ColumnNode => _isVertical ? _child.ColumnNode : this;
+            public override Node GetChild(string subpath) => _child;
+
+            public NodeList(bool isVertical)
+            {
+                _isVertical = isVertical;
+            }
 
             public override void UpdateIndex(object obj)
             {
                 if (obj is IList list)
                 {
+                    _maxCount = Math.Max(_maxCount, list.Count);
+
                     foreach (var elem in list)
-                        Child.UpdateIndex(elem);
+                        _child.UpdateIndex(elem);
                 }
+            }
+
+            protected override object GetChildIndex(int vindex, IEnumerator<object> indexer)
+            {
+                if (_isVertical)
+                {
+                    // convert 0-base to 1-base
+                    return vindex + 1;
+                }
+
+                return base.GetChildIndex(vindex, indexer);
+            }
+
+            public override int GetVerticalCount(ISheetRow row, IEnumerator<object> indexer)
+            {
+                if (_isVertical)
+                {
+                    // get vertical list count
+                    var obj = GetValue(row, 0, indexer);
+
+                    if (obj is IList list && list.Count > 0)
+                        return list.Count;
+
+                    return 1;
+                }
+
+                return base.GetVerticalCount(row, indexer);
             }
 
             public override IEnumerable<Node> TraverseChildren(List<object> indexes)
             {
+                if (_isVertical)
+                {
+                    // no need to loop through indexes for vertical list
+                    foreach (var node in _child.TraverseChildren(indexes))
+                        yield return node;
+                    yield break;
+                }
+
                 int current = indexes.Count;
                 indexes.Add(null);
 
-                for (int i = 0; i < MaxCount; ++i)
+                // use 1-base for indexes
+                for (int i = 1; i <= _maxCount; ++i)
                 {
-                    // convert 0-base to 1-base
-                    indexes[current] = i + 1;
+                    indexes[current] = i;
 
-                    foreach (var node in Child.TraverseChildren(indexes))
+                    foreach (var node in _child.TraverseChildren(indexes))
                         yield return node;
                 }
 
@@ -233,7 +288,7 @@ namespace Cathei.BakingSheet.Internal
 
                 child.Parent = this;
                 child.ValueType = elementType;
-                child.FullPath = AppendIndex(depth);
+                child.FullPath = _isVertical ? FullPath : AppendIndex(depth);
 
                 child.Getter = (obj, key) =>
                 {
@@ -265,28 +320,19 @@ namespace Cathei.BakingSheet.Internal
 
                 child.AttributesGetter = AttributesGetter;
 
-                child.GenerateChildren(isLeaf, depth + 1);
+                child.GenerateChildren(isLeaf, _isVertical ? depth : depth + 1);
 
-                Child = child;
+                _child = child;
             }
-        }
-
-        public class NodeVerticalList : NodeList
-        {
-            public override void UpdateIndex(object obj)
-            {
-                // do nothing
-            }
-
         }
 
         public class NodeDictionary : Node
         {
-            private Node Child { get; set; }
+            private Node _child;
 
             private HashSet<object> PossibleKeys { get; set; }
 
-            public override Node GetChild(string subpath) => Child;
+            public override Node GetChild(string subpath) => _child;
 
             public override void UpdateIndex(object obj)
             {
@@ -299,7 +345,7 @@ namespace Cathei.BakingSheet.Internal
                         PossibleKeys.Add(key);
 
                     foreach (var elem in dict.Values)
-                        Child.UpdateIndex(elem);
+                        _child.UpdateIndex(elem);
                 }
             }
 
@@ -315,7 +361,7 @@ namespace Cathei.BakingSheet.Internal
                 {
                     indexes[current] = key;
 
-                    foreach (var node in Child.TraverseChildren(indexes))
+                    foreach (var node in _child.TraverseChildren(indexes))
                         yield return node;
                 }
 
@@ -353,15 +399,19 @@ namespace Cathei.BakingSheet.Internal
 
                 child.GenerateChildren(isLeaf, depth + 1);
 
-                Child = child;
+                _child = child;
             }
         }
 
         private static Node CreateNode(Type type)
         {
+            if (typeof(IVerticalList).IsAssignableFrom(type))
+            {
+                return new NodeList(true);
+            }
             if (typeof(IList).IsAssignableFrom(type))
             {
-                return new NodeList();
+                return new NodeList(false);
             }
             else if (typeof(IDictionary).IsAssignableFrom(type))
             {
@@ -389,7 +439,7 @@ namespace Cathei.BakingSheet.Internal
         private NodeObject Root { get; set; }
         private NodeList Arr { get; set; }
 
-        private SheetConvertingContext _context;
+        private readonly SheetConvertingContext _context;
 
         internal static IEnumerable<string> ParseFlattenPath(string path)
         {
@@ -453,7 +503,7 @@ namespace Cathei.BakingSheet.Internal
                 Type arrElementType = GetGenericArgument(rowType, typeof(SheetRowArray<,>))[1];
                 PropertyInfo arrPropertyInfo = rowType.GetProperty(nameof(ISheetRowArray.Arr));
 
-                Arr = new NodeList
+                Arr = new NodeList(true)
                 {
                     FullPath = null,
                     ValueType = arrPropertyInfo.PropertyType,
@@ -470,7 +520,7 @@ namespace Cathei.BakingSheet.Internal
 
         private HashSet<string> _warned = null;
 
-        public void SetValue(ISheetRow row, int arrIndex, string path, string value, Func<Type, string, object> converter)
+        public void SetValue(ISheetRow row, int vindex, string path, string value, Func<Type, string, object> converter)
         {
             Node node = null;
 
@@ -482,33 +532,28 @@ namespace Cathei.BakingSheet.Internal
                 {
                     if (Root.HasSubpath(subpath))
                     {
-                        if (arrIndex != 0)
-                        {
-                            _context.Logger.LogError("There is multiple value for a non-array column");
-                            return;
-                        }
-
-                        node = Root;
+                        node = Root.ColumnNode;
+                    }
+                    else if (Arr != null && Arr.ColumnNode.HasSubpath(subpath))
+                    {
+                        node = Arr.ColumnNode;
                     }
                     else
                     {
-                        if (Arr == null || !Arr.Child.HasSubpath(subpath))
+                        _warned = _warned ?? new HashSet<string>();
+
+                        if (!_warned.Contains(path))
                         {
-                            _warned = _warned ?? new HashSet<string>();
-
-                            if (!_warned.Contains(path))
-                            {
-                                _context.Logger.LogError("Column name is invalid");
-                                _warned.Add(path);
-                            }
-
-                            return;
+                            _context.Logger.LogError("Column name is invalid");
+                            _warned.Add(path);
                         }
+                        return;
+                    }
 
-                        node = Arr.Child;
-
-                        // convert 0-base to 1-base
-                        _indexes.Add(arrIndex + 1);
+                    if (!node.SupportVertical && vindex != 0)
+                    {
+                        _context.Logger.LogError("There is multiple value for a non-vertical column");
+                        return;
                     }
                 }
 
@@ -518,10 +563,10 @@ namespace Cathei.BakingSheet.Internal
                     _indexes.Add(index);
                 }
 
-                node = node.GetChild(subpath);
+                node = node.GetChild(subpath).ColumnNode;
             }
 
-            node.SetValue(row, _indexes.GetEnumerator(), converter(node.ValueType, value));
+            node.SetValue(row, vindex, _indexes.GetEnumerator(), converter(node.ValueType, value));
         }
 
         public void UpdateIndex(ISheet sheet)
@@ -540,9 +585,6 @@ namespace Cathei.BakingSheet.Internal
         public IEnumerable<(Node, List<object>)> TraverseLeaf()
         {
             _indexes.Clear();
-
-            // first index is vertical position
-            _indexes.Add(null);
 
             foreach (var node in Root.TraverseChildren(_indexes))
                 yield return (node, _indexes);

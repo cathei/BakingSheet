@@ -9,7 +9,6 @@ namespace Cathei.BakingSheet.Internal
     {
         public const string Delimiter = ":";
         public const string Comment = "$";
-        public const string Wildcard = "*";
 
         public static bool IsConvertable(Type type)
         {

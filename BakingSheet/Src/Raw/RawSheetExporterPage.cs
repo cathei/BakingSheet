@@ -40,7 +40,7 @@ namespace Cathei.BakingSheet.Raw
             // TODO: in .net standard 2.1 this is not needed
             var delimiter = new string[] { Config.Delimiter };
 
-            foreach ((var node, var indexes) in leafs)
+            foreach (var (node, indexes) in leafs)
             {
                 var arguments = indexes.Select(x => exporter.ValueToString(x.GetType(), x)).ToArray();
                 var columnName = string.Format(node.FullPath, arguments);
@@ -73,53 +73,30 @@ namespace Cathei.BakingSheet.Raw
 
             int pageRow = exporter.SplitHeader ? headerRows.Count : 1;
 
-            foreach ((var node, var indexes) in leafs)
+            foreach (ISheetRow sheetRow in sheet)
             {
-                foreach (ISheetRow sheetRow in sheet)
+                int maxVerticalCount = 1;
+
+                pageColumn = 0;
+
+                foreach (var (node, indexes) in leafs)
                 {
-                    pageColumn = 0;
+                    int verticalCount = node.GetVerticalCount(sheetRow, indexes.GetEnumerator());
 
-                    // var sheetRowArray = sheetRow as ISheetRowArray;
-
-                    using (context.Logger.BeginScope(sheetRow.Id))
+                    for (int vindex = 0; vindex < verticalCount; ++vindex)
                     {
-                        int verticalCount = node.GetVerticalCount(sheetRow);
-
-                        for (int i = 1; i <= verticalCount; ++i)
-                        {
-
-                        }
-
-
-
-                        if (!isArray)
-                        {
-                            object value = node.GetValue(sheetRow, indexes.GetEnumerator());
-                            string cellValue = exporter.ValueToString(node.ValueType, value);
-                            page.SetCell(pageColumn, pageRow, cellValue);
-                        }
-                        else if (sheetRowArray != null)
-                        {
-                            for (int i = 0; i < sheetRowArray.Arr.Count; ++i)
-                            {
-                                // use 1-base for index
-                                indexes[0] = i + 1;
-
-                                object value = node.GetValue(sheetRow, indexes.GetEnumerator());
-                                string cellValue = exporter.ValueToString(node.ValueType, value);
-                                page.SetCell(pageColumn, pageRow + i, cellValue);
-                            }
-                        }
-
-                        pageColumn++;
+                        var value = node.GetValue(sheetRow, vindex, indexes.GetEnumerator());
+                        var valueString = exporter.ValueToString(node.ValueType, value);
+                        page.SetCell(pageColumn, pageRow + vindex, valueString);
                     }
 
-                    // if array count is 0 or 1 it is same as single row
-                    if (sheetRowArray != null && sheetRowArray.Arr.Count > 1)
-                        pageRow += sheetRowArray.Arr.Count - 1;
+                    if (maxVerticalCount < verticalCount)
+                        maxVerticalCount = verticalCount;
 
-                    pageRow++;
+                    pageColumn++;
                 }
+
+                pageRow += maxVerticalCount;
             }
         }
     }

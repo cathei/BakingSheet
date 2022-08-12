@@ -151,7 +151,7 @@ namespace Cathei.BakingSheet.Tests
 
             _logger.VerifyNoError();
 
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct:XInt,Struct:YFloat,Struct:ZList:1,Struct:ZList:2,StructList:1:XInt,StructList:1:YFloat,StructList:1:ZList:1,StructList:1:ZList:2,StructList:2:XInt,StructList:2:YFloat,StructList:2:ZList:1,StructList:2:ZList:2,IntList:1,IntList:2,IntList:3,IntList:4,IntList:5\nRow1,0,0,,,,,,,,,,,1,2,3,,\n,,,,,,,,,,,,,4,5,6,7,8\nRow2,10,50.42,x,y,,,,,,,,\nRow3,0,0,,,1,0.124,a,b,2,20,c,,,,,,\n");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Nested.csv"), "Id,Struct:XInt,Struct:YFloat,Struct:ZList:1,Struct:ZList:2,StructList:1:XInt,StructList:1:YFloat,StructList:1:ZList:1,StructList:1:ZList:2,StructList:2:XInt,StructList:2:YFloat,StructList:2:ZList:1,StructList:2:ZList:2,IntList:1,IntList:2,IntList:3,IntList:4,IntList:5\nRow1,0,0,,,,,,,,,,,1,2,3,,\n,,,,,,,,,,,,,4,5,6,7,8\nRow2,10,50.42,x,y,,,,,,,,,,,,,\nRow3,0,0,,,1,0.124,a,b,2,20,c,,,,,,\n");
         }
 
         [Fact]
@@ -206,7 +206,7 @@ namespace Cathei.BakingSheet.Tests
 
             _logger.VerifyNoError();
 
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.csv"), "Id,Dict:A,Dict:B,Dict:C,NestedDict:2034:1,NestedDict:2034:2,NestedDict:2034:3,Value\nDict1,10,20,,X,YYY,ZZZZZ,0\nDict2,,20,10\nEmpty,,,,,,,8\n,,,,,,,65\n");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.csv"), "Id,Dict:A,Dict:B,Dict:C,NestedDict:2034:1,NestedDict:2034:2,NestedDict:2034:3,Value\nDict1,10,20,,X,YYY,ZZZZZ,0\nDict2,,20,10,,,,\nEmpty,,,,,,,8\n,,,,,,,65\n");
         }
 
         [Fact]
@@ -263,7 +263,7 @@ namespace Cathei.BakingSheet.Tests
 
             _logger.VerifyNoError();
 
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.csv"), "Id,Dict,,,NestedDict,,,Value\n,A,B,C,2034\n,,,,1,2,3\nDict1,10,20,,X,YYY,ZZZZZ,0\nDict2,,20,10\nEmpty,,,,,,,8\n,,,,,,,65\n");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.csv"), "Id,Dict,,,NestedDict,,,Value\n,A,B,C,2034\n,,,,1,2,3\nDict1,10,20,,X,YYY,ZZZZZ,0\nDict2,,20,10,,,,\nEmpty,,,,,,,8\n,,,,,,,65\n");
         }
     }
 }
