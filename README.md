@@ -73,7 +73,9 @@ public class SheetContainer : SheetContainerBase
 {
     public SheetContainer(Microsoft.Extensions.Logging.ILogger logger) : base(logger) {}
 
-    // use name of each matching sheet name from source
+    // property name matches with corresponding sheet name
+    // for .xlsx or google sheet, it is name of the sheet tab in the workbook
+    // for .csv or .json, it is name of the file
     public ItemSheet Items { get; private set; }
 
     // add other sheets right here
