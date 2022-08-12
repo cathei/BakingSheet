@@ -20,6 +20,12 @@ Also, it helps to avoid having source datasheet files or parsing libraries for p
 
 ## First Step
 BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Items.xlsx`. Also, any column starts with $ will be considered as comment and ignored.
+
+![Plain Sample](.github/images/sample_plain.png)
+
+<details>
+<summary>Markdown version</summary>
+
 | Id             | Name              | Price | $Comment   |
 |----------------|-------------------|-------|------------|
 | ITEM_LVUP001   | Warrior's Shield  | 10000 | Warrior Lv up material |
@@ -27,6 +33,7 @@ BakingSheet manages datasheet schema as C# code. `Sheet` class represents a tabl
 | ITEM_LVUP003   | Assassin's Dagger | 10000 | Assassin Lv up material |
 | ITEM_POTION001 | Health Potion     | 30    | Heal 20 Hp |
 | ITEM_POTION002 | Mana Potion       | 50    | Heal 20 Mp |
+</details>
 
 Code below is corresponding BakingSheet class.
 ```csharp
@@ -107,11 +114,18 @@ foreach (var value in sheetContainer.Items.Values)
 
 ## Using Non-String Column as Id
 Any type can be used value can be also used as `Id`. This is possible as passing type argument to generic class `SheetRow<TKey>` and `Sheet<TKey, TRow>`. Below is example content of file `Contstants.xlsx`.
+
+![Const Sample](.github/images/sample_const.png)
+
+<details>
+<summary>Markdown version</summary>
+
 | Id             | Value                                 |
 |----------------|---------------------------------------|
 | ServerAddress  | https://github.com/cathei/BakingSheet |
 | InitialGold    | 1000                                  |
 | CriticalChance | 0.1                                   |
+</details>
 
 Below code shows how to use enumeration type as Id.
 ```csharp
@@ -177,7 +191,10 @@ Note that properties without setter are not serialized. Alternatively you can us
 
 ## Using List Column
 List columns are used for simple array.
-<details open>
+
+![List Sample](.github/images/sample_list.png)
+
+<details>
 <summary>Flat header</summary>
 
 | Id         | Name          | Monsters:1 | Monsters:2 | Monsters:3 | Items:1        | Items:2      |
@@ -210,13 +227,16 @@ public class DungeonSheet : Sheet<DungeonSheet.Row>
     }
 }
 ```
-Use it as simple as just including a column has type implmenting `IList<T>`.
-Since spreadsheet is designer's area, index on sheet is 1-based. So be aware when you access it from code.
+Use it as simple as just including a column has type implmenting `IList<T>`. Since spreadsheet is designer's area, index on sheet is 1-based. So be aware when you access it from code.
+
+Also you can pick between flat-header style(`Monsters:1`) and split-header style(`Monsters`, `1`) as the example shows. There is no problem to mix-and-match or nest them.
 
 ## Using Dictionary Column
 Dictionary columns are used when key-based access of value is needed.
 
-<details open>
+![Dictionary Sample](.github/images/sample_dict.png)
+
+<details>
 <summary>Flat header</summary>
 
 | Id     | Name          | Texts:Greeting    | Texts:Purchasing | Texts:Leaving     |
@@ -259,7 +279,10 @@ Use it as simple as just including a column has type implmenting `IDictionary<TK
 
 ## Using Nested Type Column
 Nested type columns are used for complex structure.
-<details open>
+
+![Nested Type Sample](.github/images/sample_dict.png)
+
+<details>
 <summary>Flat header</summary>
 
 | Id     | Name          | Texts:Greeting    | Texts:Purchasing | Texts:Leaving     |
@@ -302,6 +325,12 @@ Note that the content of datasheet is just same as when using Dictionary column.
 
 ## Using Row Array
 Row arrays are used for 2-dimentional structure. Below is example content of file `Heroes.xlsx`.
+
+![Row Array Sample](.github/images/sample_rowarray.png)
+
+<details>
+<summary>Markdown version</summary>
+
 | Id      | Name     | Strength | Inteligence | Vitality | StatMultiplier | RequiredExp | RequiredItem |
 |---------|----------|----------|-------------|----------|----------------|-------------|--------------|
 | HERO001 | Warrior  | 100      | 80          | 140      | 1              | 0           |              |
@@ -319,8 +348,9 @@ Row arrays are used for 2-dimentional structure. Below is example content of fil
 |         |          |          |             |          | 1.4            | 20          |              |
 |         |          |          |             |          | 1.6            | 40          |              |
 |         |          |          |             |          | 2              | 100         | ITEM_LVUP003 |
+</details>
 
-Rows without `Id` is considered as part of previous row. Below corresponding code shows how to define row arrays.
+Rows without `Id` is considered as part of previous row. You can merge the non-array cells to make it visually intuitive. Below corresponding code shows how to define row arrays.
 
 ```csharp
 public class HeroSheet : Sheet<HeroSheet.Row>
@@ -348,6 +378,8 @@ public class HeroSheet : Sheet<HeroSheet.Row>
 }
 ```
 Note that `SheetRowArray<TElem>` is implementing `IEnumerable<TElem>` and indexer.
+
+It is worth mention you can use `VerticalList<T>` to cover the case you need multiple list of different length in one column. Though I recommend to split the sheet in that case if possible.
 
 ## Using Cross-Sheet Reference
 Below code shows how to replace `string RequiredItem` to `ItemSheet.Reference RequiredItem` to add extra reliablity. `Sheet<TKey, TRow>.Reference` type is serialized as `TKey`, and verifies that row with same id exists in the sheet.
