@@ -57,6 +57,9 @@ public class SheetContainer : SheetContainerBase
 
     // use name of each matching sheet name from source
     public ItemSheet Items { get; private set; }
+
+    // add other sheets right here
+    // public CharacterSheet Characters { get; private set; }
 }
 ```
 
@@ -136,10 +139,14 @@ var row = sheetContainer.Items["ITEM_LVUP003"];
 
 // Assassin's dagger
 logger.LogInformation(row.Name);
+```
 
+`Sheet<T>` is `KeyedCollection<T>`, you can loop through it and order is guaranteed to be same as spreadsheet.
+
+```csharp
 // loop through all rows
-foreach (var value in sheetContainer.Items.Values)
-    logger.LogInformation(value.Name);
+foreach (var row in sheetContainer.Items)
+    logger.LogInformation(row.Name);
 ```
 
 ## Using Non-String Column as Id
