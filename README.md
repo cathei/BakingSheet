@@ -78,26 +78,56 @@ Below code shows how to convert .xlsx files from `Excel/Files/Path` directory.
 var sheetContainer = new SheetContainer(logger);
 
 // create excel converter from path
-var excelConverter = new ExcelSheetConverter("Excel/Files/Path");
+var excelConverter = new ExcelSheetConverter("Excel/Files/Path", TimeZoneInfo.Utc);
 
 // bake sheets from excel converter
 await sheetContainer.Bake(excelConverter);
 ```
 
+For Google Sheet, first create your service account through Google API Console. Then add it to your sheet with READ permission. Use Google credential for that service account to create converter.
+```csharp
+// replace with your Google sheet identifier
+// https://developers.google.com/sheets/api/guides/concepts
+string googleSheetId = "1iWMZVI4FgtGbig4EgPIun_BRbzp4ulqRIzINZQl-AFI";
+
+// service account credential than can read the sheet you're converting
+// this starts with { "type": "service_account", "project_id": ...
+string googleCredential = File.ReadAllText("Some/Path/Credential.json");
+
+var googleConverter = new GoogleSheetConverter(googleSheetId, googleCredential, TimeZoneInfo.Utc);
+
+// bake sheets from google converter
+await sheetContainer.Bake(googleConverter);
+```
+
 ## Save and Load Converted Datasheet
-Below code shows how to save and load converted json.
+Below code shows how to load sheet from Excel and save as JSON. This typically happens through Unity Editor script or any pre-build time script.
 
 ```csharp
+// create excel converter from path
+var excelConverter = new ExcelSheetConverter("Excel/Files/Path", TimeZoneInfo.Utc);
+
 // create json converter from path
-var jsonConverter = new JsonSheetConverter("Saved/Files/Path");
+var jsonConverter = new JsonSheetConverter("Json/Files/Path");
+
+// convert from excel
+await sheetContainer.Bake(excelConverter);
 
 // save as json
 await sheetContainer.Store(jsonConverter);
+```
 
-// later, load from json
+Then, for runtime you can load your data from JSON.
+
+```csharp
+// create json converter from path
+var jsonConverter = new JsonSheetConverter("Json/Files/Path");
+
+// load from json
 await sheetContainer.Bake(jsonConverter);
 ```
-You can extend `JsonSheetConverter` to customize serialization process.
+
+You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. If you are using `StreamingAssets`, see [Reading From StreaminAssets](#reading-from-streamingassets).
 
 ## Accessing Row
 Below code shows how to access specific `ItemSheet.Row`.
@@ -414,7 +444,79 @@ public class SheetContainer : SheetContainerBase
 Note that both `ItemSheet` and `HeroSheet` have to be one of the properties on same `SheetContainer` class.
 
 ## Custom Converters
-User can create and customize their own converter by implementing `ISheetImporter` and `ISheetExporter`.
+User can create and customize their own converter by implementing `ISheetImporter` and `ISheetExporter`. Or you can inherit `JsonSheetConverter` and override methods like `GetSettings()` to customize serialization process.
 
 ## Custom Verifiers
 You can verify datasheet sanity with custom verifiers. For example, you can define `ResourceAttribute` to mark columns that should reference path inside of Unity's Resources folder.
+
+```csharp
+public class ResourceAttribute : SheetAssetAttribute
+{
+    public ResourceAttribute() { }
+}
+
+public class PrefabSheet : Sheet<PrefabSheet.Row>
+{
+    public class Row : SheetRowArray<Elem>
+    {
+        [Resource] public string Path { get; private set; }
+    }
+}
+
+// this is the part depends on Unity
+public class ResourceVerifier : SheetVerifier<ResourceAttribute, string>
+{
+    // any string column with ResourceAttribute will be passed through the verify process
+    // return value is the error string
+    public override string Verify(ResourceAttribute attribute, string path)
+    {
+        if (string.IsNullOrEmpty(path))
+            return null;
+
+        var obj = Resources.Load(path);
+        if (obj != null)
+            return null;
+
+        return $"Resource {path} not found!";
+    }
+}
+```
+
+Then, you can call `SheetContainerBase.Verify` after loading your sheet.
+```csharp
+sheetContainer.Verify(new ResourceVerifier() /*, new OtherVerifier()... */);
+```
+
+## Reading from StreamingAssets
+If you are using `StreamingAssets` folder, it is required to implement own `IFileSystem` to read files from compressed `jar`. I would recommend combination with [BetterStreamingAsset](https://github.com/gwiazdorrr/BetterStreamingAssets). Below is example `IFileSystem` implemented through it.
+
+```csharp
+public class StreamingAssetFileSystem : IFileSystem
+{
+    public StreamingAssetFileSystem()
+        => BetterStreamingAssets.Initialize();
+
+    public bool Exists(string path)
+        => BetterStreamingAssets.FileExists(path);
+
+    public IEnumerable<string> GetFiles(string path, string extension)
+        => BetterStreamingAssets.GetFiles(path, $"*.{extension}");
+
+    public Stream OpenRead(string path)
+        => BetterStreamingAssets.OpenRead(path);
+
+    // write access to streaming assets is not allowed
+    public Stream OpenWrite(string path)
+        => throw new System.NotImplementedException();
+}
+```
+
+You can pass it as parameter of `JsonSheetConverter` at runtime.
+
+```csharp
+// create json converter from path
+var jsonConverter = new JsonSheetConverter("Json/Files/Path", new StreamingAssetFileSystem());
+
+// load from json
+await sheetContainer.Bake(jsonConverter);
+```
