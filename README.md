@@ -171,16 +171,18 @@ You can extend `JsonSheetConverter` to customize serialization process. For exam
 ## Accessing Row
 Below code shows how to access specific `ItemSheet.Row`.
 ```csharp
+// same as sheetContainer.Items.Find("ITEM_LVUP003");
+// returns null if no row found
 var row = sheetContainer.Items["ITEM_LVUP003"];
 
-// Assassin's dagger
+// print "Assassin's dagger"
 logger.LogInformation(row.Name);
 ```
 
 `Sheet<T>` is `KeyedCollection<T>`, you can loop through it and order is guaranteed to be same as spreadsheet.
 
 ```csharp
-// loop through all rows
+// loop through all rows and print their names
 foreach (var row in sheetContainer.Items)
     logger.LogInformation(row.Name);
 ```
