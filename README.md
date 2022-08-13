@@ -4,7 +4,7 @@
 Easy datasheet management for C# and Unity. Supports Excel, Google Sheet, JSON and CSV format. It has been used for several mobile games that released on Google Play and AppStore.
 
 ## Concept
-Throughout all stage of game development, you'll need to deal with various data. Characters, stats, stages, currencies and so on! If you're using Unity, scriptable object and inspector is not good enough for mass edition and lacks powerful features like functions or fill up. With BakingSheet your designers can use existing spreadsheet editor, while you, the programmer, can directly use C# object without messy parsing logics.
+Throughout all stage of game development, you'll need to deal with various data. Characters, stats, stages, currencies and so on! If you're using Unity, scriptable object and inspector is not good enough for mass edition and lacks powerful features like functions or fill up. With BakingSheet your designers can use existing spreadsheet editor, while you, the programmer, can directly use C# object without messy parsing logics or code generations.
 
 Let's say your team is making a RPG game. Your game has 100 characters and 10 stats for each character. If your team use Unity's scriptable object, designers will have to spend lots of time adding and editing from Unity inspector. And after setup what if you need mass edit, like to double ATK stat of all characters? Will you go through all characters with Unity inspector, or make Editor script for every time mass edit is required? With BakingSheet, designers can work easily with spreadsheet functions and fill ups without programmer help!
 
