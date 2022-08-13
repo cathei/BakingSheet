@@ -11,6 +11,8 @@ namespace Cathei.BakingSheet.Internal
 
         bool Exists(string path);
         Stream OpenRead(string path);
+
+        void CreateDirectory(string path);
         Stream OpenWrite(string path);
     }
 
@@ -29,6 +31,11 @@ namespace Cathei.BakingSheet.Internal
         public Stream OpenRead(string path)
         {
             return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        }
+
+        public void CreateDirectory(string path)
+        {
+            Directory.CreateDirectory(path);
         }
 
         public Stream OpenWrite(string path)

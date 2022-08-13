@@ -95,6 +95,8 @@ namespace Cathei.BakingSheet
         {
             var sheetProps = context.Container.GetSheetProperties();
 
+            _fileSystem.CreateDirectory(_loadPath);
+
             foreach (var prop in sheetProps)
             {
                 using (context.Logger.BeginScope(prop.Name))

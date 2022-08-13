@@ -45,8 +45,6 @@ namespace Cathei.BakingSheet.Examples
         {
             var jsonPath = Path.Combine(Application.streamingAssetsPath, "Google");
 
-            Directory.CreateDirectory(jsonPath);
-
             var googleConverter = new GoogleSheetConverter("1iWMZVI4FgtGbig4EgPIun_BRbzp4ulqRIzINZQl-AFI", GoogleCredential, TimeZoneInfo.Utc);
 
             var sheetContainer = new Google.SheetContainer(new UnityLogger());

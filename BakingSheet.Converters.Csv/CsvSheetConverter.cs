@@ -111,6 +111,8 @@ namespace Cathei.BakingSheet
 
         protected override Task<bool> SaveData()
         {
+            _fileSystem.CreateDirectory(_loadPath);
+
             foreach (var tableItem in _dataTables)
             {
                 var file = Path.Combine(_loadPath, $"{tableItem.Key}.{_extension}");

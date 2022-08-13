@@ -553,6 +553,10 @@ public class StreamingAssetFileSystem : IFileSystem
         => BetterStreamingAssets.OpenRead(path);
 
     // write access to streaming assets is not allowed
+    public void CreateDirectory(string path)
+        => throw new System.NotImplementedException();
+
+    // write access to streaming assets is not allowed
     public Stream OpenWrite(string path)
         => throw new System.NotImplementedException();
 }

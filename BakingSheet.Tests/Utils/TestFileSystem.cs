@@ -40,6 +40,11 @@ namespace Cathei.BakingSheet.Tests
             return files[path];
         }
 
+        public void CreateDirectory(string path)
+        {
+            // do nothing
+        }
+
         public Stream OpenWrite(string path)
         {
             files[path] = new MemoryStream();
