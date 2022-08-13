@@ -4,6 +4,69 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "unity: copy",
+            "dependsOn": [
+                "unity: copy core",
+                "unity: copy excel",
+                "unity: copy google",
+                "unity: copy csv",
+                "unity: copy json"
+            ],
+            "dependsOrder": "sequence",
+            "group": "build",
+            "problemMatcher": [ "$tsc" ]
+        },
+        {
+            "label": "unity: copy core",
+            "type": "shell",
+            "command": "cp",
+            "args": [
+                "-R", "BakingSheet/Src/*",
+                "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Core"
+            ],
+            "problemMatcher": [ "$tsc" ],
+        },
+        {
+            "label": "unity: copy excel",
+            "type": "shell",
+            "command": "cp",
+            "args": [
+                "BakingSheet.Converters.Excel/*.cs",
+                "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Converters/Excel"
+            ],
+            "problemMatcher": [ "$tsc" ],
+        },
+        {
+            "label": "unity: copy google",
+            "type": "shell",
+            "command": "cp",
+            "args": [
+                "BakingSheet.Converters.Google/*.cs",
+                "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Converters/Google"
+            ],
+            "problemMatcher": [ "$tsc" ],
+        },
+        {
+            "label": "unity: copy csv",
+            "type": "shell",
+            "command": "cp",
+            "args": [
+                "BakingSheet.Converters.Csv/*.cs",
+                "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Converters/Csv"
+            ],
+            "problemMatcher": [ "$tsc" ],
+        },
+        {
+            "label": "unity: copy json",
+            "type": "shell",
+            "command": "cp",
+            "args": [
+                "BakingSheet.Converters.Json/*.cs",
+                "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Converters/Json"
+            ],
+            "problemMatcher": [ "$tsc" ],
+        },
+        {
             "label": "unity: publish",
             "dependsOn": [
                 "unity: publish core",
@@ -22,7 +85,7 @@
             "command": "dotnet",
             "args": [
                 "publish", "-c", "Release",
-                "-o", "UnityProject/Assets/Plugins/BakingSheet/Core",
+                "-o", "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Core",
                 "BakingSheet" ],
             "problemMatcher": [ "$tsc" ],
         },
@@ -32,7 +95,7 @@
             "command": "dotnet",
             "args": [
                 "publish", "-c", "Release",
-                "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/Excel",
+                "-o", "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Converters/Excel",
                 "BakingSheet.Converters.Excel"
             ],
             "problemMatcher": [ "$tsc" ],
@@ -43,7 +106,7 @@
             "command": "dotnet",
             "args": [
                 "publish", "-c", "Release",
-                "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/Google",
+                "-o", "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Converters/Google",
                 "BakingSheet.Converters.Google"
             ],
             "problemMatcher": [ "$tsc" ],
@@ -54,7 +117,7 @@
             "command": "dotnet",
             "args": [
                 "publish", "-c", "Release",
-                "-o", "UnityProject/Assets/Plugins/BakingSheet/Editor/CSV",
+                "-o", "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Converters/CSV",
                 "BakingSheet.Converters.Csv"
             ],
             "problemMatcher": [ "$tsc" ],
@@ -65,7 +128,7 @@
             "command": "dotnet",
             "args": [
                 "publish", "-c", "Release",
-                "-o", "UnityProject/Assets/Plugins/BakingSheet/Json",
+                "-o", "UnityProject/Packages/com.cathei.bakingsheet/Runtime/Converters/Json",
                 "BakingSheet.Converters.Json"
             ],
             "problemMatcher": [ "$tsc" ],
