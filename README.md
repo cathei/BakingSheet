@@ -166,7 +166,7 @@ var jsonConverter = new JsonSheetConverter("Json/Files/Path");
 await sheetContainer.Bake(jsonConverter);
 ```
 
-You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. If you are using `StreamingAssets`, see [Reading From StreaminAssets](#reading-from-streamingassets).
+You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. If you are using `StreamingAssets` on Android, see [Reading From StreaminAssets](#reading-from-streamingassets).
 
 ## Accessing Row
 Below code shows how to access specific `ItemSheet.Row`.
@@ -535,7 +535,7 @@ sheetContainer.Verify(new ResourceVerifier() /*, new OtherVerifier()... */);
 ```
 
 ## Reading from StreamingAssets
-If you are using `StreamingAssets` folder, it is required to implement own `IFileSystem` to read files from compressed `jar`. I would recommend combination with [BetterStreamingAsset](https://github.com/gwiazdorrr/BetterStreamingAssets). Below is example `IFileSystem` implemented through it.
+If you are using `StreamingAssets` folder on Android platform, it is required to implement own `IFileSystem` for runtime to read files from compressed `jar`. I would recommend combination with [BetterStreamingAsset](https://github.com/gwiazdorrr/BetterStreamingAssets). Below is example `IFileSystem` implemented through it.
 
 ```csharp
 public class StreamingAssetFileSystem : IFileSystem
