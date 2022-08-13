@@ -71,7 +71,7 @@ You can see there are two classes, `ItemSheet` and `ItemSheet.Row`. Each represe
 
 Note that `Id` column is already defined in base `SheetRow` class. `Id` is `string` by default, but you can change type. See [this section](#using-non-string-column-as-id) to use non-string type for `Id`.
 
-To represent collection of sheets, implement `SheetContainerBase` class.
+To represent collection of sheets, a document, let's create `SheetContainer` class inherits from `SheetContainerBase`.
 ```csharp
 public class SheetContainer : SheetContainerBase
 {
