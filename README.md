@@ -67,6 +67,8 @@ public class ItemSheet : Sheet<ItemSheet.Row>
     }
 }
 ```
+You can see there are two classes, `ItemSheet` and `ItemSheet.Row`. Each represents a page of sheet and a single row. `ItemSheet` is surrounding `Row` class. It is not forced but recommended convention. Important part is they will inherit from `Sheet<TRow>` and `SheetRow`.
+
 Note that `Id` column is already defined in base `SheetRow` class. `Id` is `string` by default, but you can change type. See [this section](#using-non-string-column-as-id) to use non-string type for `Id`.
 
 To represent collection of sheets, implement `SheetContainerBase` class.
