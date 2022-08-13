@@ -1,0 +1,22 @@
+<!--
+  You might want to copy this link.xml under your Assets folder
+  If you plan to use Google Sheet converter at runtime
+-->
+<?xml version="1.0" encoding="utf-8" ?>
+<linker>
+  <!-- <assembly fullname="System">
+  <namespace fullname="System.ComponentModel" preserve="all"/>
+  <namespace fullname="System.Configuration" preserve="all"/>
+  <namespace fullname="System.Net.Configuration" preserve="all"/>
+  </assembly> -->
+  
+  <assembly fullname="System.Core">
+      <type fullname="System.Linq.Expressions.Interpreter.LightLambda" preserve="all" /> 
+  </assembly>
+
+  <assembly fullname="Google.Apis" ignoreIfMissing="1" preserve="all"/>
+  <assembly fullname="Google.Apis.Core" ignoreIfMissing="1" preserve="all"/>
+  <assembly fullname="Google.Apis.Auth" ignoreIfMissing="1" preserve="all"/>
+  <assembly fullname="Google.Apis.Drive.v3" ignoreIfMissing="1" preserve="all"/>
+  <assembly fullname="Google.Apis.Sheets.v4" ignoreIfMissing="1" preserve="all"/>
+</linker>

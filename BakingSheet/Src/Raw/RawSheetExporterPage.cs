@@ -14,17 +14,6 @@ namespace Cathei.BakingSheet.Raw
 
     public static class RawSheetExporterPageExtensions
     {
-        private static bool ShouldExport(PropertyInfo prop)
-        {
-            if (prop.GetCustomAttribute<NonSerializedAttribute>() != null)
-                return false;
-
-            if (prop.SetMethod == null)
-                return false;
-
-            return true;
-        }
-
         public static void Export(this IRawSheetExporterPage page, RawSheetConverter exporter, SheetConvertingContext context, ISheet sheet)
         {
             PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), Config.IsConvertable);
