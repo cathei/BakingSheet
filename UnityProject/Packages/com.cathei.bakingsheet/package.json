@@ -1,12 +1,12 @@
 {
   "name": "com.cathei.bakingsheet",
   "displayName": "BakingSheet",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "unity": "2019.4",
   "description": "Easy datasheet management for C# and Unity.\nSupports Excel, Google Sheet, JSON and CSV format.",
   "license": "MIT",
   "documentationUrl": "https://github.com/cathei/BakingSheet",
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "2.0.0"
+    "com.unity.nuget.newtonsoft-json": "3.0.2"
   }
 }
