@@ -40,7 +40,7 @@ namespace Cathei.BakingSheet.Examples
             }
         }
 
-        [MenuItem("Tools/Import From Google")]
+        [MenuItem("BakingSheet/Sample/Import From Google")]
         public static async void ConvertFromGoogle()
         {
             var jsonPath = Path.Combine(Application.streamingAssetsPath, "Google");

@@ -12,7 +12,7 @@ namespace Cathei.BakingSheet.Editor
         const string PackagePath = "Packages/com.cathei.bakingsheet";
         const string SamplePath = "Assets/Samples";
 
-        [MenuItem("Tools/Generate Package")]
+        [MenuItem("BakingSheet/Generate Package")]
         public static void GeneratePackage()
         {
             // GITHUB_REF = refs/heads/v1.X.X
@@ -37,7 +37,7 @@ namespace Cathei.BakingSheet.Editor
             Debug.Log($"Generating Unity Package Completed: {savePath} {sampleSavePath}");
         }
 
-        [MenuItem("Tools/Generate Package (AssetStore)")]
+        [MenuItem("BakingSheet/Generate Package (AssetStore)")]
         public static void GeneratePackageCombined()
         {
             var info = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(PackagePath);

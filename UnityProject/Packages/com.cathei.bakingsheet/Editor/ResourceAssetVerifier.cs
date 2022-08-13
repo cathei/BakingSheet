@@ -12,7 +12,7 @@ namespace Cathei.BakingSheet
             if (string.IsNullOrEmpty(path))
                 return null;
 
-            path = Path.Combine(attribute.Prefix, path);
+            path = Path.Combine(attribute.Prefix ?? "", path);
 
             var obj = Resources.Load(path);
             if (obj != null)
