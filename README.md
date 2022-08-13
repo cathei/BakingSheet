@@ -413,6 +413,18 @@ public class SheetContainer : SheetContainerBase
 ```
 Note that both `ItemSheet` and `HeroSheet` have to be one of the properties on same `SheetContainer` class.
 
+Now, not only error message will pop up when `RequiredItem` doesn't exist in `SheetContainer.Items`, you can access `ItemSheet.Row` directly through it.
+
+```csharp
+var heroRow = sheetContainer.Heroes["HERO001"];
+
+// ITEM_LVUP001 from Items sheet
+var itemRow = heroRow.GetLevel(5).RequiredItem.Ref;
+
+// print "Warrior's Shield"
+logger.LogInformation(itemRow.Name);
+```
+
 ## Using Non-String Column as Id
 Any type can be used value can be also used as `Id`. This is possible as passing type argument to generic class `SheetRow<TKey>` and `Sheet<TKey, TRow>`. Below is example content of file `Contstants.xlsx`.
 
