@@ -1,0 +1,39 @@
+{
+  "name": "com.cathei.bakingsheet",
+  "displayName": "BakingSheet",
+  "version": "3.4.0",
+  "unity": "2019.4",
+  "description": "Easy datasheet management for C# and Unity.\nSupports Excel, Google Sheet, JSON and CSV format.",
+  "license": "MIT",
+  "documentationUrl": "https://github.com/cathei/BakingSheet",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "2.0.0"
+  },
+  "samples": [
+    {
+      "displayName": "001 - Define Sheet Container",
+      "description": "How to define basic sheet container",
+      "path": "Samples~/001 - Define Sheet Container"
+    },
+    {
+      "displayName": "002 - Import From Excel",
+      "description": "How to import your datasheet from Excel (.xlsx) files",
+      "path": "Samples~/002 - Import From Excel"
+    },
+    {
+      "displayName": "003 - Import From Google Sheet",
+      "description": "How to import your datasheet from Google Sheet with Google credential",
+      "path": "Samples~/003 - Import From Google Sheet"
+    },
+    {
+      "displayName": "004 - Import From CSV",
+      "description": "How to import your datasheet from CSV files",
+      "path": "Samples~/004 - Import From CSV"
+    },
+    {
+      "displayName": "005 - Runtime Usage",
+      "description": "How to load and use your datasheet in runtime",
+      "path": "Samples~/005 - Runtime Usage"
+    }
+  ]
+}

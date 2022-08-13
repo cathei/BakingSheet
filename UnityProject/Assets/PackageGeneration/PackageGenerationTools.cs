@@ -12,24 +12,30 @@ namespace Cathei.BakingSheet.Editor
         [MenuItem("Tools/Generate Package")]
         public static void GeneratePackage()
         {
-            var githubRef = Environment.GetEnvironmentVariable("GITHUB_REF");
-
             // GITHUB_REF = refs/heads/v1.X.X
-            if (githubRef != null)
-                PlayerSettings.bundleVersion = githubRef.Substring(11);
+            string githubRef = Environment.GetEnvironmentVariable("GITHUB_REF");
+            string githubVersion = githubRef?.Substring(11);
 
-            AssetDatabase.ExportPackage(new string[] {
-                "Assets/Plugins/BakingSheet"
-            }, GetPackagePath("BakingSheet"), ExportPackageOptions.Recurse);
+            string packagePath = "Packages/com.cathei.bakingsheet";
 
-            Debug.Log("Generating Unity Package Completed");
+            var info = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(packagePath);
+
+            if (githubVersion != null && info.version != githubVersion)
+                throw new InvalidOperationException("Package version does not match GitHub ref");
+
+            string savePath = GetPackagePath("BakingSheet", info.version);
+
+            AssetDatabase.ExportPackage(
+                new[] { packagePath, }, savePath, ExportPackageOptions.Recurse);
+
+            Debug.Log($"Generating Unity Package Completed: {savePath}");
         }
 
-        private static string GetPackagePath(string title)
+        private static string GetPackagePath(string title, string version)
         {
             return Path.Combine(
                 Path.GetDirectoryName(Directory.GetCurrentDirectory()), "Build",
-                $"{title}.{PlayerSettings.bundleVersion}.unitypackage");
+                $"{title}.{version}.unitypackage");
         }
     }
 }
