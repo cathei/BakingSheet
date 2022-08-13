@@ -1,8 +1,9 @@
 {
-    "name": "BakingSheet.Json",
+    "name": "BakingSheet.Samples",
     "rootNamespace": "",
     "references": [
-        "BakingSheet"
+        "BakingSheet",
+        "BakingSheet.Json"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

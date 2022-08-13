@@ -2,7 +2,7 @@
     "name": "BakingSheet.Csv",
     "rootNamespace": "",
     "references": [
-        "GUID:eff4759ec02784e83a3522cd45057e0b"
+        "BakingSheet"
     ],
     "includePlatforms": [
         "Editor"

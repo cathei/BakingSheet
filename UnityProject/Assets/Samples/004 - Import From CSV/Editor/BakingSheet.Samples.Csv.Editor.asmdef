@@ -1,10 +1,14 @@
 {
-    "name": "BakingSheet.Json",
+    "name": "BakingSheet.Samples.Csv.Editor",
     "rootNamespace": "",
     "references": [
-        "BakingSheet"
+        "BakingSheet",
+        "BakingSheet.Csv",
+        "BakingSheet.Samples"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

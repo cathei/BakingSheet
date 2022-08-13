@@ -16,7 +16,8 @@ namespace Cathei.BakingSheet.Editor
             string githubRef = Environment.GetEnvironmentVariable("GITHUB_REF");
             string githubVersion = githubRef?.Substring(11);
 
-            string packagePath = "Packages/com.cathei.bakingsheet";
+            const string packagePath = "Packages/com.cathei.bakingsheet";
+            const string samplePath = "Assets/Samples";
 
             var info = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(packagePath);
 
@@ -28,7 +29,12 @@ namespace Cathei.BakingSheet.Editor
             AssetDatabase.ExportPackage(
                 new[] { packagePath, }, savePath, ExportPackageOptions.Recurse);
 
-            Debug.Log($"Generating Unity Package Completed: {savePath}");
+            string sampleSavePath = GetPackagePath("BakingSheet.Samples", info.version);
+
+            AssetDatabase.ExportPackage(
+                new[] { samplePath, }, sampleSavePath, ExportPackageOptions.Recurse);
+
+            Debug.Log($"Generating Unity Package Completed: {savePath} {sampleSavePath}");
         }
 
         private static string GetPackagePath(string title, string version)

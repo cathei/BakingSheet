@@ -1,10 +1,15 @@
 {
-    "name": "BakingSheet.Json",
+    "name": "BakingSheet.Samples.Google.Editor",
     "rootNamespace": "",
     "references": [
-        "BakingSheet"
+        "BakingSheet",
+        "BakingSheet.Google",
+        "BakingSheet.Samples",
+        "BakingSheet.Json"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
