@@ -91,6 +91,7 @@ You can add as many sheets you want as properties of your `SheetContainer`. Sing
 ## Supported Column Type
 * `string`
 * Numeric primitive types (`int`, `long`, `float`, `double`, and so on)
+* `bool` ("TRUE" or "FALSE")
 * Custom `enum` types
 * `DateTime` and `TimeSpan`
 * Cross-sheet reference (`Sheet<>.Reference`)
