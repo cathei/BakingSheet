@@ -20,6 +20,8 @@ namespace Cathei.BakingSheet.Examples
                 var csvPath = Path.GetDirectoryName(csvAsset);
                 var resultPath = Path.Combine(Application.streamingAssetsPath, "CSV");
 
+                Directory.CreateDirectory(resultPath);
+
                 var logger = new UnityLogger();
                 var sheetContainer = new SheetContainer(logger);
 
