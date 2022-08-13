@@ -519,7 +519,7 @@ public class ResourceAttribute : SheetAssetAttribute
 
 public class PrefabSheet : Sheet<PrefabSheet.Row>
 {
-    public class Row : SheetRowArray<Elem>
+    public class Row : SheetRow
     {
         [Resource] public string Path { get; private set; }
     }
