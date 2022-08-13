@@ -67,7 +67,7 @@ public class ItemSheet : Sheet<ItemSheet.Row>
     }
 }
 ```
-Note that `Id` column is already defined in base `SheetRow` class.
+Note that `Id` column is already defined in base `SheetRow` class. `Id` is `string` by default, but you can change type. See [this section](#using-non-string-column-as-id) to use non-string type for `Id`.
 
 To represent collection of sheets, implement `SheetContainerBase` class.
 ```csharp
@@ -80,10 +80,21 @@ public class SheetContainer : SheetContainerBase
     // for .csv or .json, it is name of the file
     public ItemSheet Items { get; private set; }
 
-    // add other sheets right here
+    // add other sheets as you extend your project
     // public CharacterSheet Characters { get; private set; }
 }
 ```
+You can add as many sheets you want as properties of your `SheetContainer`. Single `SheetContainer` will be enough unless you want to partition your sheets.
+
+## Supported Column Type
+* `string`
+* Numeric primitive types (`int`, `long`, `float`, `double`, and so on)
+* Custom `enum` types
+* `DateTime` and `TimeSpan`
+* Cross-sheet reference (`Sheet<>.Reference`)
+* Nullable for any other supported value type (for example `int?`)
+* `List<>` and `Dictionary<,>`
+* Custom `struct` and `class` as [nested column](#using-nested-type-column)
 
 ## Converters
 Converters are simple implementation import/export records from datasheet sources. These come as separated library, as it's user's decision to select datasheet source.
@@ -174,83 +185,6 @@ foreach (var row in sheetContainer.Items)
     logger.LogInformation(row.Name);
 ```
 
-## Using Non-String Column as Id
-Any type can be used value can be also used as `Id`. This is possible as passing type argument to generic class `SheetRow<TKey>` and `Sheet<TKey, TRow>`. Below is example content of file `Contstants.xlsx`.
-
-![Const Sample](.github/images/sample_const.png)
-
-<details>
-<summary>Markdown version</summary>
-
-| Id             | Value                                 |
-|----------------|---------------------------------------|
-| ServerAddress  | https://github.com/cathei/BakingSheet |
-| InitialGold    | 1000                                  |
-| CriticalChance | 0.1                                   |
-</details>
-
-Below code shows how to use enumeration type as Id.
-```csharp
-public enum GameConstant
-{
-    ServerAddress,
-    InitialGold,
-    CriticalChance,
-}
-
-public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
-{
-    public class Row : SheetRow<GameConstant>
-    {
-        public string Value { get; private set; }
-    }
-}
-```
-
-## Using Post Load Hook
-You can override `PostLoad` method of `Sheet`, `SheetRow` or `SheetRowElem` to execute post load process.
-
-Below code shows how to convert loaded sheet value dynamically.
-```csharp
-public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
-{
-    public class Row : SheetRow<GameConstant>
-    {
-        public string Value { get; private set; }
-
-        private int valueInt;
-        public int ValueInt => valueInt;
-
-        private float valueFloat;
-        public float ValueFloat => valueFloat;
-
-        public override void PostLoad(SheetConvertingContext context)
-        {
-            base.PostLoad(context);
-
-            int.TryParse(Value, out valueInt);
-            float.TryParse(Value, out valueFloat);
-        }
-    }
-
-    public string GetString(GameConstant key)
-    {
-        return Find(key).Value;
-    }
-
-    public int GetInt(GameConstant key)
-    {
-        return Find(key).ValueInt;
-    }
-
-    public float GetFloat(GameConstant key)
-    {
-        return Find(key).ValueFloat;
-    }
-}
-```
-Note that properties without setter are not serialized. Alternatively you can use `[NonSerialized]` attribute.
-
 ## Using List Column
 List columns are used for simple array.
 
@@ -284,6 +218,8 @@ public class DungeonSheet : Sheet<DungeonSheet.Row>
     {
         public string Name { get; private set; }
 
+        // you can use any supported type as list
+        // to know more about sheet reference types, see cross-sheet reference section
         public List<MonsterSheet.Reference> Monsters { get; private set; }
         public List<ItemSheet.Reference> Items { get; private set; }
     }
@@ -474,6 +410,83 @@ public class SheetContainer : SheetContainerBase
 }
 ```
 Note that both `ItemSheet` and `HeroSheet` have to be one of the properties on same `SheetContainer` class.
+
+## Using Non-String Column as Id
+Any type can be used value can be also used as `Id`. This is possible as passing type argument to generic class `SheetRow<TKey>` and `Sheet<TKey, TRow>`. Below is example content of file `Contstants.xlsx`.
+
+![Const Sample](.github/images/sample_const.png)
+
+<details>
+<summary>Markdown version</summary>
+
+| Id             | Value                                 |
+|----------------|---------------------------------------|
+| ServerAddress  | https://github.com/cathei/BakingSheet |
+| InitialGold    | 1000                                  |
+| CriticalChance | 0.1                                   |
+</details>
+
+Below code shows how to use enumeration type as Id.
+```csharp
+public enum GameConstant
+{
+    ServerAddress,
+    InitialGold,
+    CriticalChance,
+}
+
+public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
+{
+    public class Row : SheetRow<GameConstant>
+    {
+        public string Value { get; private set; }
+    }
+}
+```
+
+## Using Post Load Hook
+You can override `PostLoad` method of `Sheet`, `SheetRow` or `SheetRowElem` to execute post load process.
+
+Below code shows how to convert loaded sheet value dynamically.
+```csharp
+public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
+{
+    public class Row : SheetRow<GameConstant>
+    {
+        public string Value { get; private set; }
+
+        private int valueInt;
+        public int ValueInt => valueInt;
+
+        private float valueFloat;
+        public float ValueFloat => valueFloat;
+
+        public override void PostLoad(SheetConvertingContext context)
+        {
+            base.PostLoad(context);
+
+            int.TryParse(Value, out valueInt);
+            float.TryParse(Value, out valueFloat);
+        }
+    }
+
+    public string GetString(GameConstant key)
+    {
+        return Find(key).Value;
+    }
+
+    public int GetInt(GameConstant key)
+    {
+        return Find(key).ValueInt;
+    }
+
+    public float GetFloat(GameConstant key)
+    {
+        return Find(key).ValueFloat;
+    }
+}
+```
+Note that properties without setter are not serialized. Alternatively you can use `[NonSerialized]` attribute.
 
 ## Custom Converters
 User can create and customize their own converter by implementing `ISheetImporter` and `ISheetExporter`. Or you can inherit `JsonSheetConverter` and override methods like `GetSettings()` to customize serialization process.
