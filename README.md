@@ -371,8 +371,12 @@ public class HeroSheet : Sheet<HeroSheet.Row>
 
         public Elem GetLevel(int level)
         {
+            // Level 1 would be index 0
             return this[level - 1];
         }
+
+        // Max level would be count of elements
+        public int MaxLevel => Count;
     }
 
     public class Elem : SheetRowElem
