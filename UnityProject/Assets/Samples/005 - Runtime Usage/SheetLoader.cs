@@ -12,8 +12,9 @@ namespace Cathei.BakingSheet.Examples
 
         private async void Start()
         {
-            var jsonPath = Path.Combine(Application.streamingAssetsPath, "Excel");
-            var jsonConverter = new JsonSheetConverter(jsonPath);
+            // If you're using StreamingAssets from Android, StreamingAssetsFileSystem must be used
+            // Path is relative to StreamingAssets folder
+            var jsonConverter = new JsonSheetConverter("Excel", new StreamingAssetsFileSystem());
 
             Sheet = new SheetContainer(new UnityLogger());
             await Sheet.Bake(jsonConverter);
