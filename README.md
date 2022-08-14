@@ -70,7 +70,7 @@ public class ItemSheet : Sheet<ItemSheet.Row>
     }
 }
 ```
-You can see there are two classes, `ItemSheet` and `ItemSheet.Row`. Each represents a page of sheet and a single row. `ItemSheet` is surrounding `Row` class. It is not forced but recommended convention. Important part is they will inherit from `Sheet<TRow>` and `SheetRow`.
+You can see there are two classes, `ItemSheet` and `ItemSheet.Row`. Each represents a page of sheet and a single row. `ItemSheet` is surrounding `Row` class (It is not forced but recommended convention). Important part is they will inherit from `Sheet<TRow>` and `SheetRow`.
 
 Note that `Id` column is already defined in base `SheetRow` class. `Id` is `string` by default, but you can change type. See [this section](#using-non-string-column-as-id) to use non-string type for `Id`.
 
@@ -89,7 +89,7 @@ public class SheetContainer : SheetContainerBase
     // public CharacterSheet Characters { get; private set; }
 }
 ```
-You can add as many sheets you want as properties of your `SheetContainer`. Single `SheetContainer` will be enough unless you want to partition your sheets.
+You can add as many sheets you want as properties of your `SheetContainer`. This class is designed to be "fat", means single `SheetContainer` should contain all your sheets unless there is specific reason to partition your sheets. For example when you want to deploy some `Sheet` only exclusive to server program, you might want to partition `ServerSheetContainer` and `ClientSheetContainer`.
 
 ## Supported Column Type
 * `string`
@@ -172,7 +172,7 @@ var jsonConverter = new JsonSheetConverter("Json/Files/Path");
 await sheetContainer.Bake(jsonConverter);
 ```
 
-You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. If you are using `StreamingAssets` on Android, see [Reading From StreaminAssets](#reading-from-streamingassets).
+You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. If you are using `StreamingAssets` on Android, see [Reading From StreamingAssets](#reading-from-streamingassets).
 
 ## Accessing Row
 Below code shows how to access specific `ItemSheet.Row`.
