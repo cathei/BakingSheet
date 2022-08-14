@@ -16,3 +16,9 @@ License under MIT
 Used for JSON sheet converter
 https://www.newtonsoft.com/json
 License under MIT
+
+## Better Streaming Assets
+Used for Streaming Assets File System
+https://github.com/gwiazdorrr/BetterStreamingAssets (Original)
+https://github.com/cathei/BetterStreamingAssets-Package (Unity Package)
+License under MIT
