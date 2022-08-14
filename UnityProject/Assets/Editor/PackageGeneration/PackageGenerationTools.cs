@@ -10,6 +10,7 @@ namespace Cathei.BakingSheet.Editor
     public static class PackageGenerationTools
     {
         const string PackagePath = "Packages/com.cathei.bakingsheet";
+        const string BsaPath = "Packages/com.cathei.betterstreamingassets";
         const string SamplePath = "Assets/Samples";
 
         [MenuItem("BakingSheet/Generate Package")]
@@ -27,12 +28,12 @@ namespace Cathei.BakingSheet.Editor
             string savePath = GetPackagePath("BakingSheet", info.version);
 
             AssetDatabase.ExportPackage(
-                new[] { PackagePath, }, savePath, ExportPackageOptions.Recurse);
+                new[] { PackagePath, BsaPath }, savePath, ExportPackageOptions.Recurse);
 
             string sampleSavePath = GetPackagePath("BakingSheet.Samples", info.version);
 
             AssetDatabase.ExportPackage(
-                new[] { SamplePath, }, sampleSavePath, ExportPackageOptions.Recurse);
+                new[] { SamplePath }, sampleSavePath, ExportPackageOptions.Recurse);
 
             Debug.Log($"Generating Unity Package Completed: {savePath} {sampleSavePath}");
         }
@@ -45,7 +46,7 @@ namespace Cathei.BakingSheet.Editor
             string savePath = GetPackagePath("BakingSheet.AssetStore", info.version);
 
             AssetDatabase.ExportPackage(
-                new[] { PackagePath, SamplePath }, savePath, ExportPackageOptions.Recurse);
+                new[] { PackagePath, BsaPath, SamplePath }, savePath, ExportPackageOptions.Recurse);
 
             Debug.Log($"Generating Unity Package Completed: {savePath}");
         }
