@@ -13,7 +13,7 @@ namespace Cathei.BakingSheet.Raw
 
         public RawSheetImporter(TimeZoneInfo timeZoneInfo)
         {
-            TimeZoneInfo = timeZoneInfo;
+            TimeZoneInfo = timeZoneInfo ?? TimeZoneInfo.Utc;
         }
 
         public async Task<bool> Import(SheetConvertingContext context)

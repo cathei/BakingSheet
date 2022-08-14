@@ -18,7 +18,7 @@ namespace Cathei.BakingSheet
         private ICredential _credential;
         private Spreadsheet _spreadsheet;
 
-        public GoogleSheetConverter(string gsheetAddress, string credential, TimeZoneInfo timeZoneInfo)
+        public GoogleSheetConverter(string gsheetAddress, string credential, TimeZoneInfo timeZoneInfo = null)
             : base(timeZoneInfo)
         {
             _gsheetAddress = gsheetAddress;

@@ -123,7 +123,7 @@ var logger = new UnityLogger();
 var sheetContainer = new SheetContainer(logger);
 
 // create excel converter from path
-var excelConverter = new ExcelSheetConverter("Excel/Files/Path", TimeZoneInfo.Utc);
+var excelConverter = new ExcelSheetConverter("Excel/Files/Path");
 
 // bake sheets from excel converter
 await sheetContainer.Bake(excelConverter);
@@ -139,7 +139,7 @@ string googleSheetId = "1iWMZVI4FgtGbig4EgPIun_BRbzp4ulqRIzINZQl-AFI";
 // this starts with { "type": "service_account", "project_id": ...
 string googleCredential = File.ReadAllText("Some/Path/Credential.json");
 
-var googleConverter = new GoogleSheetConverter(googleSheetId, googleCredential, TimeZoneInfo.Utc);
+var googleConverter = new GoogleSheetConverter(googleSheetId, googleCredential);
 
 // bake sheets from google converter
 await sheetContainer.Bake(googleConverter);
@@ -150,7 +150,7 @@ Below code shows how to load sheet from Excel and save as JSON. This typically h
 
 ```csharp
 // create excel converter from path
-var excelConverter = new ExcelSheetConverter("Excel/Files/Path", TimeZoneInfo.Utc);
+var excelConverter = new ExcelSheetConverter("Excel/Files/Path");
 
 // create json converter from path
 var jsonConverter = new JsonSheetConverter("Json/Files/Path");
