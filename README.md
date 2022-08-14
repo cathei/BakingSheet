@@ -38,6 +38,9 @@ Download with [NuGet](https://www.nuget.org/packages?q=BakingSheet) or download 
 ### Need help?
 Before you start, I want to mention that if you have problem or need help, you can always ask me on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
 
+## Contribution
+We appreciate any contribution. Please create [issue](https://github.com/cathei/BakingSheet/issues) for bugs or feature requests. Any contribution to feature, test case, or documentation through [pull requests](https://github.com/cathei/BakingSheet/pulls) are welcome!
+
 ## First Step
 BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Items.xlsx`. Also, any column starts with $ will be considered as comment and ignored.
 
