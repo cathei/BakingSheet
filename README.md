@@ -557,38 +557,12 @@ sheetContainer.Verify(new ResourceVerifier() /*, new OtherVerifier()... */);
 ```
 
 ## Reading from StreamingAssets
-If you are using `StreamingAssets` folder on Android platform, it is required to implement own `IFileSystem` for runtime to read files from compressed `jar`. I would recommend combination with [BetterStreamingAsset](https://github.com/gwiazdorrr/BetterStreamingAssets). Below is example `IFileSystem` implemented through it.
+If you are using `StreamingAssets` folder on Android platform, it is required to implement own `IFileSystem` for runtime to read files from compressed `jar`. BakingSheet includes `StreamingAssetsFileSystem` to support this. It is based on [Package version](https://github.com/cathei/BetterStreamingAssets-Package) of [BetterStreamingAssets](https://github.com/gwiazdorrr/BetterStreamingAssets).
 
-```csharp
-public class StreamingAssetFileSystem : IFileSystem
-{
-    public StreamingAssetFileSystem()
-        => BetterStreamingAssets.Initialize();
-
-    public bool Exists(string path)
-        => BetterStreamingAssets.FileExists(path);
-
-    public IEnumerable<string> GetFiles(string path, string extension)
-        => BetterStreamingAssets.GetFiles(path, $"*.{extension}");
-
-    public Stream OpenRead(string path)
-        => BetterStreamingAssets.OpenRead(path);
-
-    // write access to streaming assets is not allowed
-    public void CreateDirectory(string path)
-        => throw new System.NotImplementedException();
-
-    // write access to streaming assets is not allowed
-    public Stream OpenWrite(string path)
-        => throw new System.NotImplementedException();
-}
-```
-
-You can pass it as parameter of `JsonSheetConverter` at runtime.
-
+Below is example of using `StreamingAssetsFileSystem` with `JsonSheetConverter` at runtime. Keep in mind that path is relative from `Assets/StreamingAssets`.
 ```csharp
 // create json converter from path
-var jsonConverter = new JsonSheetConverter("Json/Files/Path", new StreamingAssetFileSystem());
+var jsonConverter = new JsonSheetConverter("Relative/Json/Path", new StreamingAssetsFileSystem());
 
 // load from json
 await sheetContainer.Bake(jsonConverter);

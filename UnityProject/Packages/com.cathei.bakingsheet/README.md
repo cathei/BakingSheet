@@ -70,7 +70,7 @@ public class ItemSheet : Sheet<ItemSheet.Row>
     }
 }
 ```
-You can see there are two classes, `ItemSheet` and `ItemSheet.Row`. Each represents a page of sheet and a single row. `ItemSheet` is surrounding `Row` class. It is not forced but recommended convention. Important part is they will inherit from `Sheet<TRow>` and `SheetRow`.
+You can see there are two classes, `ItemSheet` and `ItemSheet.Row`. Each represents a page of sheet and a single row. `ItemSheet` is surrounding `Row` class (It is not forced but recommended convention). Important part is they will inherit from `Sheet<TRow>` and `SheetRow`.
 
 Note that `Id` column is already defined in base `SheetRow` class. `Id` is `string` by default, but you can change type. See [this section](#using-non-string-column-as-id) to use non-string type for `Id`.
 
@@ -89,7 +89,7 @@ public class SheetContainer : SheetContainerBase
     // public CharacterSheet Characters { get; private set; }
 }
 ```
-You can add as many sheets you want as properties of your `SheetContainer`. Single `SheetContainer` will be enough unless you want to partition your sheets.
+You can add as many sheets you want as properties of your `SheetContainer`. This class is designed to be "fat", means single `SheetContainer` should contain all your sheets unless there is specific reason to partition your sheets. For example when you want to deploy some `Sheet` only exclusive to server program, you might want to partition `ServerSheetContainer` and `ClientSheetContainer`.
 
 ## Supported Column Type
 * `string`
@@ -172,7 +172,7 @@ var jsonConverter = new JsonSheetConverter("Json/Files/Path");
 await sheetContainer.Bake(jsonConverter);
 ```
 
-You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. If you are using `StreamingAssets` on Android, see [Reading From StreaminAssets](#reading-from-streamingassets).
+You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. If you are using `StreamingAssets` on Android, see [Reading From StreamingAssets](#reading-from-streamingassets).
 
 ## Accessing Row
 Below code shows how to access specific `ItemSheet.Row`.
@@ -371,8 +371,12 @@ public class HeroSheet : Sheet<HeroSheet.Row>
 
         public Elem GetLevel(int level)
         {
+            // Level 1 would be index 0
             return this[level - 1];
         }
+
+        // Max level would be count of elements
+        public int MaxLevel => Count;
     }
 
     public class Elem : SheetRowElem
@@ -553,38 +557,12 @@ sheetContainer.Verify(new ResourceVerifier() /*, new OtherVerifier()... */);
 ```
 
 ## Reading from StreamingAssets
-If you are using `StreamingAssets` folder on Android platform, it is required to implement own `IFileSystem` for runtime to read files from compressed `jar`. I would recommend combination with [BetterStreamingAsset](https://github.com/gwiazdorrr/BetterStreamingAssets). Below is example `IFileSystem` implemented through it.
+If you are using `StreamingAssets` folder on Android platform, it is required to implement own `IFileSystem` for runtime to read files from compressed `jar`. BakingSheet includes `StreamingAssetsFileSystem` to support this. It is based on [Package version](https://github.com/cathei/BetterStreamingAssets-Package) of [BetterStreamingAssets](https://github.com/gwiazdorrr/BetterStreamingAssets).
 
-```csharp
-public class StreamingAssetFileSystem : IFileSystem
-{
-    public StreamingAssetFileSystem()
-        => BetterStreamingAssets.Initialize();
-
-    public bool Exists(string path)
-        => BetterStreamingAssets.FileExists(path);
-
-    public IEnumerable<string> GetFiles(string path, string extension)
-        => BetterStreamingAssets.GetFiles(path, $"*.{extension}");
-
-    public Stream OpenRead(string path)
-        => BetterStreamingAssets.OpenRead(path);
-
-    // write access to streaming assets is not allowed
-    public void CreateDirectory(string path)
-        => throw new System.NotImplementedException();
-
-    // write access to streaming assets is not allowed
-    public Stream OpenWrite(string path)
-        => throw new System.NotImplementedException();
-}
-```
-
-You can pass it as parameter of `JsonSheetConverter` at runtime.
-
+Below is example of using `StreamingAssetsFileSystem` with `JsonSheetConverter` at runtime. Keep in mind that path is relative from `Assets/StreamingAssets`.
 ```csharp
 // create json converter from path
-var jsonConverter = new JsonSheetConverter("Json/Files/Path", new StreamingAssetFileSystem());
+var jsonConverter = new JsonSheetConverter("Relative/Json/Path", new StreamingAssetsFileSystem());
 
 // load from json
 await sheetContainer.Bake(jsonConverter);
