@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
@@ -8,7 +9,9 @@ namespace Cathei.BakingSheet
     {
         public struct Reference : ISheetReference
         {
+            [Preserve]
             public TKey Id { get; private set; }
+            [Preserve]
             public TValue Ref { get; private set; }
 
             object ISheetReference.Id

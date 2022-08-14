@@ -9,6 +9,7 @@ namespace Cathei.BakingSheet
     public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet<TKey, TValue>
         where TValue : SheetRow<TKey>, new()
     {
+        [Preserve]
         public string Name { get; set; }
 
         public Type RowType => typeof(TValue);

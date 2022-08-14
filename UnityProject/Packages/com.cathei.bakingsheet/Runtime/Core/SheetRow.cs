@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cathei.BakingSheet.Internal;
 
 namespace Cathei.BakingSheet
 {
     public abstract class SheetRow<TKey> : ISheetRow<TKey>
     {
+        [Preserve]
         public TKey Id { get; set; }
 
         object ISheetRow.Id => Id;
@@ -26,6 +28,7 @@ namespace Cathei.BakingSheet
     public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, ISheetRowArray<TElem>
         where TElem : SheetRowElem, new()
     {
+        [Preserve]
         // setter is necessary for reflection
         public VerticalList<TElem> Arr { get; private set; } = new VerticalList<TElem>();
 

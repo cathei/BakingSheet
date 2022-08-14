@@ -1,9 +1,10 @@
-<!--
-  You might want to copy this link.xml under your Assets folder
-  If you plan to use Google Sheet converter at runtime
--->
 <?xml version="1.0" encoding="utf-8" ?>
 <linker>
+  <!--
+    You might want to copy this link.xml under your Assets folder
+    If you plan to use Google Sheet converter at runtime
+  -->
+
   <!-- <assembly fullname="System">
   <namespace fullname="System.ComponentModel" preserve="all"/>
   <namespace fullname="System.Configuration" preserve="all"/>
