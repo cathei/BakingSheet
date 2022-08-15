@@ -172,7 +172,7 @@ var jsonConverter = new JsonSheetConverter("Json/Files/Path");
 await sheetContainer.Bake(jsonConverter);
 ```
 
-You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. If you are using `StreamingAssets` on Android, see [Reading From StreamingAssets](#reading-from-streamingassets).
+You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. For AOT platforms, read about [AOT Code Stripping](#about-aot-code-stripping). If you are using `StreamingAssets` on Android, also see [Reading From StreamingAssets](#reading-from-streamingassets).
 
 ## Accessing Row
 Below code shows how to access specific `ItemSheet.Row`.
@@ -606,4 +606,18 @@ public class ExcelPostprocessor : AssetPostprocessor
         }
     }
 }
+```
+
+## About AOT Code Stripping
+If you are working on AOT (IL2CPP) environment, you would have option called `Managed Stripping Level` in your Player Settings. Since BakingSheet uses reflection, if you set stripping level `Medium` or `High`, the stripper might remove the code piece that required. Especially some property setters.
+
+You can prevent this by either using `Low` stripping level, or adding own `link.xml` to preserve your sheet classes. The below is simplest example of `link.xml`. If you want to know more about it, see [Unity's Documentation](https://docs.unity3d.com/Manual/ManagedCodeStripping.html#LinkXMLAnnotation).
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<linker>
+  <!--
+    Replace `BakingSheet.Samples` to your assembly to prevent Unity code stripping
+  -->
+  <assembly fullname="BakingSheet.Samples" ignoreIfMissing="1" preserve="all"/>
+</linker>
 ```

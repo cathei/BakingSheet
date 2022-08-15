@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<linker>
+  <!--
+    Preserve your assembly to prevent Unity code stripping
+  -->
+  <assembly fullname="BakingSheet.Samples" ignoreIfMissing="1" preserve="all"/>
+</linker>
