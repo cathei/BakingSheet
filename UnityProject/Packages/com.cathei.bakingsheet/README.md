@@ -569,7 +569,9 @@ await sheetContainer.Bake(jsonConverter);
 ```
 
 ## Using AssetPostProcessor to Automate Converting
-For Excel and CSV, you could set up `AssetPostProcessor` to automate converting process. The below is example source code that triggers when `.xlsx` is changed, convert sheet into `.json` under `Assets/StreamingAssets/Excel`. You can customize this logic with your desired source and destination folder.
+For Excel and CSV, you could set up `AssetPostProcessor` to automate converting process. Recommended practice is keeping both source .xlsx and .csv files alongside with destination .json files in your version control system. For Google Sheet, it is instead recommended to use custom `MenuItem` to convert into destination .json files that keeped in your version control.
+
+The below is example source code that triggers when `.xlsx` is changed, convert sheet into `.json` under `Assets/StreamingAssets/Excel`. You can customize this logic with your desired source and destination folder.
 ```csharp
 public class ExcelPostprocessor : AssetPostprocessor
 {
