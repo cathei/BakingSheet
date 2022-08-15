@@ -8,23 +8,35 @@ namespace Cathei.BakingSheet
     public class StreamingAssetsFileSystem : IFileSystem
     {
         public StreamingAssetsFileSystem()
-            => BetterStreamingAssets.Initialize();
+        {
+            BetterStreamingAssets.Initialize();
+        }
 
-        public bool Exists(string path)
-            => BetterStreamingAssets.FileExists(path);
+        public virtual bool Exists(string path)
+        {
+            return BetterStreamingAssets.FileExists(path);
+        }
 
-        public IEnumerable<string> GetFiles(string path, string extension)
-            => BetterStreamingAssets.GetFiles(path, $"*.{extension}");
+        public virtual IEnumerable<string> GetFiles(string path, string extension)
+        {
+            return BetterStreamingAssets.GetFiles(path, $"*.{extension}");
+        }
 
-        public Stream OpenRead(string path)
-            => BetterStreamingAssets.OpenRead(path);
+        public virtual Stream OpenRead(string path)
+        {
+            return BetterStreamingAssets.OpenRead(path);
+        }
 
-        // write access to streaming assets is not allowed
-        public void CreateDirectory(string path)
-            => throw new System.NotImplementedException();
+        public virtual void CreateDirectory(string path)
+        {
+            // write access to streaming assets is not allowed
+            throw new System.NotImplementedException();
+        }
 
-        // write access to streaming assets is not allowed
-        public Stream OpenWrite(string path)
-            => throw new System.NotImplementedException();
+        public virtual Stream OpenWrite(string path)
+        {
+            // write access to streaming assets is not allowed
+            throw new System.NotImplementedException();
+        }
     }
 }

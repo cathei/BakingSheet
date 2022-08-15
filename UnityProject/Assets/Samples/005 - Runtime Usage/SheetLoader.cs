@@ -12,6 +12,8 @@ namespace Cathei.BakingSheet.Examples
 
         private async void Start()
         {
+            Debug.Log("Scene loaded.");
+
             // If you're using StreamingAssets from Android, StreamingAssetsFileSystem must be used
             // Path is relative to StreamingAssets folder
             var jsonConverter = new JsonSheetConverter("Excel", new StreamingAssetsFileSystem());

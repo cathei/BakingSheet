@@ -18,27 +18,27 @@ namespace Cathei.BakingSheet.Internal
 
     public class FileSystem : IFileSystem
     {
-        public IEnumerable<string> GetFiles(string path, string extension)
+        public virtual IEnumerable<string> GetFiles(string path, string extension)
         {
             return Directory.GetFiles(path, $"*.{extension}");
         }
 
-        public bool Exists(string path)
+        public virtual bool Exists(string path)
         {
             return File.Exists(path);
         }
 
-        public Stream OpenRead(string path)
+        public virtual Stream OpenRead(string path)
         {
             return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         }
 
-        public void CreateDirectory(string path)
+        public virtual void CreateDirectory(string path)
         {
             Directory.CreateDirectory(path);
         }
 
-        public Stream OpenWrite(string path)
+        public virtual Stream OpenWrite(string path)
         {
             return File.Open(path, FileMode.Create, FileAccess.Write, FileShare.Read);
         }
