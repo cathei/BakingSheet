@@ -567,3 +567,41 @@ var jsonConverter = new JsonSheetConverter("Relative/Json/Path", new StreamingAs
 // load from json
 await sheetContainer.Bake(jsonConverter);
 ```
+
+## Using AssetPostProcessor to Automate Converting
+For Excel and CSV, you could set up `AssetPostProcessor` to automate converting process. The below is example source code that triggers when `.xlsx` is changed, convert sheet into `.json` under `Assets/StreamingAssets/Excel`. You can customize this logic with your desired source and destination folder.
+```csharp
+public class ExcelPostprocessor : AssetPostprocessor
+{
+    static async void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+    {
+        // automatically run postprocessor if any excel file is imported
+        string excelAsset = importedAssets.FirstOrDefault(x => x.EndsWith(".xlsx"));
+
+        if (excelAsset != null)
+        {
+            var excelPath = Path.GetDirectoryName(excelAsset);
+            var jsonPath = Path.Combine(Application.streamingAssetsPath, "Excel");
+
+            var logger = new UnityLogger();
+            var sheetContainer = new SheetContainer(logger);
+
+            // create excel converter from path
+            var excelConverter = new ExcelSheetConverter(excelPath, TimeZoneInfo.Utc);
+
+            // bake sheets from excel converter
+            await sheetContainer.Bake(excelConverter);
+
+            // create json converter to path
+            var jsonConverter = new JsonSheetConverter(jsonPath);
+
+            // save datasheet to streaming assets
+            await sheetContainer.Store(jsonConverter);
+
+            AssetDatabase.Refresh();
+
+            Debug.Log("Excel sheet converted.");
+        }
+    }
+}
+```

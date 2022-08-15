@@ -36,7 +36,7 @@ BakingSheet's basic workflow is like this:
 Download with [NuGet](https://www.nuget.org/packages?q=BakingSheet) or download [.unitypackage release](https://github.com/cathei/BakingSheet/releases)
 
 ### Need help?
-Before you start, I want to mention that if you have problem or need help, you can always ask me on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
+Before you start, we want to mention that if you have problem or need help, you can always ask directly on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
 
 ## Contribution
 We appreciate any contribution. Please create [issue](https://github.com/cathei/BakingSheet/issues) for bugs or feature requests. Any contribution to feature, test case, or documentation through [pull requests](https://github.com/cathei/BakingSheet/pulls) are welcome!
@@ -389,7 +389,7 @@ public class HeroSheet : Sheet<HeroSheet.Row>
 ```
 Note that `SheetRowArray<TElem>` is implementing `IEnumerable<TElem>` and indexer.
 
-It is worth mention you can use `VerticalList<T>` to cover the case you need multiple list of different length in one column. Though I recommend to split the sheet in that case if possible.
+It is worth mention you can use `VerticalList<T>` to cover the case you need multiple list of different length in one column. Though we recommend to split the sheet in that case if possible.
 
 ## Using Cross-Sheet Reference
 Below code shows how to replace `string RequiredItem` to `ItemSheet.Reference RequiredItem` to add extra reliablity. `Sheet<TKey, TRow>.Reference` type is serialized as `TKey`, and verifies that row with same id exists in the sheet.
@@ -566,4 +566,42 @@ var jsonConverter = new JsonSheetConverter("Relative/Json/Path", new StreamingAs
 
 // load from json
 await sheetContainer.Bake(jsonConverter);
+```
+
+## Using AssetPostProcessor to Automate Converting
+For Excel and CSV, you could set up `AssetPostProcessor` to automate converting process. The below is example source code that triggers when `.xlsx` is changed, convert sheet into `.json` under `Assets/StreamingAssets/Excel`. You can customize this logic with your desired source and destination folder.
+```csharp
+public class ExcelPostprocessor : AssetPostprocessor
+{
+    static async void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+    {
+        // automatically run postprocessor if any excel file is imported
+        string excelAsset = importedAssets.FirstOrDefault(x => x.EndsWith(".xlsx"));
+
+        if (excelAsset != null)
+        {
+            var excelPath = Path.GetDirectoryName(excelAsset);
+            var jsonPath = Path.Combine(Application.streamingAssetsPath, "Excel");
+
+            var logger = new UnityLogger();
+            var sheetContainer = new SheetContainer(logger);
+
+            // create excel converter from path
+            var excelConverter = new ExcelSheetConverter(excelPath, TimeZoneInfo.Utc);
+
+            // bake sheets from excel converter
+            await sheetContainer.Bake(excelConverter);
+
+            // create json converter to path
+            var jsonConverter = new JsonSheetConverter(jsonPath);
+
+            // save datasheet to streaming assets
+            await sheetContainer.Store(jsonConverter);
+
+            AssetDatabase.Refresh();
+
+            Debug.Log("Excel sheet converted.");
+        }
+    }
+}
 ```
