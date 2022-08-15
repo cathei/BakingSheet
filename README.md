@@ -389,7 +389,7 @@ public class HeroSheet : Sheet<HeroSheet.Row>
 ```
 Note that `SheetRowArray<TElem>` is implementing `IEnumerable<TElem>` and indexer.
 
-It is worth mention you can use `VerticalList<T>` to cover the case you need multiple list of different length in one column. Though we recommend to split the sheet in that case if possible.
+It is worth mention you can use `VerticalList<T>` to cover the case you want to vertically extend your `List<T>` without pairing them as `Elem`. Though we recommend to split the sheet in that case if possible.
 
 ## Using Cross-Sheet Reference
 Below code shows how to replace `string RequiredItem` to `ItemSheet.Reference RequiredItem` to add extra reliablity. `Sheet<TKey, TRow>.Reference` type is serialized as `TKey`, and verifies that row with same id exists in the sheet.
@@ -569,7 +569,7 @@ await sheetContainer.Bake(jsonConverter);
 ```
 
 ## Using AssetPostProcessor to Automate Converting
-For Excel and CSV, you could set up `AssetPostProcessor` to automate converting process. Recommended practice is keeping both source .xlsx and .csv files alongside with destination .json files in your version control system. For Google Sheet, it is instead recommended to use custom `MenuItem` to convert into destination .json files that keeped in your version control.
+For Excel and CSV, you could set up `AssetPostProcessor` to automate converting process. Recommended practice is keeping both source `.xlsx` and `.csv` files alongside with destination `.json` files in your version control system. For Google Sheet, it is instead recommended to use custom `MenuItem` to convert into destination `.json` files that keeped in your version control.
 
 The below is example source code that triggers when `.xlsx` is changed, convert sheet into `.json` under `Assets/StreamingAssets/Excel`. You can customize this logic with your desired source and destination folder.
 ```csharp
