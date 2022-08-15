@@ -36,7 +36,7 @@ BakingSheet's basic workflow is like this:
 Download with [NuGet](https://www.nuget.org/packages?q=BakingSheet) or download [.unitypackage release](https://github.com/cathei/BakingSheet/releases)
 
 ### Need help?
-Before you start, I want to mention that if you have problem or need help, you can always ask me on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
+Before you start, we want to mention that if you have problem or need help, you can always ask directly on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
 
 ## Contribution
 We appreciate any contribution. Please create [issue](https://github.com/cathei/BakingSheet/issues) for bugs or feature requests. Any contribution to feature, test case, or documentation through [pull requests](https://github.com/cathei/BakingSheet/pulls) are welcome!
@@ -389,7 +389,7 @@ public class HeroSheet : Sheet<HeroSheet.Row>
 ```
 Note that `SheetRowArray<TElem>` is implementing `IEnumerable<TElem>` and indexer.
 
-It is worth mention you can use `VerticalList<T>` to cover the case you need multiple list of different length in one column. Though I recommend to split the sheet in that case if possible.
+It is worth mention you can use `VerticalList<T>` to cover the case you need multiple list of different length in one column. Though we recommend to split the sheet in that case if possible.
 
 ## Using Cross-Sheet Reference
 Below code shows how to replace `string RequiredItem` to `ItemSheet.Reference RequiredItem` to add extra reliablity. `Sheet<TKey, TRow>.Reference` type is serialized as `TKey`, and verifies that row with same id exists in the sheet.
