@@ -8,7 +8,7 @@ namespace Cathei.BakingSheet
 
     public interface IVerticalList<T> : IVerticalList, IList<T>, IReadOnlyList<T> { }
 
-    // same as List<T> but you can reference this as ColumnName:*
+    // same as List<T> but works vertical, like SheetRowArray
     public class VerticalList<T> : List<T>, IVerticalList<T>
     {
         public VerticalList() { }
