@@ -178,9 +178,9 @@ await sheetContainer.Bake(jsonConverter);
 You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON.
 
 > **Note**  
-> For AOT platforms, read about [AOT Code Stripping](#about-aot-code-stripping).
+> For AOT platforms (iOS, Android), read about [AOT Code Stripping](#about-aot-code-stripping).
 
-> **Note**
+> **Note**  
 > If you are using `StreamingAssets` on Android, also see [Reading From StreamingAssets](#reading-from-streamingassets).
 
 ## Accessing Row
@@ -194,11 +194,15 @@ var row = sheetContainer.Items["ITEM_LVUP003"];
 logger.LogInformation(row.Name);
 ```
 
-`Sheet<T>` is `KeyedCollection`, you can loop through it and order is guaranteed to be as same as your spreadsheet.
+`Sheet<T>` is `KeyedCollection`, you can loop through it and order is guaranteed to be as same as your spreadsheet. Plus of course you can use all benefits of `IEnumerable<T>`.
 ```csharp
 // loop through all rows and print their names
 foreach (var row in sheetContainer.Items)
     logger.LogInformation(row.Name);
+
+// loop through item ids that price over 5000
+foreach (var itemId in sheetContainer.Items.Where(row => row.Price > 5000).Select(row => row.Id))
+    logger.LogInformation(itemId);
 ```
 
 ## Using List Column

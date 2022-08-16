@@ -178,9 +178,9 @@ await sheetContainer.Bake(jsonConverter);
 You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON.
 
 > **Note**  
-> For AOT platforms, read about [AOT Code Stripping](#about-aot-code-stripping).
+> For AOT platforms (iOS, Android), read about [AOT Code Stripping](#about-aot-code-stripping).
 
-> **Note**
+> **Note**  
 > If you are using `StreamingAssets` on Android, also see [Reading From StreamingAssets](#reading-from-streamingassets).
 
 ## Accessing Row
