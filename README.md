@@ -10,10 +10,10 @@ Let's say your team is making a RPG game. Your game has 100 characters and 10 st
 
 ![Concept](.github/images/concept.png)
 
-BakingSheet's core concept is controlling datasheet schema from C# code, make things flexible while supporting multiple sources like .xlsx or Google sheets. Also, you won't have to include source .xlsx files or parsing libraries for production builds. BakingSheet supports JSON serialization by default, you can ship your build with JSON or your custom format.
+BakingSheet's core concept is controlling datasheet schema from C# code, make things flexible while supporting multiple sources like Excel files or Google sheets. You can think it as datasheet version of [ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping). Also, you won't have to include source Excel files or parsing libraries for production builds. BakingSheet supports JSON serialization by default, you can ship your build with JSON or your custom format.
 
 BakingSheet's basic workflow is like this:
-1. Programmers make C# schema that represents Datasheet. (They can provide sample .xlsx or Google Sheet with headers.)
+1. Programmers make C# schema that represents Datasheet. (They can provide sample Excel files or Google Sheet with headers.)
 2. Designers fill up the Datasheet, using any powerful functions and features of spreadsheet.
 3. Edit-time script converts Datasheet to JSON (or any custom format) with your C# schema and validates data.
 4. Runtime script reads from JSON (or any custom format) with your C# schema.
@@ -39,10 +39,10 @@ Download with [NuGet](https://www.nuget.org/packages?q=BakingSheet) or download 
 Before you start, we want to mention that if you have problem or need help, you can always ask directly on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
 
 ## Contribution
-We appreciate any contribution. Please create [issue](https://github.com/cathei/BakingSheet/issues) for bugs or feature requests. Any contribution to feature, test case, or documentation through [pull requests](https://github.com/cathei/BakingSheet/pulls) are welcome!
+We appreciate any contribution. Please create [issue](https://github.com/cathei/BakingSheet/issues) for bugs or feature requests. Any contribution to feature, test case, or documentation through [pull requests](https://github.com/cathei/BakingSheet/pulls) are welcome! Any blog posts, articles, shares about this project will be greatful!
 
 ## First Step
-BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Items.xlsx`. Also, any column starts with $ will be considered as comment and ignored.
+BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Items.xlsx`. Also, any column starts with `$` will be considered as comment and ignored.
 
 ![Plain Sample](.github/images/sample_plain.png)
 
@@ -72,7 +72,7 @@ public class ItemSheet : Sheet<ItemSheet.Row>
 ```
 You can see there are two classes, `ItemSheet` and `ItemSheet.Row`. Each represents a page of sheet and a single row. `ItemSheet` is surrounding `Row` class (It is not forced but recommended convention). Important part is they will inherit from `Sheet<TRow>` and `SheetRow`.
 
-Note that `Id` column is already defined in base `SheetRow` class. `Id` is `string` by default, but you can change type. See [this section](#using-non-string-column-as-id) to use non-string type for `Id`.
+`Id` column is mandatory, so it is already defined in base `SheetRow` class. `Id` is `string` by default, but you can change type. See [this section](#using-non-string-column-as-id) to use non-string type for `Id`.
 
 To represent collection of sheets, a document, let's create `SheetContainer` class inherits from `SheetContainerBase`.
 ```csharp
@@ -102,6 +102,9 @@ You can add as many sheets you want as properties of your `SheetContainer`. This
 * `List<>` and `Dictionary<,>`
 * Custom `struct` and `class` as [nested column](#using-nested-type-column)
 
+> **Note**  
+> When using `JsonConverter`, `enum` is serialized as `string` by default so you won't have issue when reordering them.
+
 ## Converters
 Converters are simple implementation import/export records from datasheet sources. These come as separated library, as it's user's decision to select datasheet source.
 User can have converting process, to convert datasheet to other format ahead of time and not include heavy converters in production applications.
@@ -114,7 +117,7 @@ BakingSheet supports four basic converters. They're included in .unitypackage as
 | [BakingSheet.Converters.Csv](https://www.nuget.org/packages/BakingSheet.Converters.Csv/)    | Comma-Separated Values (CSV) | O               | O               |
 | [BakingSheet.Converters.Json](https://www.nuget.org/packages/BakingSheet.Converters.Json/)   | JSON                         | O               | O               |
 
-Below code shows how to convert .xlsx files from `Excel/Files/Path` directory.
+Below code shows how to convert `.xlsx` files from `Excel/Files/Path` directory.
 ```csharp
 // any ILogger will work, there is built-in UnityLogger
 var logger = new UnityLogger();
@@ -172,10 +175,16 @@ var jsonConverter = new JsonSheetConverter("Json/Files/Path");
 await sheetContainer.Bake(jsonConverter);
 ```
 
-You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON. For AOT platforms, read about [AOT Code Stripping](#about-aot-code-stripping). If you are using `StreamingAssets` on Android, also see [Reading From StreamingAssets](#reading-from-streamingassets).
+You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON.
+
+> **Note**  
+> For AOT platforms, read about [AOT Code Stripping](#about-aot-code-stripping).
+
+> **Note**
+> If you are using `StreamingAssets` on Android, also see [Reading From StreamingAssets](#reading-from-streamingassets).
 
 ## Accessing Row
-Below code shows how to access specific `ItemSheet.Row`.
+Now you have `SheetContainer` loaded from your data, accessing to the row is fairly simple. Below code shows how to access specific `ItemSheet.Row`.
 ```csharp
 // same as sheetContainer.Items.Find("ITEM_LVUP003");
 // returns null if no row found
@@ -185,12 +194,15 @@ var row = sheetContainer.Items["ITEM_LVUP003"];
 logger.LogInformation(row.Name);
 ```
 
-`Sheet<T>` is `KeyedCollection<T>`, you can loop through it and order is guaranteed to be same as spreadsheet.
-
+`Sheet<T>` is `KeyedCollection`, you can loop through it and order is guaranteed to be as same as your spreadsheet. Plus of course you can use all benefits of `IEnumerable<T>`.
 ```csharp
 // loop through all rows and print their names
 foreach (var row in sheetContainer.Items)
     logger.LogInformation(row.Name);
+
+// loop through item ids that price over 5000
+foreach (var itemId in sheetContainer.Items.Where(row => row.Price > 5000).Select(row => row.Id))
+    logger.LogInformation(itemId);
 ```
 
 ## Using List Column
@@ -327,7 +339,7 @@ public class NpcSheet : Sheet<NpcSheet.Row>
     }
 }
 ```
-Note that the content of datasheet is just same as when using Dictionary column. The data type of column determines how BakingSheet reads the column.
+As you see, content of the datasheet is just same as when using Dictionary column. The data type of column determines how BakingSheet reads the column.
 
 ## Using Row Array
 Row arrays are used for 2-dimentional structure. Below is example content of file `Heroes.xlsx`.
@@ -387,9 +399,10 @@ public class HeroSheet : Sheet<HeroSheet.Row>
     }
 }
 ```
-Note that `SheetRowArray<TElem>` is implementing `IEnumerable<TElem>` and indexer.
+`SheetRowArray<TElem>` implements `IEnumerable<TElem>`, indexer `this[int]` and `Count` property.
 
-It is worth mention you can use `VerticalList<T>` to cover the case you want to vertically extend your `List<T>` without pairing them as `Elem`. Though we recommend to split the sheet in that case if possible.
+> **Note**  
+> It is worth mention you can use `VerticalList<T>` to cover the case you want to vertically extend your `List<T>` without pairing them as `Elem`. Though we recommend to split the sheet in that case if possible.
 
 ## Using Cross-Sheet Reference
 Below code shows how to replace `string RequiredItem` to `ItemSheet.Reference RequiredItem` to add extra reliablity. `Sheet<TKey, TRow>.Reference` type is serialized as `TKey`, and verifies that row with same id exists in the sheet.
@@ -421,7 +434,7 @@ public class SheetContainer : SheetContainerBase
     public ItemSheet Items { get; private set; }
 }
 ```
-Note that both `ItemSheet` and `HeroSheet` have to be one of the properties on same `SheetContainer` class.
+Both `ItemSheet` and `HeroSheet` must be the properties on same `SheetContainer` class to reference each other's row.
 
 Now, not only error message will pop up when `RequiredItem` doesn't exist in `SheetContainer.Items`, you can access `ItemSheet.Row` directly through it.
 
@@ -510,7 +523,9 @@ public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
     }
 }
 ```
-Note that properties without setter are not serialized. Alternatively you can use `[NonSerialized]` attribute.
+
+> **Note**  
+> Properties without setter are not serialized. Alternatively you can use `[NonSerialized]` attribute.
 
 ## Custom Converters
 User can create and customize their own converter by implementing `ISheetImporter` and `ISheetExporter`. Or you can inherit `JsonSheetConverter` and override methods like `GetSettings()` to customize serialization process.
@@ -571,7 +586,7 @@ await sheetContainer.Bake(jsonConverter);
 ## Using AssetPostProcessor to Automate Converting
 For Excel and CSV, you could set up `AssetPostProcessor` to automate converting process. Recommended practice is keeping both source `.xlsx` and `.csv` files alongside with destination `.json` files in your version control system. For Google Sheet, it is instead recommended to use custom `MenuItem` to convert into destination `.json` files that keeped in your version control.
 
-The below is example source code that triggers when `.xlsx` is changed, convert sheet into `.json` under `Assets/StreamingAssets/Excel`. You can customize this logic with your desired source and destination folder.
+The below is example source code that triggers when any `.xlsx` is changed, convert Excel sheet under `Assets/Excel` into `.json` under `Assets/StreamingAssets/Json`. You can customize this logic with your desired source and destination folder.
 ```csharp
 public class ExcelPostprocessor : AssetPostprocessor
 {
@@ -582,14 +597,17 @@ public class ExcelPostprocessor : AssetPostprocessor
 
         if (excelAsset != null)
         {
-            var excelPath = Path.GetDirectoryName(excelAsset);
-            var jsonPath = Path.Combine(Application.streamingAssetsPath, "Excel");
+            // excel path as "Assets/Excel"
+            var excelPath = Path.Combine(Application.dataPath, "Excel");
+
+            // json path as "Assets/StreamingAssets/Json"
+            var jsonPath = Path.Combine(Application.streamingAssetsPath, "Json");
 
             var logger = new UnityLogger();
             var sheetContainer = new SheetContainer(logger);
 
             // create excel converter from path
-            var excelConverter = new ExcelSheetConverter(excelPath, TimeZoneInfo.Utc);
+            var excelConverter = new ExcelSheetConverter(excelPath);
 
             // bake sheets from excel converter
             await sheetContainer.Bake(excelConverter);

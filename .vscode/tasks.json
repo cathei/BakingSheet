@@ -132,6 +132,13 @@
                 "BakingSheet.Converters.Json"
             ],
             "problemMatcher": [ "$tsc" ],
+        },
+        {
+            "label": "copy readme",
+            "type": "shell",
+            "command": "cp",
+            "args": [ "*.md", "UnityProject/Packages/com.cathei.bakingsheet/" ],
+            "problemMatcher": [ "$tsc" ],
         }
     ]
 }
