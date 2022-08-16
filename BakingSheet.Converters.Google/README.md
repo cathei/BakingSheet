@@ -6,22 +6,27 @@ To use `GoogleSheetConverter`, BakingSheet requires a service account credential
 
 ### Create Google Service Account
 First, visit [Google API Console](https://console.cloud.google.com/). Pick `API & Services` > `Credentials` from sidebar menu.
+
 ![Google API Menu](../.github/images/gsheet_menu.png)
 
 Create project if you don't have any. Then pick `Create Credentials` > `Service Account`.
+
 ![Select Create Service Account](../.github/images/gsheet_sa_list.png)
 
 Now fill your preferred service account name for BakingSheet to use. Click `Done` (You don't have to fill other options).
+
 ![Create Service Account](../.github/images/gsheet_sa_create.png)
 
 ### Get Service Account Credential
 You've create service account, now click your new service account and select `Keys` tab. Pick `Add Key` > `Create New Key`.
+
 ![Service Account Keys](../.github/images/gsheet_sa_keys.png)
 
 Select `JSON` option to download your key. Save it somewhere under your `Assets` folder.
 
 ### Invite Service Account to your Google Sheet
 You have Service Account, now create a Google Sheet and Share it to your service account email with `Viewer` permission.
+
 ![Invite Service Account](../.github/images/gsheet_email.png)
 
 ### Get Your Sheet Identifier
