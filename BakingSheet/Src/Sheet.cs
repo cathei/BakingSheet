@@ -86,6 +86,10 @@ namespace Cathei.BakingSheet
 
         private static bool IsVerifiableNode(PropertyMap.Node node)
         {
+            // prevent recursive call
+            if (IsReferenceNode(node))
+                return true;
+
             return node is PropertyMap.NodeObject &&
                 node.AttributesGetter(typeof(SheetAssetAttribute)).Any();
         }
