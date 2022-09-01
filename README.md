@@ -1,4 +1,4 @@
-[![Nuget](https://img.shields.io/nuget/v/BakingSheet)](https://www.nuget.org/packages?q=BakingSheet) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/cathei/BakingSheet)](https://github.com/cathei/BakingSheet/releases) [![GitHub](https://img.shields.io/github/license/cathei/BakingSheet)](https://github.com/cathei/BakingSheet/blob/master/LICENSE) [![Discord](https://img.shields.io/discord/942240862354702376?color=%235865F2&label=discord&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/wXjxjfrDQa)
+[![Nuget](https://img.shields.io/nuget/v/BakingSheet)](https://www.nuget.org/packages?q=BakingSheet) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/cathei/BakingSheet)](https://github.com/cathei/BakingSheet/releases) [![openupm](https://img.shields.io/npm/v/com.cathei.bakingsheet?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.cathei.bakingsheet/) [![GitHub](https://img.shields.io/github/license/cathei/BakingSheet)](https://github.com/cathei/BakingSheet/blob/master/LICENSE) [![Discord](https://img.shields.io/discord/942240862354702376?color=%235865F2&label=discord&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/wXjxjfrDQa)
 
 # BakingSheet 🍞
 Easy datasheet management for C# and Unity. Supports Excel, Google Sheet, JSON and CSV format. It has been used for several mobile games that released on Google Play and AppStore.
@@ -34,6 +34,11 @@ BakingSheet's basic workflow is like this:
 
 ## Install
 Download with [NuGet](https://www.nuget.org/packages?q=BakingSheet) or download [.unitypackage release](https://github.com/cathei/BakingSheet/releases)
+
+You can also install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/)
+```
+openupm add com.cathei.bakingsheet
+```
 
 ### Need help?
 Before you start, we want to mention that if you have problem or need help, you can always ask directly on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
