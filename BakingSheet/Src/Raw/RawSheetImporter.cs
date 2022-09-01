@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
@@ -48,6 +49,32 @@ namespace Cathei.BakingSheet.Raw
             }
 
             return true;
+        }
+
+        internal bool IsConvertableNode(PropertyMap.Node node)
+        {
+            return IsConvertable(node.ValueType);
+        }
+
+        public virtual bool IsConvertable(Type type)
+        {
+            // is it numeric type?
+            if (type.IsPrimitive || type.IsEnum || type == typeof(decimal))
+                return true;
+
+            // is it string or date type?
+            if (type == typeof(string) || type == typeof(DateTime) || type == typeof(TimeSpan))
+                return true;
+
+            // is it sheet reference?
+            if (typeof(ISheetReference).IsAssignableFrom(type))
+                return true;
+
+            // is it nullable value type?
+            if (Nullable.GetUnderlyingType(type) != null)
+                return true;
+
+            return false;
         }
 
         public virtual object StringToValue(Type type, string value)

@@ -9,23 +9,5 @@ namespace Cathei.BakingSheet.Internal
     {
         public const string Delimiter = ":";
         public const string Comment = "$";
-
-        public static bool IsConvertable(Type type)
-        {
-            if (type.IsPrimitive || type.IsEnum)
-                return true;
-
-            if (type == typeof(string) || type == typeof(DateTime) || type == typeof(TimeSpan))
-                return true;
-
-            if (typeof(ISheetReference).IsAssignableFrom(type))
-                return true;
-
-            if (Nullable.GetUnderlyingType(type) != null)
-                return true;
-
-            return false;
-        }
-
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
@@ -16,8 +17,8 @@ namespace Cathei.BakingSheet
         private Dictionary<string, DataTable> _dataTables;
         private IFileSystem _fileSystem;
 
-        public ExcelSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo = null, string extension = "xlsx", IFileSystem fileSystem = null)
-            : base(timeZoneInfo)
+        public ExcelSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo = null, string extension = "xlsx", IFileSystem fileSystem = null, IFormatProvider formatProvider = null)
+            : base(timeZoneInfo, formatProvider)
         {
             _loadPath = loadPath;
             _extension = extension;

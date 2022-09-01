@@ -38,7 +38,7 @@ namespace Cathei.BakingSheet.Internal
 
             public abstract void UpdateIndex(object obj);
             public abstract IEnumerable<Node> TraverseChildren(List<object> indexes);
-            public abstract void GenerateChildren(Func<Type, bool> isLeaf, int depth);
+            public abstract void GenerateChildren(Func<Node, bool> isLeaf, int depth);
 
             protected virtual object GetChildIndex(int vindex, IEnumerator<object> indexer)
             {
@@ -170,9 +170,9 @@ namespace Cathei.BakingSheet.Internal
                 }
             }
 
-            public override void GenerateChildren(Func<Type, bool> isLeaf, int depth)
+            public override void GenerateChildren(Func<Node, bool> isLeaf, int depth)
             {
-                if (isLeaf(ValueType))
+                if (isLeaf(this))
                     return;
 
                 _children = new Dictionary<string, Node>();
@@ -277,7 +277,7 @@ namespace Cathei.BakingSheet.Internal
                 indexes.RemoveAt(current);
             }
 
-            public override void GenerateChildren(Func<Type, bool> isLeaf, int depth)
+            public override void GenerateChildren(Func<Node, bool> isLeaf, int depth)
             {
                 var elementType = GetGenericArgument(ValueType, typeof(IList<>))[0];
 
@@ -367,7 +367,7 @@ namespace Cathei.BakingSheet.Internal
                 indexes.RemoveAt(current);
             }
 
-            public override void GenerateChildren(Func<Type, bool> isLeaf, int depth)
+            public override void GenerateChildren(Func<Node, bool> isLeaf, int depth)
             {
                 var arguments = GetGenericArgument(ValueType, typeof(IDictionary<,>));
                 var keyType = arguments[0];
@@ -480,7 +480,7 @@ namespace Cathei.BakingSheet.Internal
             return null;
         }
 
-        public PropertyMap(SheetConvertingContext context, Type sheetType, Func<Type, bool> isLeaf)
+        public PropertyMap(SheetConvertingContext context, Type sheetType, Func<Node, bool> isLeaf)
         {
             _context = context;
 

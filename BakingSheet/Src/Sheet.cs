@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
@@ -34,11 +35,16 @@ namespace Cathei.BakingSheet
             return item.Id;
         }
 
+        private static bool IsReferenceNode(PropertyMap.Node node)
+        {
+            return typeof(ISheetReference).IsAssignableFrom(node.ValueType);
+        }
+
         public virtual void PostLoad(SheetConvertingContext context)
         {
             using (context.Logger.BeginScope(Name))
             {
-                var propertyMap = new PropertyMap(context, GetType(), Config.IsConvertable);
+                var propertyMap = new PropertyMap(context, GetType(), IsReferenceNode);
 
                 propertyMap.UpdateIndex(this);
 
@@ -78,11 +84,17 @@ namespace Cathei.BakingSheet
             }
         }
 
+        private static bool IsVerifiableNode(PropertyMap.Node node)
+        {
+            return node is PropertyMap.NodeObject &&
+                node.AttributesGetter(typeof(SheetAssetAttribute)).Any();
+        }
+
         public virtual void VerifyAssets(SheetConvertingContext context)
         {
             using (context.Logger.BeginScope(Name))
             {
-                var propertyMap = new PropertyMap(context, GetType(), Config.IsConvertable);
+                var propertyMap = new PropertyMap(context, GetType(), IsVerifiableNode);
 
                 propertyMap.UpdateIndex(this);
 

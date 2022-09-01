@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
@@ -10,10 +12,12 @@ namespace Cathei.BakingSheet.Raw
         protected abstract IRawSheetImporterPage GetPage(string sheetName);
 
         public TimeZoneInfo TimeZoneInfo { get; }
+        public IFormatProvider FormatProvider { get; }
 
-        public RawSheetImporter(TimeZoneInfo timeZoneInfo)
+        public RawSheetImporter(TimeZoneInfo timeZoneInfo, IFormatProvider formatProvider)
         {
             TimeZoneInfo = timeZoneInfo ?? TimeZoneInfo.Utc;
+            FormatProvider = formatProvider ?? CultureInfo.InvariantCulture;
         }
 
         public async Task<bool> Import(SheetConvertingContext context)
@@ -47,6 +51,32 @@ namespace Cathei.BakingSheet.Raw
             return true;
         }
 
+        internal bool IsConvertableNode(PropertyMap.Node node)
+        {
+            return IsConvertable(node.ValueType);
+        }
+
+        public virtual bool IsConvertable(Type type)
+        {
+            // is it numeric type?
+            if (type.IsPrimitive || type.IsEnum || type == typeof(decimal))
+                return true;
+
+            // is it string or date type?
+            if (type == typeof(string) || type == typeof(DateTime) || type == typeof(TimeSpan))
+                return true;
+
+            // is it sheet reference?
+            if (typeof(ISheetReference).IsAssignableFrom(type))
+                return true;
+
+            // is it nullable value type?
+            if (Nullable.GetUnderlyingType(type) != null)
+                return true;
+
+            return false;
+        }
+
         public virtual object StringToValue(Type type, string value)
         {
             if (type.IsEnum)
@@ -63,13 +93,13 @@ namespace Cathei.BakingSheet.Raw
 
             if (type == typeof(DateTime))
             {
-                var local = DateTime.Parse(value);
+                var local = DateTime.Parse(value, FormatProvider);
                 return TimeZoneInfo.ConvertTimeToUtc(local, TimeZoneInfo);
             }
 
             if (type == typeof(TimeSpan))
             {
-                return TimeSpan.Parse(value);
+                return TimeSpan.Parse(value, FormatProvider);
             }
 
             Type underlyingType = Nullable.GetUnderlyingType(type);
@@ -81,7 +111,7 @@ namespace Cathei.BakingSheet.Raw
                 return StringToValue(underlyingType, value);
             }
 
-            return Convert.ChangeType(value, type);
+            return Convert.ChangeType(value, type, FormatProvider);
         }
     }
 }

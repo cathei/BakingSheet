@@ -12,7 +12,8 @@ namespace Cathei.BakingSheet.Raw
         protected abstract Task<bool> SaveData();
         protected abstract IRawSheetExporterPage CreatePage(string sheetName);
 
-        protected RawSheetConverter(TimeZoneInfo timeZoneInfo, bool splitHeader = false) : base(timeZoneInfo)
+        protected RawSheetConverter(TimeZoneInfo timeZoneInfo, IFormatProvider formatProvider, bool splitHeader = false)
+            : base(timeZoneInfo, formatProvider)
         {
             SplitHeader = splitHeader;
         }
@@ -57,10 +58,10 @@ namespace Cathei.BakingSheet.Raw
             if (value is DateTime dt)
             {
                 var local = TimeZoneInfo.ConvertTimeFromUtc(dt, TimeZoneInfo);
-                return local.ToString(CultureInfo.InvariantCulture);
+                return local.ToString(FormatProvider);
             }
 
-            return value.ToString();
+            return Convert.ToString(value, FormatProvider);
         }
     }
 }

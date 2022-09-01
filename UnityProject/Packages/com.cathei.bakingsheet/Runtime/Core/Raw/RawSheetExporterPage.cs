@@ -16,7 +16,7 @@ namespace Cathei.BakingSheet.Raw
     {
         public static void Export(this IRawSheetExporterPage page, RawSheetConverter exporter, SheetConvertingContext context, ISheet sheet)
         {
-            PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), Config.IsConvertable);
+            PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), exporter.IsConvertableNode);
 
             propertyMap.UpdateIndex(sheet);
 
