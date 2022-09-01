@@ -61,6 +61,7 @@ namespace Cathei.BakingSheet.Tests
         {
             public int IntColumn { get; set; }
             public float FloatColumn { get; set; }
+            public decimal DecimalColumn { get; set; }
             public DateTime DateTimeColumn { get; set; }
             public TimeSpan TimeSpanColumn { get; set; }
         }
