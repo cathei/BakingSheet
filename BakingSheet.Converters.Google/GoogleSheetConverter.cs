@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Raw;
@@ -18,8 +19,8 @@ namespace Cathei.BakingSheet
         private ICredential _credential;
         private Spreadsheet _spreadsheet;
 
-        public GoogleSheetConverter(string gsheetAddress, string credential, TimeZoneInfo timeZoneInfo = null)
-            : base(timeZoneInfo)
+        public GoogleSheetConverter(string gsheetAddress, string credential, TimeZoneInfo timeZoneInfo = null, CultureInfo cultureInfo = null)
+            : base(timeZoneInfo, cultureInfo)
         {
             _gsheetAddress = gsheetAddress;
             _credential = GoogleCredential.

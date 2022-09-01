@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -10,10 +11,12 @@ namespace Cathei.BakingSheet.Raw
         protected abstract IRawSheetImporterPage GetPage(string sheetName);
 
         public TimeZoneInfo TimeZoneInfo { get; }
+        public CultureInfo CultureInfo { get; }
 
-        public RawSheetImporter(TimeZoneInfo timeZoneInfo)
+        public RawSheetImporter(TimeZoneInfo timeZoneInfo, CultureInfo cultureInfo)
         {
             TimeZoneInfo = timeZoneInfo ?? TimeZoneInfo.Utc;
+            CultureInfo = cultureInfo ?? CultureInfo.InvariantCulture;
         }
 
         public async Task<bool> Import(SheetConvertingContext context)
@@ -63,7 +66,7 @@ namespace Cathei.BakingSheet.Raw
 
             if (type == typeof(DateTime))
             {
-                var local = DateTime.Parse(value);
+                var local = DateTime.Parse(value, CultureInfo);
                 return TimeZoneInfo.ConvertTimeToUtc(local, TimeZoneInfo);
             }
 
@@ -81,7 +84,7 @@ namespace Cathei.BakingSheet.Raw
                 return StringToValue(underlyingType, value);
             }
 
-            return Convert.ChangeType(value, type);
+            return Convert.ChangeType(value, type, CultureInfo);
         }
     }
 }
