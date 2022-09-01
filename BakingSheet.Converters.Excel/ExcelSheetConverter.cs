@@ -17,8 +17,8 @@ namespace Cathei.BakingSheet
         private Dictionary<string, DataTable> _dataTables;
         private IFileSystem _fileSystem;
 
-        public ExcelSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo = null, string extension = "xlsx", IFileSystem fileSystem = null, CultureInfo cultureInfo = null)
-            : base(timeZoneInfo, cultureInfo)
+        public ExcelSheetConverter(string loadPath, TimeZoneInfo timeZoneInfo = null, string extension = "xlsx", IFileSystem fileSystem = null, IFormatProvider formatProvider = null)
+            : base(timeZoneInfo, formatProvider)
         {
             _loadPath = loadPath;
             _extension = extension;
