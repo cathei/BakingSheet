@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 
 namespace Cathei.BakingSheet
 {
@@ -61,7 +62,7 @@ namespace Cathei.BakingSheet
 
     public interface ISheetReference
     {
-        void Map(SheetConvertingContext context);
+        void Map(SheetConvertingContext context, ISheet sheet);
 
         object Id { get; set; }
         Type IdType { get; }

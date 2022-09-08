@@ -116,7 +116,6 @@ namespace Cathei.BakingSheet.Tests
         }
     }
 
-
     public class TestSheetContainer : SheetContainerBase
     {
         public TestSheetContainer(ILogger logger) : base(logger) { }

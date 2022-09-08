@@ -53,6 +53,20 @@ namespace Cathei.BakingSheet
                     if (!typeof(ISheetReference).IsAssignableFrom(node.ValueType))
                         continue;
 
+                    var referenceSheetType = node.ValueType.DeclaringType
+                        .MakeGenericType(node.ValueType.GenericTypeArguments);
+
+                    var sheet = context.Container.GetSheetProperties()
+                        .Where(p => p.PropertyType.IsSubclassOf(referenceSheetType))
+                        .Select(p => p.GetValue(context.Container) as ISheet)
+                        .FirstOrDefault();
+
+                    if (sheet == null)
+                    {
+                        context.Logger.LogError("Failed to find sheet for {ReferenceType}", node.ValueType);
+                        continue;
+                    }
+
                     foreach (var row in Items)
                     {
                         int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
@@ -66,7 +80,7 @@ namespace Cathei.BakingSheet
 
                                 if (obj is ISheetReference refer)
                                 {
-                                    refer.Map(context);
+                                    refer.Map(context, sheet);
                                     node.SetValue(row, vindex, indexes.GetEnumerator(), refer);
                                 }
                             }
