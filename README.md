@@ -20,6 +20,8 @@ BakingSheet's basic workflow is like this:
 5. Your business logic directly uses C# instace of your schema.
 6. Profit!
 
+Don't trust me that it's better than using ScriptableObject? You might change your mind if you see how famous SuperCell ships their games with CSV, like [Clash Royale](https://github.com/smlbiobot/cr-csv/tree/master/assets/csv_logic) or [Brawl Stars](https://github.com/weeco/brawlstars-assets/tree/master/7.278.1/csv_logic). Though of course, their games aren't made with Unity, still a very good example to show how you can utilize spreadsheet!
+
 ![Sample1](.github/images/sample_simple.jpg)
 ![Sample2](.github/images/sample_complex.jpg)
 
