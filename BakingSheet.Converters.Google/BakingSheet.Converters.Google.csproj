@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>BakingSheet.Converters.Google</PackageId>
+    <Authors>Maxwell Keonwoo Kang</Authors>
     <PackageDescription>BakingSheet importer for Google Sheet</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>

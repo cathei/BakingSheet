@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>BakingSheet.Converters.Excel</PackageId>
+    <Authors>Maxwell Keonwoo Kang</Authors>
     <PackageDescription>BakingSheet importer for Excel files</PackageDescription>
     <RepositoryUrl>https://github.com/cathei/BakingSheet</RepositoryUrl>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>

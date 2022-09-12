@@ -1,9 +1,6 @@
+// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
 using System;
-using Xunit;
-using Cathei.BakingSheet.Internal;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Moq;
 
