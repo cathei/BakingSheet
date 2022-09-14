@@ -16,20 +16,32 @@ namespace Cathei.BakingSheet.Raw
         public TimeZoneInfo TimeZoneInfo { get; }
         public IFormatProvider FormatProvider { get; }
 
+        private bool _isLoaded;
+
         public RawSheetImporter(TimeZoneInfo timeZoneInfo, IFormatProvider formatProvider)
         {
             TimeZoneInfo = timeZoneInfo ?? TimeZoneInfo.Utc;
             FormatProvider = formatProvider ?? CultureInfo.InvariantCulture;
         }
 
+        public virtual void Reset()
+        {
+            _isLoaded = false;
+        }
+
         public async Task<bool> Import(SheetConvertingContext context)
         {
-            var success = await LoadData();
-
-            if (!success)
+            if (!_isLoaded)
             {
-                context.Logger.LogError("Failed to load data");
-                return false;
+                var success = await LoadData();
+
+                if (!success)
+                {
+                    context.Logger.LogError("Failed to load data");
+                    return false;
+                }
+
+                _isLoaded = true;
             }
 
             var sheetProps = context.Container.GetSheetProperties();
