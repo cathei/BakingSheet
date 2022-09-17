@@ -2,18 +2,35 @@
 
 using System.Reflection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace Cathei.BakingSheet
 {
-    internal class JsonSheetContractResolver : DefaultContractResolver
+    public class JsonSheetContractResolver : DefaultContractResolver
     {
+        public static readonly JsonSheetContractResolver Instance = new JsonSheetContractResolver();
+
         protected override JsonContract CreateContract(System.Type objectType)
         {
             if (typeof(ISheetRow).IsAssignableFrom(objectType) ||
                 typeof(ISheetRowElem).IsAssignableFrom(objectType))
             {
                 return CreateObjectContract(objectType);
+            }
+
+            if (typeof(ISheetReference).IsAssignableFrom(objectType))
+            {
+                var contract = base.CreateContract(objectType);
+                contract.Converter = new JsonSheetReferenceConverter();
+                return contract;
+            }
+
+            if (objectType.IsEnum)
+            {
+                var contract = base.CreateContract(objectType);
+                contract.Converter = new StringEnumConverter();
+                return contract;
             }
 
             return base.CreateContract(objectType);
@@ -25,7 +42,7 @@ namespace Cathei.BakingSheet
 
             if (member is PropertyInfo pi)
             {
-                var nonSerialize = pi.GetCustomAttribute<NonSerializedAttribute>() != null;
+                var nonSerialize = pi.IsDefined(typeof(NonSerializedAttribute));
                 var hasSetMethod = pi.SetMethod != null;
 
                 property.Writable = !nonSerialize && hasSetMethod;
@@ -36,3 +53,4 @@ namespace Cathei.BakingSheet
         }
     }
 }
+

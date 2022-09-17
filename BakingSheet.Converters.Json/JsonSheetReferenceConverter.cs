@@ -15,7 +15,7 @@ using Newtonsoft.Json.Converters;
 
 namespace Cathei.BakingSheet
 {
-    public class SheetReferenceConverter : JsonConverter<ISheetReference>
+    public class JsonSheetReferenceConverter : JsonConverter<ISheetReference>
     {
         public override ISheetReference ReadJson(JsonReader reader, Type objectType, ISheetReference existingValue, bool hasExistingValue, JsonSerializer serializer)
         {

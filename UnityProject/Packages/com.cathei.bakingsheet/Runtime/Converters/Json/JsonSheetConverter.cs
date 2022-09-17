@@ -50,11 +50,7 @@ namespace Cathei.BakingSheet
             var settings = new JsonSerializerSettings();
 
             settings.Error = (_, err) => ErrorHandler(logError, err);
-
-            settings.ContractResolver = new JsonSheetContractResolver();
-
-            settings.Converters.Add(new StringEnumConverter());
-            settings.Converters.Add(new SheetReferenceConverter());
+            settings.ContractResolver = JsonSheetContractResolver.Instance;
 
             return settings;
         }
