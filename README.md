@@ -139,7 +139,7 @@ var excelConverter = new ExcelSheetConverter("Excel/Files/Path");
 await sheetContainer.Bake(excelConverter);
 ```
 
-For Google Sheet, first create your service account through Google API Console. Then add it to your sheet with `Viewer` permission. Use Google credential for that service account to create converter. For detailed information about how to create service account and link to your sheet, see [Google Sheet Converter's README](./BakingSheet.Converters.Google/README.md).
+For Google Sheet, first create your service account through Google API Console. Then add it to your sheet with `Viewer` permission. Use Google credential for that service account to create converter. For detailed information about how to create service account and link to your sheet, see [How to import from Google Sheet](./docs/google-sheet-import.md).
 
 ```csharp
 // replace with your Google sheet identifier
