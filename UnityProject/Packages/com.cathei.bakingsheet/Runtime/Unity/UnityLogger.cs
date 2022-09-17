@@ -10,6 +10,8 @@ namespace Cathei.BakingSheet
 {
     public class UnityLogger : ILogger
     {
+        public static UnityLogger Default { get; } = new UnityLogger();
+
         private IExternalScopeProvider scopeProvider = new LoggerExternalScopeProvider();
 
         private IList<object> scopes = new List<object>();

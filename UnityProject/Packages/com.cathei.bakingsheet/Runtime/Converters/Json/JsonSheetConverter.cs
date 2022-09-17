@@ -12,6 +12,7 @@ using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Cathei.BakingSheet
 {
@@ -28,25 +29,27 @@ namespace Cathei.BakingSheet
             _fileSystem = fileSystem ?? new FileSystem();
         }
 
+        public static void ErrorHandler(ILogger logError, ErrorEventArgs err)
+        {
+            if (err.ErrorContext.Member?.ToString() == nameof(ISheetRow.Id) &&
+                err.ErrorContext.OriginalObject is ISheetRow &&
+                !(err.CurrentObject is ISheet))
+            {
+                // if Id has error, the error must be handled on the sheet level
+                return;
+            }
+
+            using (logError.BeginScope(err.ErrorContext.Path))
+                logError.LogError(err.ErrorContext.Error, err.ErrorContext.Error.Message);
+
+            err.ErrorContext.Handled = true;
+        }
+
         public virtual JsonSerializerSettings GetSettings(ILogger logError)
         {
             var settings = new JsonSerializerSettings();
 
-            settings.Error = (sender, err) =>
-            {
-                if (err.ErrorContext.Member?.ToString() == nameof(ISheetRow.Id) &&
-                    err.ErrorContext.OriginalObject is ISheetRow &&
-                    !(err.CurrentObject is ISheet))
-                {
-                    // if Id has error, the error must be handled on the sheet level
-                    return;
-                }
-
-                using (logError.BeginScope(err.ErrorContext.Path))
-                    logError.LogError(err.ErrorContext.Error, err.ErrorContext.Error.Message);
-
-                err.ErrorContext.Handled = true;
-            };
+            settings.Error = (_, err) => ErrorHandler(logError, err);
 
             settings.ContractResolver = new JsonSheetContractResolver();
 
@@ -115,23 +118,6 @@ namespace Cathei.BakingSheet
             }
 
             return true;
-        }
-
-        internal class SheetReferenceConverter : JsonConverter<ISheetReference>
-        {
-            public override ISheetReference ReadJson(JsonReader reader, Type objectType, ISheetReference existingValue, bool hasExistingValue, JsonSerializer serializer)
-            {
-                if (existingValue == null)
-                    existingValue = Activator.CreateInstance(objectType) as ISheetReference;
-
-                existingValue.Id = serializer.Deserialize(reader, existingValue.IdType);
-                return existingValue;
-            }
-
-            public override void WriteJson(JsonWriter writer, ISheetReference value, JsonSerializer serializer)
-            {
-                serializer.Serialize(writer, value.Id);
-            }
         }
     }
 }

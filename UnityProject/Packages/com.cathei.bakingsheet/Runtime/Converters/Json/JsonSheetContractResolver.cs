@@ -6,7 +6,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Cathei.BakingSheet
 {
-    internal class JsonSheetContractResolver : DefaultContractResolver
+    public class JsonSheetContractResolver : DefaultContractResolver
     {
         protected override JsonContract CreateContract(System.Type objectType)
         {
