@@ -13,6 +13,15 @@ namespace Cathei.BakingSheet
     {
         public Task<bool> Export(SheetConvertingContext context)
         {
+            var props = context.Container.GetSheetProperties();
+
+            foreach (var prop in props)
+            {
+                prop.GetValue(context.Container);
+
+
+            }
+
 
 
             AssetDatabase.CreateAsset();

@@ -16,37 +16,43 @@ using Object = UnityEngine.Object;
 
 namespace Cathei.BakingSheet
 {
-    public class JsonSheetScriptableObjectConverter : JsonConverter<ISheetScriptableObjectReference>
+    public class JsonSheetUnityObjectConverter : JsonConverter<UnityEngine.Object>
     {
         private readonly List<Object> _references;
 
-        public JsonSheetScriptableObjectConverter(List<UnityEngine.Object> references)
+        public JsonSheetUnityObjectConverter(List<UnityEngine.Object> references)
         {
             _references = references;
         }
 
-        public override ISheetScriptableObjectReference ReadJson(
-            JsonReader reader, Type objectType, ISheetScriptableObjectReference existingValue,
+        public override UnityEngine.Object ReadJson(
+            JsonReader reader, Type objectType, UnityEngine.Object existingValue,
             bool hasExistingValue, JsonSerializer serializer)
         {
-            existingValue ??= (ISheetScriptableObjectReference)Activator.CreateInstance(objectType);
-            existingValue.Asset = serializer.Deserialize(reader, );
-            return existingValue;
+            int referenceIndex = reader.ReadAsInt32() ?? -1;
+
+            if (referenceIndex < 0)
+                return null;
+
+            if (referenceIndex >= _references.Count)
+                throw new IndexOutOfRangeException();
+
+            return _references[referenceIndex];
         }
 
         public override void WriteJson(
-            JsonWriter writer, ISheetScriptableObjectReference value, JsonSerializer serializer)
+            JsonWriter writer, UnityEngine.Object value, JsonSerializer serializer)
         {
             int referenceIndex = -1;
 
-            if (value.Asset != null)
+            if (value != null)
             {
-                referenceIndex = _references.IndexOf(value.Asset);
+                referenceIndex = _references.IndexOf(value);
 
                 if (referenceIndex < 0)
                 {
                     referenceIndex = _references.Count;
-                    _references.Add(value.Asset);
+                    _references.Add(value);
                 }
             }
 

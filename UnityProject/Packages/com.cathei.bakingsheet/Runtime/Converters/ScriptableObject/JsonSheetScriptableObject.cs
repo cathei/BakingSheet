@@ -11,36 +11,32 @@ namespace Cathei.BakingSheet
 {
     public class JsonSheetScriptableObject : SheetScriptableObject
     {
-        private static JsonSerializerSettings _settings;
-
-        protected virtual JsonSerializerSettings GetSettings()
+        protected virtual JsonSerializerSettings GetSettings(List<UnityEngine.Object> references)
         {
-            if (_settings != null)
-                return _settings;
+            var settings = new JsonSerializerSettings
+            {
+                Error = (_, err) =>
+                    JsonSheetConverter.ErrorHandler(UnityLogger.Default, err),
+                ContractResolver = new JsonSheetContractResolver()
+            };
 
-            _settings = new JsonSerializerSettings();
+            settings.Converters.Add(new JsonSheetScriptableObjectConverter(references));
 
-            _settings.Error = (_, err) =>
-                JsonSheetConverter.ErrorHandler(UnityLogger.Default, err);
-
-            _settings.ContractResolver = new JsonSheetContractResolver();
-
-            _settings.Converters.Add(new StringEnumConverter());
-            _settings.Converters.Add(new SheetReferenceConverter());
-            _settings.Converters.Add(new JsonSheetScriptableObjectConverter());
-
-            return _settings;
+            return settings;
         }
 
         protected override string SerializeRow(ISheetRow row, List<UnityEngine.Object> references)
         {
-            var settings = GetSettings();
+            var settings = GetSettings(references);
             return JsonConvert.SerializeObject(row, settings);
         }
 
         protected override T DeserializeRow<T>(string serializedRow, List<UnityEngine.Object> references)
         {
-            var settings = GetSettings();
+            // initial reference values
+            references.Clear();
+
+            var settings = GetSettings(references);
             return JsonConvert.DeserializeObject<T>(serializedRow, settings);
         }
     }
