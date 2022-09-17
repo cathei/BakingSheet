@@ -4,12 +4,6 @@ using System;
 
 namespace Cathei.BakingSheet
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public abstract class SheetAssetAttribute : Attribute
-    {
-
-    }
-
     public abstract class SheetVerifier
     {
         public virtual Type TargetAttribute => typeof(SheetAssetAttribute);

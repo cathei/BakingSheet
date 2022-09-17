@@ -16,10 +16,16 @@ namespace Cathei.BakingSheet
     {
         private ILogger _logger;
         private PropertyInfo[] _sheetProperties;
+        private List<ISheetValueConverter> _valueConverters;
 
         public SheetContainerBase(ILogger logger)
         {
             _logger = logger;
+
+            _valueConverters = new List<ISheetValueConverter>
+            {
+
+            };
         }
 
         public IEnumerable<PropertyInfo> GetSheetProperties()
@@ -106,6 +112,11 @@ namespace Cathei.BakingSheet
                     sheet.VerifyAssets(context);
                 }
             }
+        }
+
+        protected void AddValueConverter(ISheetValueConverter converter)
+        {
+            _valueConverters.Add(converter);
         }
     }
 }

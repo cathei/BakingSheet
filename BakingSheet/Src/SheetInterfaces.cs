@@ -70,12 +70,20 @@ namespace Cathei.BakingSheet
         Type IdType { get; }
     }
 
-    public interface ISheetImporter
+    public interface ISheetFormatter
+    {
+        TimeZoneInfo TimeZoneInfo { get; }
+        IFormatProvider FormatProvider { get; }
+
+        object StringToValue(Type type, string value);
+    }
+
+    public interface ISheetImporter : ISheetFormatter
     {
         Task<bool> Import(SheetConvertingContext context);
     }
 
-    public interface ISheetExporter
+    public interface ISheetExporter : ISheetFormatter
     {
         Task<bool> Export(SheetConvertingContext context);
     }
