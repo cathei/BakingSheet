@@ -9,6 +9,9 @@ namespace Cathei.BakingSheet
 {
     public partial class Sheet<TKey, TValue>
     {
+        /// <summary>
+        /// Cross-sheet reference column to this Sheet.
+        /// </summary>
         public struct Reference : ISheetReference
         {
             [Preserve]

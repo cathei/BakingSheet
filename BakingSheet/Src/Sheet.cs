@@ -9,6 +9,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
+    /// <summary>
+    /// Represents a single page of Sheet.
+    /// </summary>
+    /// <typeparam name="TKey">Type of Id column.</typeparam>
+    /// <typeparam name="TValue">Type of Row.</typeparam>
     public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet<TKey, TValue>
         where TValue : SheetRow<TKey>, new()
     {
@@ -167,7 +172,11 @@ namespace Cathei.BakingSheet
         }
     }
 
-    // Convenient shorthand
+    /// <summary>
+    /// Represents a single page of Sheet, with string Id.
+    /// For other type of Id, use generic version.
+    /// </summary>
+    /// <typeparam name="T">Type of Row.</typeparam>
     public abstract class Sheet<T> : Sheet<string, T>
         where T : SheetRow<string>, new() {}
 }

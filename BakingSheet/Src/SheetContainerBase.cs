@@ -12,6 +12,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
+    /// <summary>
+    /// Represents a Container, workbook that holds multiple Sheet.
+    /// </summary>
     public abstract class SheetContainerBase
     {
         private ILogger _logger;
