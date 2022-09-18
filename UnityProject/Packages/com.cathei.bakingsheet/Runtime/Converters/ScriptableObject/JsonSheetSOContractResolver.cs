@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Cathei.BakingSheet
 {
-    public class JsonSheetSOContractResolver : JsonSheetContractResolver
+    public class JsonSheetSOContractResolver : DefaultContractResolver
     {
         public static readonly JsonSheetSOContractResolver Instance =
             new JsonSheetSOContractResolver();

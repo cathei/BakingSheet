@@ -34,7 +34,7 @@ namespace Cathei.BakingSheet
 
             public Type IdType => typeof(TKey);
 
-            public Reference(TKey id)
+            public Reference(TKey id) : this()
             {
                 Id = id;
                 Ref = default(TValue);
