@@ -1,18 +1,25 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
-using System.Linq;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
+    public partial interface ISheetReference
+    {
+        void Map(SheetConvertingContext context, ISheet sheet);
+
+        object Id { get; set; }
+        Type IdType { get; }
+    }
+
     public partial class Sheet<TKey, TValue>
     {
         /// <summary>
         /// Cross-sheet reference column to this Sheet.
         /// </summary>
-        public struct Reference : ISheetReference
+        public partial struct Reference : ISheetReference
         {
             [Preserve]
             public TKey Id { get; private set; }

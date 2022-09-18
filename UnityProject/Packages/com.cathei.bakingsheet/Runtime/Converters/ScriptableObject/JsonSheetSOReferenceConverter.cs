@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Cathei.BakingSheet
 {
-    public class JsonSheetScriptableObjectReferenceConverter : JsonConverter<ISheetScriptableObjectReference>
+    public class JsonSheetSOReferenceConverter : JsonConverter<ISheetScriptableObjectReference>
     {
         public override ISheetScriptableObjectReference ReadJson(
             JsonReader reader, Type objectType, ISheetScriptableObjectReference existingValue,

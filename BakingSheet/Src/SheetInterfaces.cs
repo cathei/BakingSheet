@@ -63,14 +63,6 @@ namespace Cathei.BakingSheet
         new IReadOnlyList<TElem> Arr { get; }
     }
 
-    public interface ISheetReference
-    {
-        void Map(SheetConvertingContext context, ISheet sheet);
-
-        object Id { get; set; }
-        Type IdType { get; }
-    }
-
     public interface ISheetFormatter
     {
         TimeZoneInfo TimeZoneInfo { get; }

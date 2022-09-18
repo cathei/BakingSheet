@@ -9,10 +9,10 @@ using UnityEngine;
 
 namespace Cathei.BakingSheet
 {
-    public class JsonSheetScriptableObjectContractResolver : JsonSheetContractResolver
+    public class JsonSheetSOContractResolver : JsonSheetContractResolver
     {
-        public static readonly JsonSheetScriptableObjectContractResolver Instance =
-            new JsonSheetScriptableObjectContractResolver();
+        public static readonly JsonSheetSOContractResolver Instance =
+            new JsonSheetSOContractResolver();
 
         protected override JsonContract CreateContract(System.Type objectType)
         {

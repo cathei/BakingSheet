@@ -1,12 +1,10 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
-using System;
 using Cathei.BakingSheet.Internal;
-using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
-    public interface ISheetAssetPath
+    public partial interface ISheetAssetPath
     {
         string FullPath { get; set; }
 
@@ -14,7 +12,7 @@ namespace Cathei.BakingSheet
         string Postfix { get; }
     }
 
-    public class AssetPath : ISheetAssetPath
+    public partial class AssetPath : ISheetAssetPath
     {
         [Preserve]
         public string FullPath { get; set; }

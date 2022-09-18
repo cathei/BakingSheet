@@ -3,7 +3,6 @@
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
