@@ -13,14 +13,14 @@ namespace Cathei.BakingSheet.Internal
                    type == typeof(string) || type == typeof(decimal);
         }
 
-        public object StringToValue(Type type, string value, ISheetFormatter format)
+        public object StringToValue(Type type, string value, SheetValueConvertingContext context)
         {
-            return Convert.ChangeType(value, type, format.FormatProvider);
+            return Convert.ChangeType(value, type, context.FormatProvider);
         }
 
-        public string ValueToString(Type type, object value, ISheetFormatter format)
+        public string ValueToString(Type type, object value, SheetValueConvertingContext context)
         {
-            return Convert.ToString(value, format.FormatProvider);
+            return Convert.ToString(value, context.FormatProvider);
         }
     }
 }

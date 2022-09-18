@@ -42,11 +42,24 @@ namespace Cathei.BakingSheet
             return typeof(ISheetReference).IsAssignableFrom(node.ValueType);
         }
 
+        private PropertyMap _propertyMap;
+
+        internal PropertyMap GetPropertyMap(SheetConvertingContext context)
+        {
+            if (_propertyMap != null)
+                return _propertyMap;
+
+            _propertyMap = new PropertyMap(context, GetType());
+            return _propertyMap;
+        }
+
+        PropertyMap ISheet.GetPropertyMap(SheetConvertingContext context) => GetPropertyMap(context);
+
         public virtual void PostLoad(SheetConvertingContext context)
         {
             using (context.Logger.BeginScope(Name))
             {
-                var propertyMap = new PropertyMap(context, GetType(), IsReferenceNode);
+                var propertyMap = GetPropertyMap(context);
 
                 propertyMap.UpdateIndex(this);
 
@@ -100,21 +113,11 @@ namespace Cathei.BakingSheet
             }
         }
 
-        private static bool IsVerifiableNode(PropertyMap.Node node)
-        {
-            // prevent recursive call
-            if (IsReferenceNode(node))
-                return true;
-
-            return node is PropertyMap.NodeObject &&
-                node.AttributesGetter(typeof(SheetAssetAttribute)).Any();
-        }
-
         public virtual void VerifyAssets(SheetConvertingContext context)
         {
             using (context.Logger.BeginScope(Name))
             {
-                var propertyMap = new PropertyMap(context, GetType(), IsVerifiableNode);
+                var propertyMap = GetPropertyMap(context);
 
                 propertyMap.UpdateIndex(this);
 
@@ -125,7 +128,10 @@ namespace Cathei.BakingSheet
                         if (!verifier.TargetType.IsAssignableFrom(node.ValueType))
                             continue;
 
-                        var attributes = node.AttributesGetter(verifier.TargetAttribute);
+                        if (!node.PropertyInfo.IsDefined(verifier.TargetAttribute))
+                            continue;
+
+                        var attributes = node.PropertyInfo.GetCustomAttributes(verifier.TargetAttribute);
 
                         foreach (var row in Items)
                         {

@@ -12,17 +12,17 @@ namespace Cathei.BakingSheet.Internal
             return typeof(ISheetReference).IsAssignableFrom(type);
         }
 
-        public object StringToValue(Type type, string value, ISheetFormatter format)
+        public object StringToValue(Type type, string value, SheetValueConvertingContext context)
         {
             var reference = (ISheetReference)Activator.CreateInstance(type);
-            reference.Id = format.StringToValue(reference.IdType, value);
+            reference.Id = context.StringToValue(reference.IdType, value);
             return reference;
         }
 
-        public string ValueToString(Type type, object value, ISheetFormatter format)
+        public string ValueToString(Type type, object value, SheetValueConvertingContext context)
         {
             var reference = (ISheetReference)value;
-            return format.ValueToString(reference.IdType, reference.Id);
+            return context.ValueToString(reference.IdType, reference.Id);
         }
     }
 }

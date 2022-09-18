@@ -38,7 +38,8 @@ namespace Cathei.BakingSheet.Tests
         public void TestStringToValue(Type type, string data, object expected)
         {
             var converter = new CsvSheetConverter("csvdata", TimeZoneInfo.Utc, fileSystem: _fileSystem);
-            var value = converter.StringToValue(type, data);
+            var context = new SheetValueConvertingContext(converter, SheetContractResolver.Instance);
+            var value = context.StringToValue(type, data);
 
             Assert.Equal(expected, value);
         }
@@ -57,7 +58,8 @@ namespace Cathei.BakingSheet.Tests
         public void TestValueToString(Type type, object value, string expected)
         {
             var converter = new CsvSheetConverter("csvdata", TimeZoneInfo.Utc, fileSystem: _fileSystem);
-            var data = converter.ValueToString(type, value);
+            var context = new SheetValueConvertingContext(converter, SheetContractResolver.Instance);
+            var data = context.ValueToString(type, value);
 
             Assert.Equal(expected, data);
         }
@@ -73,7 +75,8 @@ namespace Cathei.BakingSheet.Tests
         public void TestStringToDateTime(Type type, string data, object expected, TimeZoneInfo timeZoneInfo)
         {
             var converter = new CsvSheetConverter("csvdata", timeZoneInfo, fileSystem: _fileSystem);
-            var value = converter.StringToValue(type, data);
+            var context = new SheetValueConvertingContext(converter, SheetContractResolver.Instance);
+            var value = context.StringToValue(type, data);
 
             Assert.Equal(expected, value);
         }
@@ -89,7 +92,8 @@ namespace Cathei.BakingSheet.Tests
         public void TestDateTimeToString(Type type, object value, string expected, TimeZoneInfo timeZoneInfo)
         {
             var converter = new CsvSheetConverter("csvdata", timeZoneInfo, fileSystem: _fileSystem);
-            var data = converter.ValueToString(type, value);
+            var context = new SheetValueConvertingContext(converter, SheetContractResolver.Instance);
+            var data = context.ValueToString(type, value);
 
             Assert.Equal(expected, data);
         }

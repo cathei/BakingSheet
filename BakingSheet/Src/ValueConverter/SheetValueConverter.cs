@@ -12,18 +12,18 @@ namespace Cathei.BakingSheet
             return type == typeof(T);
         }
 
-        object ISheetValueConverter.StringToValue(Type type, string value, ISheetFormatter format)
+        object ISheetValueConverter.StringToValue(Type type, string value, SheetValueConvertingContext context)
         {
-            return StringToValue(value, format);
+            return StringToValue(value, context);
         }
 
-        string ISheetValueConverter.ValueToString(Type type, object value, ISheetFormatter format)
+        string ISheetValueConverter.ValueToString(Type type, object value, SheetValueConvertingContext context)
         {
-            return ValueToString((T)value, format);
+            return ValueToString((T)value, context);
         }
 
-        protected abstract T StringToValue(string value, ISheetFormatter format);
-        protected abstract string ValueToString(T value, ISheetFormatter format);
+        protected abstract T StringToValue(string value, SheetValueConvertingContext context);
+        protected abstract string ValueToString(T value, SheetValueConvertingContext context);
 
     }
 }

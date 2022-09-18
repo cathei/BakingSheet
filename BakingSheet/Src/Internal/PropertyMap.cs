@@ -58,9 +58,11 @@ namespace Cathei.BakingSheet.Internal
             return null;
         }
 
-        public PropertyMap(SheetConvertingContext context, Type sheetType, ISheetContractResolver resolver)
+        public PropertyMap(SheetConvertingContext context, Type sheetType)
         {
             _context = context;
+
+            var resolver = context.Container.ContractResolver;
 
             Type rowType = GetGenericArgument(sheetType, typeof(Sheet<,>))[1];
 
@@ -68,9 +70,9 @@ namespace Cathei.BakingSheet.Internal
             {
                 FullPath = null,
                 ValueType = rowType,
-                Getter = (obj, key) => obj,
+                Getter = (child, obj, key) => obj,
                 Setter = null,
-                AttributesGetter = _ => Enumerable.Empty<Attribute>(),
+                PropertyInfo = null,
             };
 
             Root.GenerateChildren(resolver, 0);
@@ -84,9 +86,9 @@ namespace Cathei.BakingSheet.Internal
                 {
                     FullPath = null,
                     ValueType = arrPropertyInfo.PropertyType,
-                    Getter = (obj, key) => arrPropertyInfo.GetValue(obj),
+                    Getter = (child, obj, key) => child.PropertyInfo.GetValue(obj),
                     Setter = null,
-                    AttributesGetter = _ => Enumerable.Empty<Attribute>(),
+                    PropertyInfo = arrPropertyInfo,
                 };
 
                 Arr.GenerateChildren(resolver, 0);
@@ -100,6 +102,8 @@ namespace Cathei.BakingSheet.Internal
         public void SetValue(ISheetRow row, int vindex, string path, string value, ISheetFormatter formatter)
         {
             Node node = null;
+
+            var context = new SheetValueConvertingContext(formatter, _context.Container.ContractResolver);
 
             _indexes.Clear();
 
@@ -133,7 +137,7 @@ namespace Cathei.BakingSheet.Internal
 
                 if (node.IndexType != null)
                 {
-                    object index = converter(node.IndexType, subpath);
+                    object index = context.StringToValue(node.IndexType, subpath);
                     _indexes.Add(index);
                 }
 
@@ -159,7 +163,7 @@ namespace Cathei.BakingSheet.Internal
                 return;
             }
 
-            node.SetValue(row, vindex, _indexes.GetEnumerator(), converter(node.ValueType, value));
+            node.SetValue(row, vindex, _indexes.GetEnumerator(), context.StringToValue(node.ValueType, value));
         }
 
         public void UpdateIndex(ISheet sheet)

@@ -16,7 +16,6 @@ namespace Cathei.BakingSheet
     {
         private ILogger _logger;
         private PropertyInfo[] _sheetProperties;
-        private List<ISheetValueConverter> _valueConverters;
 
         public virtual ISheetContractResolver ContractResolver => SheetContractResolver.Instance;
 

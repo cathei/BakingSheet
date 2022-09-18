@@ -13,8 +13,7 @@ namespace Cathei.BakingSheet
         public static readonly SheetContractResolver Instance = new SheetContractResolver();
 
         private List<ISheetValueConverter> _converters = new List<ISheetValueConverter>();
-        private Dictionary<Type, ISheetValueConverter> _attrConverters = new Dictionary<Type, ISheetValueConverter>();
-
+        private Dictionary<Type, ISheetValueConverter> _attrToConverter = new Dictionary<Type, ISheetValueConverter>();
         private Dictionary<Type, ISheetValueConverter> _typeToConverter = new Dictionary<Type, ISheetValueConverter>();
 
         public SheetContractResolver() : this(null) { }
@@ -29,7 +28,7 @@ namespace Cathei.BakingSheet
             _converters.Add(new DateTimeValueConverter());
             _converters.Add(new TimeSpanValueConverter());
             _converters.Add(new SheetReferenceValueConverter());
-            _converters.Add(new NullableValueConverter());
+            // _converters.Add(new NullableValueConverter());
         }
 
         public virtual ISheetValueConverter GetValueConverter(Type type)
@@ -64,22 +63,26 @@ namespace Cathei.BakingSheet
 
         public virtual ISheetValueConverter GetValueConverter(PropertyInfo propertyInfo)
         {
+            if (propertyInfo == null)
+                return null;
+
             if (!propertyInfo.IsDefined(typeof(SheetValueConverterAttribute)))
                 return null;
 
             // property-level converter
             var attr = propertyInfo.GetCustomAttribute<SheetValueConverterAttribute>();
             var converter = GetConverterFromAttribute(attr);
+
             return converter;
         }
 
         private ISheetValueConverter GetConverterFromAttribute(SheetValueConverterAttribute attr)
         {
-            if (_attrConverters.TryGetValue(attr.ConverterType, out var converter))
+            if (_attrToConverter.TryGetValue(attr.ConverterType, out var converter))
                 return converter;
 
             converter = (ISheetValueConverter)Activator.CreateInstance(attr.ConverterType);
-            _attrConverters.Add(attr.ConverterType, converter);
+            _attrToConverter.Add(attr.ConverterType, converter);
             return converter;
         }
     }
