@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Cathei.BakingSheet.Tests
@@ -55,6 +56,21 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal(expected, value.FullPath);
         }
 
+        [Theory]
+        [MemberData(nameof(AssetPathStringToValueTestData))]
+        public void TestStringToValueJson(Type type, string data, string expected)
+        {
+            if (data == null)
+                data = "null";
+            else
+                data = $"\"{data}\"";
+
+            var value = (ISheetAssetPath)JsonConvert.DeserializeObject(
+                data, type, new JsonSheetAssetPathConverter());
+
+            Assert.Equal(expected, value.FullPath);
+        }
+
         public static IEnumerable<object[]> AssetPathValueToStringTestData()
         {
             yield return new object[] { new AssetPath { FullPath = "MyPng" }, "MyPng" };
@@ -76,6 +92,21 @@ namespace Cathei.BakingSheet.Tests
             var converter = new CsvSheetConverter("csvdata", TimeZoneInfo.Utc, fileSystem: _fileSystem);
             var context = new SheetValueConvertingContext(converter, SheetContractResolver.Instance);
             var value = context.ValueToString(data.GetType(), data);
+
+            Assert.Equal(expected, value);
+        }
+
+        [Theory]
+        [MemberData(nameof(AssetPathValueToStringTestData))]
+        public void TestValueToStringJson(ISheetAssetPath data, string expected)
+        {
+            if (expected == null)
+                expected = "null";
+            else
+                expected = $"\"{expected}\"";
+
+            var value = JsonConvert.SerializeObject(
+                data, new JsonSheetAssetPathConverter());
 
             Assert.Equal(expected, value);
         }

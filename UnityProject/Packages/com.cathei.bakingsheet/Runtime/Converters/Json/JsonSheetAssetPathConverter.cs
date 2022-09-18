@@ -22,12 +22,15 @@ namespace Cathei.BakingSheet
             if (existingValue == null)
                 existingValue = (ISheetAssetPath)Activator.CreateInstance(objectType);
 
-            string path = reader.ReadAsString();
+            string path = (string)reader.Value;
 
-            if (!string.IsNullOrEmpty(path))
-                path = $"{existingValue.Prefix}{path}{existingValue.Postfix}";
+            if (string.IsNullOrEmpty(path))
+            {
+                existingValue.FullPath = null;
+                return existingValue;
+            }
 
-            existingValue.FullPath = path;
+            existingValue.FullPath = $"{existingValue.Prefix}{path}{existingValue.Postfix}";
             return existingValue;
         }
 
