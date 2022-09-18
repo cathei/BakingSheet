@@ -13,12 +13,20 @@ namespace Cathei.BakingSheet.Internal
     // property map for a sheet
     public partial class PropertyMap
     {
-        private NodeObject Root { get; set; }
-        private NodeList Arr { get; set; }
+        private NodeObject Root { get; }
+        private NodeList Arr { get; }
 
         private readonly SheetConvertingContext _context;
 
-        internal static IEnumerable<string> ParseFlattenPath(string path)
+        private List<object> _indexes = new List<object>();
+
+        private HashSet<string> _warned = null;
+
+        private int _maxDepth;
+
+        public int MaxDepth => _maxDepth;
+
+        private static IEnumerable<string> ParseFlattenPath(string path)
         {
             int idx = 0;
             int next = path.IndexOf(Config.Delimiter, StringComparison.Ordinal);
@@ -32,6 +40,17 @@ namespace Cathei.BakingSheet.Internal
             }
 
             yield return path.Substring(idx);
+        }
+
+        private static bool ShouldInclude(PropertyInfo propertyInfo)
+        {
+            if (propertyInfo.IsDefined(typeof(NonSerializedAttribute)))
+                return false;
+
+            if (propertyInfo.SetMethod == null)
+                return false;
+
+            return true;
         }
 
         private static Type[] GetGenericArgument(Type type, Type baseType)
@@ -77,6 +96,8 @@ namespace Cathei.BakingSheet.Internal
 
             Root.GenerateChildren(resolver, 0);
 
+            _maxDepth = Root.CalculateDepth();
+
             if (typeof(ISheetRowArray).IsAssignableFrom(rowType))
             {
                 Type arrElementType = GetGenericArgument(rowType, typeof(SheetRowArray<,>))[1];
@@ -92,12 +113,10 @@ namespace Cathei.BakingSheet.Internal
                 };
 
                 Arr.GenerateChildren(resolver, 0);
+
+                _maxDepth = Math.Max(_maxDepth, Arr.CalculateDepth());
             }
         }
-
-        private List<object> _indexes = new List<object>();
-
-        private HashSet<string> _warned = null;
 
         public void SetValue(ISheetRow row, int vindex, string path, string value, ISheetFormatter formatter)
         {

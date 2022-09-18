@@ -34,16 +34,16 @@ namespace Cathei.BakingSheet.Raw
             var valueContext = new SheetValueConvertingContext(exporter, resolver);
 
             List<string> headerRows = new List<string>();
-            List<string> arguments = new List<string>();
+            object[] arguments = new object[propertyMap.MaxDepth];
 
             foreach (var (node, indexes) in leafs)
             {
-                arguments.Clear();
+                int i = 0;
 
                 foreach (var index in indexes)
                 {
                     var arg = valueContext.ValueToString(index.GetType(), index);
-                    arguments.Add(arg);
+                    arguments[i++] = arg;
                 }
 
                 var columnName = string.Format(node.FullPath, arguments);

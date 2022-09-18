@@ -28,7 +28,6 @@ namespace Cathei.BakingSheet
             _converters.Add(new DateTimeValueConverter());
             _converters.Add(new TimeSpanValueConverter());
             _converters.Add(new SheetReferenceValueConverter());
-            // _converters.Add(new NullableValueConverter());
         }
 
         public virtual ISheetValueConverter GetValueConverter(Type type)
@@ -36,10 +35,15 @@ namespace Cathei.BakingSheet
             if (_typeToConverter.TryGetValue(type, out var cached))
                 return cached;
 
+            // nullable support
+            Type innerType = Nullable.GetUnderlyingType(type);
+            if (innerType == null)
+                innerType = type;
+
             // type-level converter
-            if (type.IsDefined(typeof(SheetValueConverterAttribute)))
+            if (innerType.IsDefined(typeof(SheetValueConverterAttribute)))
             {
-                var attr = type.GetCustomAttribute<SheetValueConverterAttribute>();
+                var attr = innerType.GetCustomAttribute<SheetValueConverterAttribute>();
                 var converter = GetConverterFromAttribute(attr);
 
                 _typeToConverter.Add(type, converter);
@@ -49,7 +53,7 @@ namespace Cathei.BakingSheet
             // sheet-level converter
             foreach (var converter in _converters)
             {
-                if (!converter.CanConvert(type))
+                if (!converter.CanConvert(innerType))
                     continue;
 
                 _typeToConverter.Add(type, converter);
