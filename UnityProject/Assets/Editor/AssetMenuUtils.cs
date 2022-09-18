@@ -13,7 +13,7 @@ namespace Cathei.BakingSheet.Editor
         [MenuItem("Assets/Create/BakingSheet/Sheet SO")]
         public static void CreateScriptableObject()
         {
-            var so = ScriptableObject.CreateInstance<SheetScriptableObject>();
+            var so = ScriptableObject.CreateInstance<SheetRowScriptableObject>();
 
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);
 

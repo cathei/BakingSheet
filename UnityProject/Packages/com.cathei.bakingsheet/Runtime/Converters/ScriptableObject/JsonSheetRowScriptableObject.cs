@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Cathei.BakingSheet
 {
-    public class JsonSheetScriptableObject : SheetScriptableObject
+    public class JsonSheetRowScriptableObject : SheetRowScriptableObject
     {
         protected virtual JsonSerializerSettings GetSettings(List<UnityEngine.Object> references)
         {
@@ -17,10 +17,10 @@ namespace Cathei.BakingSheet
             {
                 Error = (_, err) =>
                     JsonSheetConverter.ErrorHandler(UnityLogger.Default, err),
-                ContractResolver = new JsonSheetContractResolver()
+                ContractResolver = JsonSheetScriptableObjectContractResolver.Instance
             };
 
-            settings.Converters.Add(new JsonSheetScriptableObjectConverter(references));
+            settings.Converters.Add(new JsonSheetUnityObjectConverter(references));
 
             return settings;
         }

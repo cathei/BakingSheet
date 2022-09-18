@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Cathei.BakingSheet
 {
-    public abstract class SheetScriptableObject : ScriptableObject, ISerializationCallbackReceiver
+    public abstract class SheetRowScriptableObject : ScriptableObject, ISerializationCallbackReceiver
     {
 #if UNITY_EDITOR
         // type metadata that used for editor type check

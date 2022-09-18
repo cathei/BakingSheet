@@ -9,7 +9,7 @@ namespace Cathei.BakingSheet.Internal
 {
     public interface ISheetScriptableObjectReference
     {
-        public SheetScriptableObject Asset { get; set; }
+        public SheetRowScriptableObject Asset { get; set; }
     }
 }
 
@@ -21,9 +21,9 @@ namespace Cathei.BakingSheet
         public struct RowSO : ISheetScriptableObjectReference
         {
             [SerializeField]
-            private SheetScriptableObject _asset;
+            private SheetRowScriptableObject _asset;
 
-            public SheetScriptableObject Asset
+            public SheetRowScriptableObject Asset
             {
                 get => _asset;
                 set => _asset = value;

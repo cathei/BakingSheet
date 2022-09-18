@@ -16,6 +16,13 @@ namespace Cathei.BakingSheet
 
         protected override JsonContract CreateContract(System.Type objectType)
         {
+            if (typeof(ISheetScriptableObjectReference).IsAssignableFrom(objectType))
+            {
+                var contract = base.CreateContract(objectType);
+                contract.Converter = new JsonSheetScriptableObjectConverter();
+                return contract;
+            }
+
             return base.CreateContract(objectType);
         }
     }

@@ -18,39 +18,19 @@ namespace Cathei.BakingSheet
 {
     public class JsonSheetScriptableObjectConverter : JsonConverter<ISheetScriptableObjectReference>
     {
-        private readonly List<Object> _references;
-
-        public JsonSheetScriptableObjectConverter(List<UnityEngine.Object> references)
-        {
-            _references = references;
-        }
-
         public override ISheetScriptableObjectReference ReadJson(
             JsonReader reader, Type objectType, ISheetScriptableObjectReference existingValue,
             bool hasExistingValue, JsonSerializer serializer)
         {
             existingValue ??= (ISheetScriptableObjectReference)Activator.CreateInstance(objectType);
-            existingValue.Asset = serializer.Deserialize(reader, );
+            existingValue.Asset = serializer.Deserialize<SheetRowScriptableObject>(reader);
             return existingValue;
         }
 
         public override void WriteJson(
             JsonWriter writer, ISheetScriptableObjectReference value, JsonSerializer serializer)
         {
-            int referenceIndex = -1;
-
-            if (value.Asset != null)
-            {
-                referenceIndex = _references.IndexOf(value.Asset);
-
-                if (referenceIndex < 0)
-                {
-                    referenceIndex = _references.Count;
-                    _references.Add(value.Asset);
-                }
-            }
-
-            writer.WriteValue(referenceIndex);
+            serializer.Serialize(writer, value.Asset);
         }
     }
 }
