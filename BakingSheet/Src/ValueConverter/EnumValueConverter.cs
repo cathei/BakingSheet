@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 
 namespace Cathei.BakingSheet.Internal
 {
-    public class PrimitiveValueConverter : ISheetValueConverter
+    public class EnumValueConverter : ISheetValueConverter
     {
         public bool CanConvert(Type type)
         {
-            return type.IsPrimitive || type == typeof(string) || type == typeof(decimal);
+            return type.IsEnum;
         }
 
         public object StringToValue(Type type, string value, SheetValueConvertingContext context)
         {
-            return Convert.ChangeType(value, type, context.FormatProvider);
+            return Enum.Parse(type, value, true);
         }
 
         public string ValueToString(Type type, object value, SheetValueConvertingContext context)
         {
-            return Convert.ToString(value, context.FormatProvider);
+            return value.ToString();
         }
     }
 }
