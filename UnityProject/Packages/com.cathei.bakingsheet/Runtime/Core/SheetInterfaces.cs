@@ -17,6 +17,7 @@ namespace Cathei.BakingSheet
         bool Contains(object key);
         void Add(object value);
 
+        PropertyMap GetPropertyMap(SheetConvertingContext context);
         void PostLoad(SheetConvertingContext context);
         void VerifyAssets(SheetConvertingContext context);
     }
@@ -68,6 +69,12 @@ namespace Cathei.BakingSheet
 
         object Id { get; set; }
         Type IdType { get; }
+    }
+
+    public interface ISheetFormatter
+    {
+        TimeZoneInfo TimeZoneInfo { get; }
+        IFormatProvider FormatProvider { get; }
     }
 
     public interface ISheetImporter

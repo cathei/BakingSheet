@@ -12,12 +12,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
-    public class SheetContainerBase
+    /// <summary>
+    /// Represents a Container, workbook that holds multiple Sheet.
+    /// </summary>
+    public abstract class SheetContainerBase
     {
         private ILogger _logger;
         private PropertyInfo[] _sheetProperties;
 
-        public SheetContainerBase(ILogger logger)
+        public virtual ISheetContractResolver ContractResolver => SheetContractResolver.Instance;
+
+        protected SheetContainerBase(ILogger logger)
         {
             _logger = logger;
         }

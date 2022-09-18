@@ -45,25 +45,5 @@ namespace Cathei.BakingSheet.Raw
 
             return true;
         }
-
-        public virtual string ValueToString(Type type, object value)
-        {
-            if (value == null)
-                return null;
-
-            if (value is ISheetReference)
-            {
-                var reference = value as ISheetReference;
-                return ValueToString(reference.IdType, reference.Id);
-            }
-
-            if (value is DateTime dt)
-            {
-                var local = TimeZoneInfo.ConvertTimeFromUtc(dt, TimeZoneInfo);
-                return local.ToString(FormatProvider);
-            }
-
-            return Convert.ToString(value, FormatProvider);
-        }
     }
 }

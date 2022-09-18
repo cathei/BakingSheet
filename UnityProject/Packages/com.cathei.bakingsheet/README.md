@@ -1,6 +1,6 @@
-[![Nuget](https://img.shields.io/nuget/v/BakingSheet)](https://www.nuget.org/packages?q=BakingSheet) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/cathei/BakingSheet)](https://github.com/cathei/BakingSheet/releases) [![GitHub](https://img.shields.io/github/license/cathei/BakingSheet)](https://github.com/cathei/BakingSheet/blob/master/LICENSE) [![Discord](https://img.shields.io/discord/942240862354702376?color=%235865F2&label=discord&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/wXjxjfrDQa)
+[![Nuget](https://img.shields.io/nuget/v/BakingSheet)](https://www.nuget.org/packages?q=BakingSheet) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/cathei/BakingSheet)](https://github.com/cathei/BakingSheet/releases) [![openupm](https://img.shields.io/npm/v/com.cathei.bakingsheet?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.cathei.bakingsheet/) [![GitHub](https://img.shields.io/github/license/cathei/BakingSheet)](https://github.com/cathei/BakingSheet/blob/master/LICENSE) [![Discord](https://img.shields.io/discord/942240862354702376?color=%235865F2&label=discord&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/wXjxjfrDQa)
 
-# BakingSheet
+# BakingSheet 🍞
 Easy datasheet management for C# and Unity. Supports Excel, Google Sheet, JSON and CSV format. It has been used for several mobile games that released on Google Play and AppStore.
 
 ## Concept
@@ -20,6 +20,8 @@ BakingSheet's basic workflow is like this:
 5. Your business logic directly uses C# instace of your schema.
 6. Profit!
 
+Don't trust me that it's better than using ScriptableObject? You might change your mind if you see how famous SuperCell ships their games with CSV, like [Clash Royale](https://github.com/smlbiobot/cr-csv/tree/master/assets/csv_logic) or [Brawl Stars](https://github.com/weeco/brawlstars-assets/tree/master/7.278.1/csv_logic). Though of course, their games aren't made with Unity, still a very good example to show how you can utilize spreadsheet!
+
 ![Sample1](.github/images/sample_simple.jpg)
 ![Sample2](.github/images/sample_complex.jpg)
 
@@ -34,6 +36,11 @@ BakingSheet's basic workflow is like this:
 
 ## Install
 Download with [NuGet](https://www.nuget.org/packages?q=BakingSheet) or download [.unitypackage release](https://github.com/cathei/BakingSheet/releases)
+
+You can also install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/)
+```
+openupm add com.cathei.bakingsheet
+```
 
 ### Need help?
 Before you start, we want to mention that if you have problem or need help, you can always ask directly on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
@@ -132,7 +139,8 @@ var excelConverter = new ExcelSheetConverter("Excel/Files/Path");
 await sheetContainer.Bake(excelConverter);
 ```
 
-For Google Sheet, first create your service account through Google API Console. Then add it to your sheet with READ permission. Use Google credential for that service account to create converter.
+For Google Sheet, first create your service account through Google API Console. Then add it to your sheet with `Viewer` permission. Use Google credential for that service account to create converter. For detailed information about how to create service account and link to your sheet, see [How to import from Google Sheet](./docs/google-sheet-import.md).
+
 ```csharp
 // replace with your Google sheet identifier
 // https://developers.google.com/sheets/api/guides/concepts

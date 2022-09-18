@@ -5,6 +5,7 @@ using Cathei.BakingSheet.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using UnityEngine;
 
 namespace Cathei.BakingSheet
 {

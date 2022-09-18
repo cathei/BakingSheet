@@ -51,7 +51,8 @@ namespace Cathei.BakingSheet.Raw
             return false;
         }
 
-        public static void Import(this IRawSheetImporterPage page, RawSheetImporter importer, SheetConvertingContext context, ISheet sheet)
+        public static void Import(this IRawSheetImporterPage page,
+            RawSheetImporter importer, SheetConvertingContext context, ISheet sheet)
         {
             var idColumnName = page.GetCell(0, 0);
 
@@ -86,7 +87,7 @@ namespace Cathei.BakingSheet.Raw
                 columnNames.Add(string.Join(Config.Delimiter, headerRows.Take(lastValidRow + 1)));
             }
 
-            PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), importer.IsConvertableNode);
+            PropertyMap propertyMap = sheet.GetPropertyMap(context);
 
             ISheetRow sheetRow = null;
             string rowId = null;
@@ -160,7 +161,7 @@ namespace Cathei.BakingSheet.Raw
 
                     try
                     {
-                        propertyMap.SetValue(sheetRow, vindex, columnValue, cellValue, importer.StringToValue);
+                        propertyMap.SetValue(sheetRow, vindex, columnValue, cellValue, importer);
                     }
                     catch (Exception ex)
                     {

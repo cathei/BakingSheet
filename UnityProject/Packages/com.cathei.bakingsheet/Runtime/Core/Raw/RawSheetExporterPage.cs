@@ -16,9 +16,14 @@ namespace Cathei.BakingSheet.Raw
 
     public static class RawSheetExporterPageExtensions
     {
-        public static void Export(this IRawSheetExporterPage page, RawSheetConverter exporter, SheetConvertingContext context, ISheet sheet)
+        // TODO: in .net standard 2.1 this is not needed
+        private static readonly string[] Delimiter = { Config.Delimiter };
+
+        public static void Export(this IRawSheetExporterPage page,
+            RawSheetConverter exporter, SheetConvertingContext context, ISheet sheet)
         {
-            PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), exporter.IsConvertableNode);
+            var propertyMap = sheet.GetPropertyMap(context);
+            var resolver = context.Container.ContractResolver;
 
             propertyMap.UpdateIndex(sheet);
 
@@ -26,21 +31,28 @@ namespace Cathei.BakingSheet.Raw
 
             int pageColumn = 0;
 
-            List<string> headerRows = new List<string>();
+            var valueContext = new SheetValueConvertingContext(exporter, resolver);
 
-            // TODO: in .net standard 2.1 this is not needed
-            var delimiter = new string[] { Config.Delimiter };
+            List<string> headerRows = new List<string>();
+            object[] arguments = new object[propertyMap.MaxDepth];
 
             foreach (var (node, indexes) in leafs)
             {
-                var arguments = indexes.Select(x => exporter.ValueToString(x.GetType(), x)).ToArray();
+                int i = 0;
+
+                foreach (var index in indexes)
+                {
+                    var arg = valueContext.ValueToString(index.GetType(), index);
+                    arguments[i++] = arg;
+                }
+
                 var columnName = string.Format(node.FullPath, arguments);
 
                 if (exporter.SplitHeader)
                 {
                     int tempRow = 0;
 
-                    foreach (var path in columnName.Split(delimiter, StringSplitOptions.None))
+                    foreach (var path in columnName.Split(Delimiter, StringSplitOptions.None))
                     {
                         while (headerRows.Count <= tempRow)
                             headerRows.Add(null);
@@ -77,7 +89,7 @@ namespace Cathei.BakingSheet.Raw
                     for (int vindex = 0; vindex < verticalCount; ++vindex)
                     {
                         var value = node.GetValue(sheetRow, vindex, indexes.GetEnumerator());
-                        var valueString = exporter.ValueToString(node.ValueType, value);
+                        var valueString = valueContext.ValueToString(node.ValueType, value);
                         page.SetCell(pageColumn, pageRow + vindex, valueString);
                     }
 
