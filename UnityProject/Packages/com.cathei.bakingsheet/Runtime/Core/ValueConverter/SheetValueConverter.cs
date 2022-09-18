@@ -9,21 +9,20 @@ namespace Cathei.BakingSheet
     {
         bool ISheetValueConverter.CanConvert(Type type)
         {
-            return type == typeof(T);
+            return typeof(T).IsAssignableFrom(type);
         }
 
         object ISheetValueConverter.StringToValue(Type type, string value, SheetValueConvertingContext context)
         {
-            return StringToValue(value, context);
+            return StringToValue(type, value, context);
         }
 
         string ISheetValueConverter.ValueToString(Type type, object value, SheetValueConvertingContext context)
         {
-            return ValueToString((T)value, context);
+            return ValueToString(type, (T)value, context);
         }
 
-        protected abstract T StringToValue(string value, SheetValueConvertingContext context);
-        protected abstract string ValueToString(T value, SheetValueConvertingContext context);
-
+        protected abstract T StringToValue(Type type, string value, SheetValueConvertingContext context);
+        protected abstract string ValueToString(Type type, T value, SheetValueConvertingContext context);
     }
 }

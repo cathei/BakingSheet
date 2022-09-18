@@ -20,6 +20,8 @@ namespace Cathei.BakingSheet
         [Preserve]
         public string Name { get; set; }
 
+        private PropertyMap _propertyMap;
+
         public Type RowType => typeof(TValue);
 
         public new TValue this[TKey id]
@@ -41,13 +43,6 @@ namespace Cathei.BakingSheet
         {
             return item.Id;
         }
-
-        private static bool IsReferenceNode(PropertyMap.Node node)
-        {
-            return typeof(ISheetReference).IsAssignableFrom(node.ValueType);
-        }
-
-        private PropertyMap _propertyMap;
 
         internal PropertyMap GetPropertyMap(SheetConvertingContext context)
         {

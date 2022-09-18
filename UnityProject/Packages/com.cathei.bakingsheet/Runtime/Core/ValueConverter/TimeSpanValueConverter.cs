@@ -7,12 +7,12 @@ namespace Cathei.BakingSheet.Internal
 {
     public class TimeSpanValueConverter : SheetValueConverter<TimeSpan>
     {
-        protected override TimeSpan StringToValue(string value, SheetValueConvertingContext context)
+        protected override TimeSpan StringToValue(Type type, string value, SheetValueConvertingContext context)
         {
             return TimeSpan.Parse(value, context.FormatProvider);
         }
 
-        protected override string ValueToString(TimeSpan value, SheetValueConvertingContext context)
+        protected override string ValueToString(Type type, TimeSpan value, SheetValueConvertingContext context)
         {
             return value.ToString(null, context.FormatProvider);
         }

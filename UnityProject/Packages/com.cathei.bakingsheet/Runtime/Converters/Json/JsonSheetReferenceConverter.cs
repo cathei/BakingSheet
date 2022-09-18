@@ -20,7 +20,7 @@ namespace Cathei.BakingSheet
         public override ISheetReference ReadJson(JsonReader reader, Type objectType, ISheetReference existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (existingValue == null)
-                existingValue = Activator.CreateInstance(objectType) as ISheetReference;
+                existingValue = (ISheetReference)Activator.CreateInstance(objectType);
 
             existingValue.Id = serializer.Deserialize(reader, existingValue.IdType);
             return existingValue;

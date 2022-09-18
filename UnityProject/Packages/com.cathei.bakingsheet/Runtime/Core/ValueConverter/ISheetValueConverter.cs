@@ -24,22 +24,16 @@ namespace Cathei.BakingSheet
             return _resolver.GetValueConverter(type);
         }
 
-        public string ValueToString(Type type, object value)
-        {
-            if (value == null)
-                return null;
-
-            var converter = GetValueConverter(type);
-            return converter.ValueToString(type, value, this);
-        }
-
         public object StringToValue(Type type, string value)
         {
-            if (string.IsNullOrEmpty(value))
-                return null;
-
             var converter = GetValueConverter(type);
             return converter.StringToValue(type, value, this);
+        }
+
+        public string ValueToString(Type type, object value)
+        {
+            var converter = GetValueConverter(type);
+            return converter.ValueToString(type, value, this);
         }
     }
 

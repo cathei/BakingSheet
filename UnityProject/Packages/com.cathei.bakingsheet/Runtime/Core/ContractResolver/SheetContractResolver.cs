@@ -33,11 +33,13 @@ namespace Cathei.BakingSheet
                 list.AddRange(converters);
 
             // add default converters
+            list.Add(new NullableValueConverter());
             list.Add(new EnumValueConverter());
             list.Add(new PrimitiveValueConverter());
             list.Add(new DateTimeValueConverter());
             list.Add(new TimeSpanValueConverter());
             list.Add(new SheetReferenceValueConverter());
+            list.Add(new AssetPathValueConverter());
 
             _converters = list;
         }
@@ -49,15 +51,10 @@ namespace Cathei.BakingSheet
             if (cache.FromTargetType.TryGetValue(type, out var cached))
                 return cached;
 
-            // nullable support
-            Type innerType = Nullable.GetUnderlyingType(type);
-            if (innerType == null)
-                innerType = type;
-
             // type-level converter
-            if (innerType.IsDefined(typeof(SheetValueConverterAttribute)))
+            if (type.IsDefined(typeof(SheetValueConverterAttribute)))
             {
-                var attr = innerType.GetCustomAttribute<SheetValueConverterAttribute>();
+                var attr = type.GetCustomAttribute<SheetValueConverterAttribute>();
                 var converter = GetConverterFromAttribute(attr);
 
                 cache.FromTargetType.Add(type, converter);
@@ -67,7 +64,7 @@ namespace Cathei.BakingSheet
             // sheet-level converter
             foreach (var converter in _converters)
             {
-                if (!converter.CanConvert(innerType))
+                if (!converter.CanConvert(type))
                     continue;
 
                 cache.FromTargetType.Add(type, converter);

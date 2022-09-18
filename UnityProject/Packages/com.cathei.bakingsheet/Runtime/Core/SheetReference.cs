@@ -68,9 +68,6 @@ namespace Cathei.BakingSheet
 
             public static bool operator ==(Reference x, Reference y)
             {
-                if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
-                    return ReferenceEquals(x, null) && ReferenceEquals(y, null);
-
                 if (x.Id == null || y.Id == null)
                     return x.Id == null && y.Id == null;
 

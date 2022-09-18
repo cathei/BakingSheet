@@ -27,6 +27,8 @@ namespace Cathei.BakingSheet.Tests
         public static IEnumerable<object[]> GetStringToValueTestData()
         {
             yield return new object[] { typeof(int), "3", 3 };
+            yield return new object[] { typeof(int?), "3", 3 };
+            yield return new object[] { typeof(int?), null, null };
             yield return new object[] { typeof(float), "3.14", 3.14f };
             yield return new object[] { typeof(string), "abcd", "abcd" };
             yield return new object[] { typeof(TimeSpan), "20:00", new TimeSpan(20, 0, 0) };
@@ -47,6 +49,8 @@ namespace Cathei.BakingSheet.Tests
         public static IEnumerable<object[]> GetValueToStringTestData()
         {
             yield return new object[] { typeof(int), 3, "3" };
+            yield return new object[] { typeof(int?), 3, "3" };
+            yield return new object[] { typeof(int?), null, null };
             yield return new object[] { typeof(float), 3.14f, "3.14" };
             yield return new object[] { typeof(string), "abcd", "abcd" };
             yield return new object[] { typeof(TimeSpan), new TimeSpan(20, 0, 0), "20:00:00" };
