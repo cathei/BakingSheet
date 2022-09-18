@@ -9,12 +9,14 @@ namespace Cathei.BakingSheet.Internal
     {
         protected override DateTime StringToValue(string value, ISheetFormatter format)
         {
-
+            var local = DateTime.Parse(value, format.FormatProvider);
+            return TimeZoneInfo.ConvertTimeToUtc(local, format.TimeZoneInfo);
         }
 
         protected override string ValueToString(DateTime value, ISheetFormatter format)
         {
-
+            var local = TimeZoneInfo.ConvertTimeFromUtc(value, format.TimeZoneInfo);
+            return local.ToString(format.FormatProvider);
         }
     }
 }

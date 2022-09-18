@@ -127,5 +127,10 @@ namespace Cathei.BakingSheet.Raw
 
             return Convert.ChangeType(value, type, FormatProvider);
         }
+
+        public virtual string ValueToString(Type type, object value)
+        {
+
+        }
     }
 }

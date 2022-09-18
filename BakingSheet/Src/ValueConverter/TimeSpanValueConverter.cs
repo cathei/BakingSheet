@@ -9,12 +9,12 @@ namespace Cathei.BakingSheet.Internal
     {
         protected override TimeSpan StringToValue(string value, ISheetFormatter format)
         {
-
+            return TimeSpan.Parse(value, format.FormatProvider);
         }
 
         protected override string ValueToString(TimeSpan value, ISheetFormatter format)
         {
-
+            return value.ToString(null, format.FormatProvider);
         }
     }
 }

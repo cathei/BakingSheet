@@ -76,6 +76,7 @@ namespace Cathei.BakingSheet
         IFormatProvider FormatProvider { get; }
 
         object StringToValue(Type type, string value);
+        string ValueToString(Type type, object value);
     }
 
     public interface ISheetImporter : ISheetFormatter
