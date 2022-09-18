@@ -26,6 +26,13 @@ namespace Cathei.BakingSheet
                 return contract;
             }
 
+            if (typeof(ISheetAssetPath).IsAssignableFrom(objectType))
+            {
+                var contract = base.CreateContract(objectType);
+                contract.Converter = new JsonSheetAssetPathConverter();
+                return contract;
+            }
+
             if (objectType.IsEnum)
             {
                 var contract = base.CreateContract(objectType);
