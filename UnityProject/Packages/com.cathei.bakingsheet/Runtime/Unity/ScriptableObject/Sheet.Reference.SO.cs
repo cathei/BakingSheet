@@ -21,18 +21,18 @@ namespace Cathei.BakingSheet
         public struct RowSO : ISheetScriptableObjectReference
         {
             [SerializeField]
-            private SheetRowScriptableObject _asset;
+            private SheetRowScriptableObject asset;
 
             public SheetRowScriptableObject Asset
             {
-                get => _asset;
-                set => _asset = value;
+                get => asset;
+                set => asset = value;
             }
 
             public TValue Row
             {
-                get => _asset.GetRow<TValue>();
-                set => _asset.SetRow(value);
+                get => asset.GetRow<TValue>();
+                set => asset.SetRow(value);
             }
         }
     }

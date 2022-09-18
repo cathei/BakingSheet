@@ -17,7 +17,7 @@ namespace Cathei.BakingSheet
             {
                 Error = (_, err) =>
                     JsonSheetConverter.ErrorHandler(UnityLogger.Default, err),
-                ContractResolver = JsonSheetScriptableObjectContractResolver.Instance
+                ContractResolver = JsonSheetSOContractResolver.Instance
             };
 
             settings.Converters.Add(new JsonSheetUnityObjectConverter(references));

@@ -40,14 +40,17 @@ namespace Cathei.BakingSheet
                     if (sheet == null)
                         continue;
 
-                    var sheetSO = ScriptableObject.CreateInstance<SheetScriptableObject>();
                     string sheetPath = Path.Combine(_savePath, $"{sheet.Name}.asset");
+
+                    var sheetSO = ScriptableObject.CreateInstance<SheetScriptableObject>();
+                    sheetSO.name = sheet.Name;
 
                     AssetDatabase.CreateAsset(sheetSO, sheetPath);
 
                     foreach (ISheetRow row in sheet)
                     {
                         var rowSO = ScriptableObject.CreateInstance<JsonSheetRowScriptableObject>();
+                        rowSO.name = row.Id.ToString();
                         rowSO.SetRow(row);
 
                         AssetDatabase.AddObjectToAsset(rowSO, sheetSO);

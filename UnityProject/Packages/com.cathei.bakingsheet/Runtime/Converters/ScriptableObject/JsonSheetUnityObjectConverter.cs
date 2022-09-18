@@ -29,7 +29,8 @@ namespace Cathei.BakingSheet
             JsonReader reader, Type objectType, UnityEngine.Object existingValue,
             bool hasExistingValue, JsonSerializer serializer)
         {
-            int referenceIndex = reader.ReadAsInt32() ?? -1;
+            if (!(reader.Value is int referenceIndex))
+                referenceIndex = -1;
 
             if (referenceIndex < 0)
                 return null;

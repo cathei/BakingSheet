@@ -1,22 +1,12 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Object = UnityEngine.Object;
 
 namespace Cathei.BakingSheet
 {
-    public class JsonSheetScriptableObjectConverter : JsonConverter<ISheetScriptableObjectReference>
+    public class JsonSheetScriptableObjectReferenceConverter : JsonConverter<ISheetScriptableObjectReference>
     {
         public override ISheetScriptableObjectReference ReadJson(
             JsonReader reader, Type objectType, ISheetScriptableObjectReference existingValue,

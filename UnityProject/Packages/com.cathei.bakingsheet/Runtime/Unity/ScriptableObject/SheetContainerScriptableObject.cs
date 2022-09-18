@@ -10,13 +10,13 @@ namespace Cathei.BakingSheet
 {
     public class SheetContainerScriptableObject : ScriptableObject
     {
-        [SerializeField] private List<SheetScriptableObject> _sheets;
+        [SerializeField] private List<SheetScriptableObject> sheets;
 
-        public IEnumerable<SheetScriptableObject> Sheets => _sheets;
+        public IEnumerable<SheetScriptableObject> Sheets => sheets;
 
         public void Add(SheetScriptableObject sheet)
         {
-            _sheets.Add(sheet);
+            sheets.Add(sheet);
         }
     }
 }

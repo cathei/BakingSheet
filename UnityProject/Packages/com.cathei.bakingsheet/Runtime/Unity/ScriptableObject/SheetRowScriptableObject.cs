@@ -16,10 +16,10 @@ namespace Cathei.BakingSheet
 #endif
 
         [SerializeField]
-        private string _serializedRow;
+        private string serializedRow;
 
         [SerializeField]
-        private List<UnityEngine.Object> _references = new List<UnityEngine.Object>();
+        private List<UnityEngine.Object> references = new List<UnityEngine.Object>();
 
         private ISheetRow _row;
 
@@ -28,7 +28,7 @@ namespace Cathei.BakingSheet
             if (_row != null)
                 return (T)_row;
 
-            var row = DeserializeRow<T>(_serializedRow, _references);
+            var row = DeserializeRow<T>(serializedRow, references);
             _row = row;
             return row;
         }
@@ -44,7 +44,7 @@ namespace Cathei.BakingSheet
             if (_row == null)
                 return;
 
-            _serializedRow = SerializeRow(_row, _references);
+            serializedRow = SerializeRow(_row, references);
         }
 
         public void OnAfterDeserialize()
