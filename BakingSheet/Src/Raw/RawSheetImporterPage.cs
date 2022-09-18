@@ -87,7 +87,7 @@ namespace Cathei.BakingSheet.Raw
                 columnNames.Add(string.Join(Config.Delimiter, headerRows.Take(lastValidRow + 1)));
             }
 
-            PropertyMap propertyMap = new PropertyMap(context, sheet.GetType());
+            PropertyMap propertyMap = sheet.GetPropertyMap(context);
 
             ISheetRow sheetRow = null;
             string rowId = null;

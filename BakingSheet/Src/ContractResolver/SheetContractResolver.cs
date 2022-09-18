@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
 
@@ -12,27 +13,40 @@ namespace Cathei.BakingSheet
     {
         public static readonly SheetContractResolver Instance = new SheetContractResolver();
 
-        private List<ISheetValueConverter> _converters = new List<ISheetValueConverter>();
-        private Dictionary<Type, ISheetValueConverter> _attrToConverter = new Dictionary<Type, ISheetValueConverter>();
-        private Dictionary<Type, ISheetValueConverter> _typeToConverter = new Dictionary<Type, ISheetValueConverter>();
+        private readonly IReadOnlyList<ISheetValueConverter> _converters;
+
+        private readonly ThreadLocal<ConverterCache> _cache = new ThreadLocal<ConverterCache>(() => new ConverterCache());
+
+        private class ConverterCache
+        {
+            public readonly Dictionary<Type, ISheetValueConverter> FromAttribute = new Dictionary<Type, ISheetValueConverter>();
+            public readonly Dictionary<Type, ISheetValueConverter> FromTargetType = new Dictionary<Type, ISheetValueConverter>();
+        }
 
         public SheetContractResolver() : this(null) { }
 
         protected SheetContractResolver(IEnumerable<ISheetValueConverter> converters)
         {
+            var list = new List<ISheetValueConverter>();
+
             if (converters != null)
-                _converters.AddRange(converters);
+                list.AddRange(converters);
 
             // add default converters
-            _converters.Add(new PrimitiveValueConverter());
-            _converters.Add(new DateTimeValueConverter());
-            _converters.Add(new TimeSpanValueConverter());
-            _converters.Add(new SheetReferenceValueConverter());
+            list.Add(new EnumValueConverter());
+            list.Add(new PrimitiveValueConverter());
+            list.Add(new DateTimeValueConverter());
+            list.Add(new TimeSpanValueConverter());
+            list.Add(new SheetReferenceValueConverter());
+
+            _converters = list;
         }
 
         public virtual ISheetValueConverter GetValueConverter(Type type)
         {
-            if (_typeToConverter.TryGetValue(type, out var cached))
+            var cache = _cache.Value;
+
+            if (cache.FromTargetType.TryGetValue(type, out var cached))
                 return cached;
 
             // nullable support
@@ -46,7 +60,7 @@ namespace Cathei.BakingSheet
                 var attr = innerType.GetCustomAttribute<SheetValueConverterAttribute>();
                 var converter = GetConverterFromAttribute(attr);
 
-                _typeToConverter.Add(type, converter);
+                cache.FromTargetType.Add(type, converter);
                 return converter;
             }
 
@@ -56,12 +70,12 @@ namespace Cathei.BakingSheet
                 if (!converter.CanConvert(innerType))
                     continue;
 
-                _typeToConverter.Add(type, converter);
+                cache.FromTargetType.Add(type, converter);
                 return converter;
             }
 
             // there is no ValueConverter provided for this type
-            _typeToConverter.Add(type, null);
+            cache.FromTargetType.Add(type, null);
             return null;
         }
 
@@ -82,11 +96,13 @@ namespace Cathei.BakingSheet
 
         private ISheetValueConverter GetConverterFromAttribute(SheetValueConverterAttribute attr)
         {
-            if (_attrToConverter.TryGetValue(attr.ConverterType, out var converter))
+            var cache = _cache.Value;
+
+            if (cache.FromAttribute.TryGetValue(attr.ConverterType, out var converter))
                 return converter;
 
             converter = (ISheetValueConverter)Activator.CreateInstance(attr.ConverterType);
-            _attrToConverter.Add(attr.ConverterType, converter);
+            cache.FromAttribute.Add(attr.ConverterType, converter);
             return converter;
         }
     }
