@@ -22,14 +22,14 @@ namespace Cathei.BakingSheet
                 return CreateObjectContract(objectType);
             }
 
-            if (typeof(ISheetReference).IsAssignableFrom(objectType))
+            if (typeof(IUnitySheetReference).IsAssignableFrom(objectType))
             {
                 var contract = base.CreateContract(objectType);
                 contract.Converter = new JsonSheetSOReferenceConverter();
                 return contract;
             }
 
-            if (typeof(ISheetAssetPath).IsAssignableFrom(objectType))
+            if (typeof(IUnitySheetAssetPath).IsAssignableFrom(objectType))
             {
                 var contract = base.CreateContract(objectType);
                 contract.Converter = new JsonSheetSOAssetPathConverter();

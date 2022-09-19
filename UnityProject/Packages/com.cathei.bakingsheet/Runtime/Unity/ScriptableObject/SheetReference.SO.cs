@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Cathei.BakingSheet
 {
-    public partial interface ISheetReference
+    public interface IUnitySheetReference : ISheetReference
     {
         public SheetRowScriptableObject SO { get; set; }
     }
@@ -15,12 +15,12 @@ namespace Cathei.BakingSheet
     public partial class Sheet<TKey, TValue>
     {
         [Serializable]
-        public partial struct Reference : ISerializationCallbackReceiver
+        public partial class Reference : IUnitySheetReference
         {
             [SerializeField]
             private SheetRowScriptableObject asset;
 
-            SheetRowScriptableObject ISheetReference.SO
+            SheetRowScriptableObject IUnitySheetReference.SO
             {
                 get => asset;
                 set => asset = value;

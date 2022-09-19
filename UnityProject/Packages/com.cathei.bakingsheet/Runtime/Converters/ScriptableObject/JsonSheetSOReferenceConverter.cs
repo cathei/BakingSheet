@@ -6,19 +6,19 @@ using Newtonsoft.Json;
 
 namespace Cathei.BakingSheet
 {
-    public class JsonSheetSOReferenceConverter : JsonConverter<ISheetReference>
+    public class JsonSheetSOReferenceConverter : JsonConverter<IUnitySheetReference>
     {
-        public override ISheetReference ReadJson(
-            JsonReader reader, Type objectType, ISheetReference existingValue,
+        public override IUnitySheetReference ReadJson(
+            JsonReader reader, Type objectType, IUnitySheetReference existingValue,
             bool hasExistingValue, JsonSerializer serializer)
         {
-            existingValue ??= (ISheetReference)Activator.CreateInstance(objectType);
+            existingValue ??= (IUnitySheetReference)Activator.CreateInstance(objectType);
             existingValue.SO = serializer.Deserialize<SheetRowScriptableObject>(reader);
             return existingValue;
         }
 
         public override void WriteJson(
-            JsonWriter writer, ISheetReference value, JsonSerializer serializer)
+            JsonWriter writer, IUnitySheetReference value, JsonSerializer serializer)
         {
             serializer.Serialize(writer, value.SO);
         }

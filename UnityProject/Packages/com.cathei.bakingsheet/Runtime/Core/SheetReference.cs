@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
-    public partial interface ISheetReference
+    public interface ISheetReference
     {
         void Map(SheetConvertingContext context, ISheet sheet);
 
@@ -19,7 +19,7 @@ namespace Cathei.BakingSheet
         /// <summary>
         /// Cross-sheet reference column to this Sheet.
         /// </summary>
-        public partial struct Reference : ISheetReference
+        public sealed partial class Reference : ISheetReference
         {
             [Preserve]
             public TKey Id { get; private set; }
@@ -28,16 +28,18 @@ namespace Cathei.BakingSheet
 
             object ISheetReference.Id
             {
-                get { return Id; }
-                set { Id = (TKey)value; }
+                get => Id;
+                set => Id = (TKey)value;
             }
 
             public Type IdType => typeof(TKey);
 
-            public Reference(TKey id) : this()
+            public Reference() { }
+
+            public Reference(TKey id)
             {
                 Id = id;
-                Ref = default(TValue);
+                Ref = null;
             }
 
             void ISheetReference.Map(SheetConvertingContext context, ISheet sheet)
@@ -71,19 +73,6 @@ namespace Cathei.BakingSheet
             public override string ToString()
             {
                 return Id == null ? "(null)" : Id.ToString();
-            }
-
-            public static bool operator ==(Reference x, Reference y)
-            {
-                if (x.Id == null || y.Id == null)
-                    return x.Id == null && y.Id == null;
-
-                return x.GetType() == y.GetType() && x.Id.Equals(y.Id);
-            }
-
-            public static bool operator !=(Reference x, Reference y)
-            {
-                return !(x == y);
             }
         }
     }

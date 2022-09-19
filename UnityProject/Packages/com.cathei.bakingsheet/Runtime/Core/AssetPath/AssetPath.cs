@@ -4,7 +4,7 @@ using Cathei.BakingSheet.Internal;
 
 namespace Cathei.BakingSheet
 {
-    public partial interface ISheetAssetPath
+    public interface ISheetAssetPath
     {
         string FullPath { get; set; }
 

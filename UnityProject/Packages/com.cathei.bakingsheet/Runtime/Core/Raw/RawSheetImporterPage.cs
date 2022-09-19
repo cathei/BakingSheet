@@ -153,6 +153,9 @@ namespace Cathei.BakingSheet.Raw
                 using (context.Logger.BeginScope(columnValue))
                 {
                     string cellValue = page.GetCell(pageColumn, pageRow);
+
+                    // if cell is empty, value should not be set
+                    // Property will keep it's default value
                     if (string.IsNullOrEmpty(cellValue))
                         continue;
 
