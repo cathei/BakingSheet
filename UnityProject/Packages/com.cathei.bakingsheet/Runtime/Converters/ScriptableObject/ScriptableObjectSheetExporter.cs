@@ -2,13 +2,10 @@
 
 #if UNITY_EDITOR
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
-using Cathei.BakingSheet.Internal;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Windows;
 
 namespace Cathei.BakingSheet
 {
@@ -25,8 +22,11 @@ namespace Cathei.BakingSheet
         {
             var props = context.Container.GetSheetProperties();
 
-            AssetDatabase.CreateFolder(
-                Path.GetDirectoryName(_savePath), Path.GetFileName(_savePath));
+            if (!AssetDatabase.IsValidFolder(_savePath))
+            {
+                AssetDatabase.CreateFolder(
+                    Path.GetDirectoryName(_savePath), Path.GetFileName(_savePath));
+            }
 
             var containerSO = ScriptableObject.CreateInstance<SheetContainerScriptableObject>();
             AssetDatabase.CreateAsset(containerSO, Path.Combine(_savePath, "_Container.asset"));
@@ -53,12 +53,15 @@ namespace Cathei.BakingSheet
                         rowSO.name = row.Id.ToString();
                         rowSO.SetRow(row);
 
+                        sheetSO.Add(rowSO);
                         AssetDatabase.AddObjectToAsset(rowSO, sheetSO);
                     }
 
                     containerSO.Add(sheetSO);
                 }
             }
+
+            AssetDatabase.SaveAssets();
 
             return Task.FromResult(true);
         }

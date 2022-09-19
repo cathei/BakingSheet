@@ -18,7 +18,7 @@ namespace Cathei.BakingSheet.Examples
             // Path is relative to StreamingAssets folder
             var jsonConverter = new JsonSheetConverter("Excel", new StreamingAssetsFileSystem());
 
-            Sheet = new SheetContainer(new UnityLogger());
+            Sheet = new SheetContainer();
             await Sheet.Bake(jsonConverter);
 
             Debug.Log(Sheet.Constants.Count);

@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c9f16a815c438f9dbeaa7d721117d9, type: 3}
+  m_Name: Npcs
+  m_EditorClassIdentifier: 
+  rows:
+  - {fileID: 8896248345890014111}
+  - {fileID: 6841486749850852973}
+  - {fileID: 840324207524902407}
+--- !u!114 &840324207524902407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: NPC003
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: "{\"Name\":\"Potion Master\",\"Texts\":{\"Greeting\":\"What do you
+    want?\",\"Purchasing\":\"Take it already.\",\"Leaving\":\"Don\u2019t come again.\"},\"Id\":\"NPC003\"}"
+  references: []
+--- !u!114 &6841486749850852973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: NPC002
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: "{\"Name\":\"Blacksmith\",\"Texts\":{\"Greeting\":\"G\u2019day!\",\"Purchasing\":\"Good
+    choice.\",\"Leaving\":\"Take care.\"},\"Id\":\"NPC002\"}"
+  references: []
+--- !u!114 &8896248345890014111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: NPC001
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: '{"Name":"Fat Baker","Texts":{"Greeting":"Morning traveler!","Purchasing":"Thank
+    you!","Leaving":"Come again!"},"Id":"NPC001"}'
+  references: []

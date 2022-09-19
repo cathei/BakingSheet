@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8518386616016606756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: CriticalChance
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: '{"Value":"0.1","Id":"CriticalChance"}'
+  references: []
+--- !u!114 &-5940834942826890971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: ServerAddress
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: '{"Value":"https://github.com/cathei/BakingSheet","Id":"ServerAddress"}'
+  references: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c9f16a815c438f9dbeaa7d721117d9, type: 3}
+  m_Name: Constants
+  m_EditorClassIdentifier: 
+  rows:
+  - {fileID: -5940834942826890971}
+  - {fileID: 4518543040488491928}
+  - {fileID: -8518386616016606756}
+--- !u!114 &4518543040488491928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: InitialGold
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: '{"Value":"1000","Id":"InitialGold"}'
+  references: []

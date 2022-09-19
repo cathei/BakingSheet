@@ -15,7 +15,7 @@ namespace Cathei.BakingSheet
     public partial class Sheet<TKey, TValue>
     {
         [Serializable]
-        public partial class Reference : IUnitySheetReference
+        public partial class Reference : IUnitySheetReference, ISerializationCallbackReceiver
         {
             [SerializeField]
             private SheetRowScriptableObject asset;

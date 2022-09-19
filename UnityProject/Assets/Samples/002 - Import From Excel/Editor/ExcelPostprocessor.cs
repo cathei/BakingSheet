@@ -20,8 +20,7 @@ namespace Cathei.BakingSheet.Examples
                 var excelPath = Path.GetDirectoryName(excelAsset);
                 var jsonPath = Path.Combine(Application.streamingAssetsPath, "Excel");
 
-                var logger = new UnityLogger();
-                var sheetContainer = new SheetContainer(logger);
+                var sheetContainer = new SheetContainer();
 
                 // create excel converter from path
                 var excelConverter = new ExcelSheetConverter(excelPath, TimeZoneInfo.Utc);

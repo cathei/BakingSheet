@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6371210848230845047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: DUNGEON001
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: '{"Name":"Easy Field","Monsters":[null],"Items":[null,null],"Id":"DUNGEON001"}'
+  references: []
+--- !u!114 &-1525116611769520917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: DUNGEON003
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: "{\"Name\":\"Dragon\u2019s Nest\",\"Monsters\":[null,null,null],\"Items\":[null],\"Id\":\"DUNGEON003\"}"
+  references: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c9f16a815c438f9dbeaa7d721117d9, type: 3}
+  m_Name: Dungeons
+  m_EditorClassIdentifier: 
+  rows:
+  - {fileID: -6371210848230845047}
+  - {fileID: 1137146024122851924}
+  - {fileID: -1525116611769520917}
+--- !u!114 &1137146024122851924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: DUNGEON002
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: '{"Name":"Expert Zone","Monsters":[null,null],"Items":[null,null],"Id":"DUNGEON002"}'
+  references: []

@@ -7,7 +7,7 @@ namespace Cathei.BakingSheet.Examples
 {
     public class SheetContainer : SheetContainerBase
     {
-        public SheetContainer(ILogger logger) : base(logger) {}
+        public SheetContainer() : base(UnityLogger.Default) {}
 
         // use name of each matching sheet name from source
         public ConstantSheet Constants { get; private set; }
