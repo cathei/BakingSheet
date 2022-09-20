@@ -15,6 +15,13 @@ namespace Cathei.BakingSheet
 
         public Task<bool> Import(SheetConvertingContext context)
         {
+            foreach (var sheetSO in _so.Sheets)
+            {
+                string sheetName = sheetSO.name;
+            }
+
+
+
             // _so.Sheets
             return Task.FromResult(true);
         }
