@@ -13,7 +13,12 @@ namespace Cathei.BakingSheet
 
         public IEnumerable<SheetRowScriptableObject> Rows => rows;
 
-        public void Add(SheetRowScriptableObject row)
+        internal void Clear()
+        {
+            rows.Clear();
+        }
+
+        internal void Add(SheetRowScriptableObject row)
         {
             rows.Add(row);
         }

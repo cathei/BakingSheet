@@ -6,13 +6,15 @@ namespace Cathei.BakingSheet
 {
     public partial class ResourcePath
     {
-        public override UnityEngine.Object Load()
-        {
-            if (Asset != null)
-                return Asset;
+        private UnityEngine.Object _asset;
 
-            Asset = Resources.Load(FullPath);
-            return Asset;
+        public UnityEngine.Object Load()
+        {
+            if (_asset != null)
+                return _asset;
+
+            _asset = Resources.Load(FullPath);
+            return _asset;
         }
     }
 }

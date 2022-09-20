@@ -18,28 +18,22 @@ namespace Cathei.BakingSheet
     {
         private UnityEngine.Object _asset;
 
-        protected UnityEngine.Object Asset
-        {
-            get => _asset;
-            set => _asset = value;
-        }
-
         UnityEngine.Object IUnitySheetAssetPath.Asset
         {
             get => _asset;
             set => _asset = value;
         }
 
-        public virtual UnityEngine.Object Load()
+        public UnityEngine.Object Load()
         {
-            if (Asset != null)
-                return Asset;
+            if (_asset != null)
+                return _asset;
 
 #if UNITY_EDITOR
-            Asset = UnityEditor.AssetDatabase.LoadMainAssetAtPath(FullPath);
+            _asset = UnityEditor.AssetDatabase.LoadMainAssetAtPath(FullPath);
 #endif
 
-            return Asset;
+            return _asset;
         }
     }
 }

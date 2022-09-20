@@ -3,6 +3,7 @@
 #if UNITY_EDITOR
 
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -28,8 +29,17 @@ namespace Cathei.BakingSheet
                     Path.GetDirectoryName(_savePath), Path.GetFileName(_savePath));
             }
 
-            var containerSO = ScriptableObject.CreateInstance<SheetContainerScriptableObject>();
-            AssetDatabase.CreateAsset(containerSO, Path.Combine(_savePath, "_Container.asset"));
+            string containerPath = Path.Combine(_savePath, "_Container.asset");
+
+            var containerSO = AssetDatabase.LoadAssetAtPath<SheetContainerScriptableObject>(containerPath);
+
+            if (containerSO == null)
+            {
+                containerSO = ScriptableObject.CreateInstance<SheetContainerScriptableObject>();
+                AssetDatabase.CreateAsset(containerSO, containerPath);
+            }
+
+            containerSO.Clear();
 
             foreach (var prop in props)
             {
@@ -42,20 +52,40 @@ namespace Cathei.BakingSheet
 
                     string sheetPath = Path.Combine(_savePath, $"{sheet.Name}.asset");
 
-                    var sheetSO = ScriptableObject.CreateInstance<SheetScriptableObject>();
+                    var sheetSO = AssetDatabase.LoadAssetAtPath<SheetScriptableObject>(sheetPath);
+
+                    if (sheetSO == null)
+                    {
+                        sheetSO = ScriptableObject.CreateInstance<SheetScriptableObject>();
+                        AssetDatabase.CreateAsset(sheetSO, sheetPath);
+                    }
+
                     sheetSO.name = sheet.Name;
 
-                    AssetDatabase.CreateAsset(sheetSO, sheetPath);
+                    var rowSODict = AssetDatabase.LoadAllAssetsAtPath(sheetPath)
+                        .OfType<SheetRowScriptableObject>()
+                        .ToDictionary(x => x.GetRow(sheet.RowType).Id);
+
+                    sheetSO.Clear();
 
                     foreach (ISheetRow row in sheet)
                     {
-                        var rowSO = ScriptableObject.CreateInstance<JsonSheetRowScriptableObject>();
+                        if (!rowSODict.TryGetValue(row.Id, out var rowSO))
+                        {
+                            rowSO = ScriptableObject.CreateInstance<JsonSheetRowScriptableObject>();
+                            AssetDatabase.AddObjectToAsset(rowSO, sheetSO);
+                        }
+
                         rowSO.name = row.Id.ToString();
                         rowSO.SetRow(row);
 
                         sheetSO.Add(rowSO);
-                        AssetDatabase.AddObjectToAsset(rowSO, sheetSO);
+                        rowSODict.Remove(row.Id);
                     }
+
+                    // clear removed scriptable objects
+                    foreach (var removedRowSO in rowSODict.Values)
+                        AssetDatabase.RemoveObjectFromAsset(removedRowSO);
 
                     containerSO.Add(sheetSO);
                 }

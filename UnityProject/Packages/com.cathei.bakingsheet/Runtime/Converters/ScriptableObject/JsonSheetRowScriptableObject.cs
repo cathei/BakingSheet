@@ -1,5 +1,6 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -44,13 +45,19 @@ namespace Cathei.BakingSheet
             return JsonConvert.SerializeObject(row, settings);
         }
 
-        protected override T DeserializeRow<T>(string serializedRow, List<UnityEngine.Object> references)
+        protected override ISheetRow DeserializeRow(Type type, string serializedRow, List<UnityEngine.Object> references)
         {
+            if (!typeof(ISheetRow).IsAssignableFrom(type))
+                return null;
+
+            if (string.IsNullOrEmpty(serializedRow))
+                return null;
+
             // initial reference values
             references.Clear();
 
             var settings = GetSettings(references);
-            return JsonConvert.DeserializeObject<T>(serializedRow, settings);
+            return (ISheetRow)JsonConvert.DeserializeObject(serializedRow, type, settings);
         }
     }
 }

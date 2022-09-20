@@ -14,7 +14,12 @@ namespace Cathei.BakingSheet
 
         public IEnumerable<SheetScriptableObject> Sheets => sheets;
 
-        public void Add(SheetScriptableObject sheet)
+        internal void Clear()
+        {
+            sheets.Clear();
+        }
+
+        internal void Add(SheetScriptableObject sheet)
         {
             sheets.Add(sheet);
         }

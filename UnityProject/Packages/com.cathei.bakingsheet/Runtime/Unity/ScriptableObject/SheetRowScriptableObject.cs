@@ -23,20 +23,26 @@ namespace Cathei.BakingSheet
 
         private ISheetRow _row;
 
-        public T GetRow<T>() where T : ISheetRow
+        public T GetRow<T>() where T : class, ISheetRow
         {
             if (_row != null)
-                return (T)_row;
+                return _row as T;
 
-            var row = DeserializeRow<T>(serializedRow, references);
-            _row = row;
-            return row;
+            _row = DeserializeRow(typeof(T), serializedRow, references);
+            return _row as T;
         }
 
-        public T SetRow<T>(T row) where T : ISheetRow
+        public ISheetRow GetRow(Type type)
+        {
+            if (_row != null)
+                return _row;
+
+            return _row = DeserializeRow(type, serializedRow, references);
+        }
+
+        public void SetRow<T>(T row) where T : ISheetRow
         {
             _row = row;
-            return row;
         }
 
         public void OnBeforeSerialize()
@@ -53,6 +59,6 @@ namespace Cathei.BakingSheet
         }
 
         protected abstract string SerializeRow(ISheetRow row, List<UnityEngine.Object> references);
-        protected abstract T DeserializeRow<T>(string serializedRow, List<UnityEngine.Object> references);
+        protected abstract ISheetRow DeserializeRow(Type type, string serializedRow, List<UnityEngine.Object> references);
     }
 }

@@ -4,8 +4,12 @@ using Cathei.BakingSheet.Internal;
 
 namespace Cathei.BakingSheet
 {
-    public partial class ResourcePath : AssetPath
+    public partial class ResourcePath : ISheetAssetPath
     {
+        [Preserve]
+        public string FullPath { get; set; }
 
+        public virtual string Prefix => string.Empty;
+        public virtual string Postfix => string.Empty;
     }
 }

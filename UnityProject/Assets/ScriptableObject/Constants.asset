@@ -1,21 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8518386616016606756
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
-  m_Name: CriticalChance
-  m_EditorClassIdentifier: 
-  _typeMeta: 
-  serializedRow: '{"Value":"0.1","Id":"CriticalChance"}'
-  references: []
---- !u!114 &-5940834942826890971
+--- !u!114 &-9051975116145477753
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -30,6 +15,21 @@ MonoBehaviour:
   _typeMeta: 
   serializedRow: '{"Value":"https://github.com/cathei/BakingSheet","Id":"ServerAddress"}'
   references: []
+--- !u!114 &-5256940531556780202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: CriticalChance
+  m_EditorClassIdentifier: 
+  _typeMeta: 
+  serializedRow: '{"Value":"0.1","Id":"CriticalChance"}'
+  references: []
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43,10 +43,10 @@ MonoBehaviour:
   m_Name: Constants
   m_EditorClassIdentifier: 
   rows:
-  - {fileID: -5940834942826890971}
-  - {fileID: 4518543040488491928}
-  - {fileID: -8518386616016606756}
---- !u!114 &4518543040488491928
+  - {fileID: -9051975116145477753}
+  - {fileID: 180901747962629572}
+  - {fileID: -5256940531556780202}
+--- !u!114 &180901747962629572
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

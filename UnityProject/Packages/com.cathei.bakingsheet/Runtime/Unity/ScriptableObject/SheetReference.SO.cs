@@ -33,6 +33,9 @@ namespace Cathei.BakingSheet
 
             public void OnAfterDeserialize()
             {
+                if (asset == null)
+                    return;
+
                 Ref = asset.GetRow<TValue>();
                 Id = Ref != null ? Ref.Id : default;
             }
