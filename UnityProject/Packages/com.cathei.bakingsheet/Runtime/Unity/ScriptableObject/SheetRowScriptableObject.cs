@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Cathei.BakingSheet.Internal;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Cathei.BakingSheet
 {
@@ -19,9 +20,16 @@ namespace Cathei.BakingSheet
         private string serializedRow;
 
         [SerializeField]
-        private List<UnityEngine.Object> references = new List<UnityEngine.Object>();
+        private List<UnityEngine.Object> references;
 
         private ISheetRow _row;
+
+        private void Reset()
+        {
+            serializedRow = null;
+            references = new List<UnityEngine.Object>();
+            _row = null;
+        }
 
         public T GetRow<T>() where T : class, ISheetRow
         {

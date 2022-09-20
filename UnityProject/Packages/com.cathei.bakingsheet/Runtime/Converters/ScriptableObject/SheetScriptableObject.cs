@@ -9,9 +9,14 @@ namespace Cathei.BakingSheet
 {
     public class SheetScriptableObject : ScriptableObject
     {
-        [SerializeField] private List<SheetRowScriptableObject> rows = new List<SheetRowScriptableObject>();
+        [SerializeField] private List<SheetRowScriptableObject> rows;
 
         public IEnumerable<SheetRowScriptableObject> Rows => rows;
+
+        private void Reset()
+        {
+            rows = new List<SheetRowScriptableObject>();
+        }
 
         internal void Clear()
         {

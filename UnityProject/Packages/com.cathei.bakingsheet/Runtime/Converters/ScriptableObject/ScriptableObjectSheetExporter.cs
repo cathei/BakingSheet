@@ -81,6 +81,9 @@ namespace Cathei.BakingSheet
 
                         sheetSO.Add(rowSO);
                         rowSODict.Remove(row.Id);
+
+                        EditorUtility.SetDirty(rowSO);
+                        EditorUtility.SetDirty(sheetSO);
                     }
 
                     // clear removed scriptable objects
@@ -88,6 +91,7 @@ namespace Cathei.BakingSheet
                         AssetDatabase.RemoveObjectFromAsset(removedRowSO);
 
                     containerSO.Add(sheetSO);
+                    EditorUtility.SetDirty(containerSO);
                 }
             }
 
