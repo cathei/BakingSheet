@@ -13,14 +13,14 @@ namespace Cathei.BakingSheet
             bool hasExistingValue, JsonSerializer serializer)
         {
             existingValue ??= (IUnitySheetReference)Activator.CreateInstance(objectType);
-            existingValue.SO = serializer.Deserialize<SheetRowScriptableObject>(reader);
+            existingValue.Asset = serializer.Deserialize<SheetRowScriptableObject>(reader);
             return existingValue;
         }
 
         public override void WriteJson(
             JsonWriter writer, IUnitySheetReference value, JsonSerializer serializer)
         {
-            serializer.Serialize(writer, value.SO);
+            serializer.Serialize(writer, value.Asset);
         }
     }
 }

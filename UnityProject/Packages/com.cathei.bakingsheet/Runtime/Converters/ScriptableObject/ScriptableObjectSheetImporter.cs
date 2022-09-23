@@ -20,8 +20,6 @@ namespace Cathei.BakingSheet
                 string sheetName = sheetSO.name;
             }
 
-
-
             // _so.Sheets
             return Task.FromResult(true);
         }

@@ -9,6 +9,10 @@ namespace Cathei.BakingSheet
 {
     public class SheetScriptableObject : ScriptableObject
     {
+#if UNITY_EDITOR
+        [SerializeField] private string typeInfo;
+#endif
+
         [SerializeField] private List<SheetRowScriptableObject> rows;
 
         public IEnumerable<SheetRowScriptableObject> Rows => rows;
@@ -16,6 +20,11 @@ namespace Cathei.BakingSheet
         private void Reset()
         {
             rows = new List<SheetRowScriptableObject>();
+        }
+
+        internal Type Type
+        {
+            set => typeInfo = value.FullName;
         }
 
         internal void Clear()

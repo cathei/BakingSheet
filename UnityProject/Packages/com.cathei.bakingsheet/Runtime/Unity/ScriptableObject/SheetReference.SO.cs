@@ -9,7 +9,7 @@ namespace Cathei.BakingSheet
 {
     public interface IUnitySheetReference : ISheetReference
     {
-        public SheetRowScriptableObject SO { get; set; }
+        public SheetRowScriptableObject Asset { get; set; }
     }
 
     public partial class Sheet<TKey, TValue>
@@ -20,7 +20,7 @@ namespace Cathei.BakingSheet
             [SerializeField]
             private SheetRowScriptableObject asset;
 
-            SheetRowScriptableObject IUnitySheetReference.SO
+            SheetRowScriptableObject IUnitySheetReference.Asset
             {
                 get => asset;
                 set => asset = value;

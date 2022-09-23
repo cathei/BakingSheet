@@ -1,5 +1,6 @@
 using System.IO;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -17,8 +18,19 @@ namespace Cathei.BakingSheet.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var assetProp = property.FindPropertyRelative("asset");
+            position = EditorGUI.PrefixLabel(position, label);
 
-            EditorGUI.PropertyField(position, assetProp, label);
+            var content = new GUIContent();
+            content.text = "None";
+
+            if (assetProp.objectReferenceValue == null)
+                content.text = assetProp.objectReferenceValue.name;
+
+            if (EditorGUI.DropdownButton(position, content, FocusType.Keyboard))
+            {
+                var dropdown = new SheetReferenceDropdown(new AdvancedDropdownState());
+                dropdown.Show(position);
+            }
         }
     }
 }
