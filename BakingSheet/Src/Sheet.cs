@@ -93,10 +93,16 @@ namespace Cathei.BakingSheet
                             {
                                 var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
 
+                                if (obj == null)
+                                {
+                                    // create default value for reference
+                                    obj = Activator.CreateInstance(node.ValueType);
+                                    node.SetValue(row, vindex, indexes.GetEnumerator(), obj);
+                                }
+
                                 if (obj is ISheetReference refer)
                                 {
                                     refer.Map(context, sheet);
-                                    node.SetValue(row, vindex, indexes.GetEnumerator(), refer);
                                 }
                             }
                         }
