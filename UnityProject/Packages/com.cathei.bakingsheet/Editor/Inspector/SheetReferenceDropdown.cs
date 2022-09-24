@@ -53,9 +53,11 @@ namespace Cathei.BakingSheet.Editor
 
                 foreach (var rowSO in sheetSO.Rows)
                 {
-                    var dropdownItem = new AdvancedDropdownItem(rowSO.name);
-                    dropdownItem.id = rowSO.GetInstanceID();
-                    dropdownItem.icon = AssetPreview.GetMiniThumbnail(rowSO);
+                    var dropdownItem = new AdvancedDropdownItem(rowSO.name)
+                    {
+                        id = rowSO.GetInstanceID(),
+                        icon = AssetPreview.GetMiniThumbnail(rowSO)
+                    };
 
                     root.AddChild(dropdownItem);
                 }

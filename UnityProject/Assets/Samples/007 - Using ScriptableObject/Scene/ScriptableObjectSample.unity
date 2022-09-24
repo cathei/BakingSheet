@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hero:
-    asset: {fileID: 7143358573701240944, guid: d23e22ed8f4864aa2a9ffb35beda7bfe, type: 2}
+    asset: {fileID: 107211345608050729, guid: d23e22ed8f4864aa2a9ffb35beda7bfe, type: 2}
     typeInfo: Cathei.BakingSheet.Examples.HeroSheet+Row
   constant:
     asset: {fileID: -905956753305311065, guid: 2e8ae7191abe94dd2848b34bbb2f063c, type: 2}

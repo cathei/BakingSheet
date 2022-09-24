@@ -4,30 +4,49 @@ using UnityEditor.IMGUI.Controls;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 namespace Cathei.BakingSheet.Editor
 {
     [CustomPropertyDrawer(typeof(Sheet<,>.Reference), true)]
     public class SheetReferencePropertyDrawer : PropertyDrawer
     {
-        // public override VisualElement CreatePropertyGUI(SerializedProperty property)
-        // {
-        //     return new PropertyField(property.FindPropertyRelative("asset"));
-        // }
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var assetProp = property.FindPropertyRelative("asset");
 
             position = EditorGUI.PrefixLabel(position, new GUIContent(property.displayName));
 
-            var content = new GUIContent();
-            content.text = "(None)";
+            var content = new GUIContent
+            {
+                text = "(None)"
+            };
 
-            if (assetProp.objectReferenceValue != null)
-                content.text = assetProp.objectReferenceValue.name;
+            var selectedObject = assetProp.objectReferenceValue;
 
-            if (EditorGUI.DropdownButton(position, content, FocusType.Keyboard))
+            if (selectedObject != null)
+            {
+                content.text = selectedObject.name;
+                content.image = AssetPreview.GetMiniThumbnail(selectedObject);
+            }
+
+            var labelButtonRect = position;
+            labelButtonRect.xMax = position.xMax - 20f;
+
+            var objectFieldStyle = new GUIStyle(EditorStyles.objectField);
+
+            if (GUI.Button(labelButtonRect, content, objectFieldStyle) && selectedObject != null)
+            {
+                EditorGUIUtility.PingObject(selectedObject);
+            }
+
+            var listButtonRect = position;
+            listButtonRect.xMin = labelButtonRect.xMax;
+            listButtonRect = new RectOffset(-1, -1, -1, -1).Add(listButtonRect);
+
+            var objectFieldButtonStyle = new GUIStyle("ObjectFieldButton");
+
+            if (GUI.Button(listButtonRect, new GUIContent(""), objectFieldButtonStyle))
             {
                 var dropdown = new SheetReferenceDropdown(property, new AdvancedDropdownState());
                 dropdown.Show(position);
