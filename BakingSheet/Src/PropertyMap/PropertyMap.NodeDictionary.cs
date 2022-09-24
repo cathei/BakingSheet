@@ -57,11 +57,16 @@ namespace Cathei.BakingSheet.Internal
                 indexes.RemoveAt(current);
             }
 
-            private static object ValueGetter(Node child, object obj, object key)
+            private static bool ValueGetter(Node child, object obj, object key, out object value)
             {
-                if (obj is IDictionary dict)
-                    return dict[key];
-                return null;
+                if (obj is IDictionary dict && dict.Contains(key))
+                {
+                    value = dict[key];
+                    return true;
+                }
+
+                value = null;
+                return false;
             }
 
             private static void ValueSetter(Node child, object obj, object key, object value)

@@ -74,6 +74,12 @@ namespace Cathei.BakingSheet.Internal
             return null;
         }
 
+        private static bool RootGetter(Node child, object obj, object key, out object value)
+        {
+            value = obj;
+            return true;
+        }
+
         public PropertyMap(SheetConvertingContext context, Type sheetType)
         {
             _context = context;
@@ -86,7 +92,7 @@ namespace Cathei.BakingSheet.Internal
             {
                 FullPath = null,
                 ValueType = rowType,
-                Getter = (child, obj, key) => obj,
+                Getter = RootGetter,
                 Setter = null,
                 PropertyInfo = null,
             };
@@ -104,7 +110,7 @@ namespace Cathei.BakingSheet.Internal
                 {
                     FullPath = null,
                     ValueType = arrPropertyInfo.PropertyType,
-                    Getter = (child, obj, key) => child.PropertyInfo.GetValue(obj),
+                    Getter = NodeObject.ValueGetter,
                     Setter = null,
                     PropertyInfo = arrPropertyInfo,
                 };

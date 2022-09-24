@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73c9f16a815c438f9dbeaa7d721117d9, type: 3}
   m_Name: Npcs
   m_EditorClassIdentifier: 
+  typeInfo: Cathei.BakingSheet.Examples.NpcSheet+Row
   rows:
   - {fileID: -71205408121471625}
   - {fileID: -9034269934657255992}

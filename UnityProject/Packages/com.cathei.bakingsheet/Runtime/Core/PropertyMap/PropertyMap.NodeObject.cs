@@ -34,7 +34,7 @@ namespace Cathei.BakingSheet.Internal
 
                 foreach (var child in _children.Values)
                 {
-                    var elem = child.Getter(child, obj, null);
+                    child.Getter(child, obj, null, out var elem);
                     child.UpdateIndex(elem);
                 }
             }
@@ -77,9 +77,10 @@ namespace Cathei.BakingSheet.Internal
                 }
             }
 
-            private static object ValueGetter(Node child, object obj, object key)
+            internal static bool ValueGetter(Node child, object obj, object key, out object value)
             {
-                return child.PropertyInfo.GetValue(obj);
+                value = child.PropertyInfo.GetValue(obj);
+                return true;
             }
 
             private static void ValueSetter(Node child, object obj, object key, object value)

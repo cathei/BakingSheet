@@ -1,7 +1,9 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
 using Cathei.BakingSheet.Internal;
@@ -38,13 +40,14 @@ namespace Cathei.BakingSheet
 
         bool ISheet.Contains(object key) => Contains((TKey)key);
         void ISheet.Add(object value) => Add((TValue)value);
+        IEnumerator<ISheetRow> ISheet.GetEnumerator() => GetEnumerator();
 
         protected override TKey GetKeyForItem(TValue item)
         {
             return item.Id;
         }
 
-        internal PropertyMap GetPropertyMap(SheetConvertingContext context)
+        private PropertyMap GetPropertyMap(SheetConvertingContext context)
         {
             if (_propertyMap != null)
                 return _propertyMap;
@@ -57,6 +60,11 @@ namespace Cathei.BakingSheet
 
         public virtual void PostLoad(SheetConvertingContext context)
         {
+            var rowTypeToSheet = context.Container.GetSheetProperties()
+                .Select(p => p.GetValue(context.Container) as ISheet)
+                .Where(x => x != null)
+                .ToDictionary(x => x.RowType);
+
             using (context.Logger.BeginScope(Name))
             {
                 var propertyMap = GetPropertyMap(context);
@@ -68,15 +76,9 @@ namespace Cathei.BakingSheet
                     if (!typeof(ISheetReference).IsAssignableFrom(node.ValueType))
                         continue;
 
-                    var referenceSheetType = node.ValueType.DeclaringType
-                        .MakeGenericType(node.ValueType.GenericTypeArguments);
+                    var referenceRowType = node.ValueType.GenericTypeArguments[1];
 
-                    var sheet = context.Container.GetSheetProperties()
-                        .Where(p => p.PropertyType.IsSubclassOf(referenceSheetType))
-                        .Select(p => p.GetValue(context.Container) as ISheet)
-                        .FirstOrDefault();
-
-                    if (sheet == null)
+                    if (!rowTypeToSheet.TryGetValue(referenceRowType, out var sheet))
                     {
                         context.Logger.LogError("Failed to find sheet for {ReferenceType}", node.ValueType);
                         continue;
@@ -91,8 +93,11 @@ namespace Cathei.BakingSheet
                         {
                             for (int vindex = 0; vindex < verticalCount; ++vindex)
                             {
-                                var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
+                                // only proceed when path is valid
+                                if (!node.TryGetValue(row, vindex, indexes.GetEnumerator(), out var obj))
+                                    continue;
 
+                                // path is valid but not assigned
                                 if (obj == null)
                                 {
                                     // create default value for reference

@@ -11,7 +11,7 @@ namespace Cathei.BakingSheet.Internal
     {
         public abstract class Node
         {
-            public delegate object GetterDelegate(Node child, object obj, object key);
+            public delegate bool GetterDelegate(Node child, object obj, object key, out object value);
             public delegate void SetterDelegate(Node child, object obj, object key, object value);
             public delegate IEnumerable<Attribute> AttributesGetterDelegate(Type attribute);
             public delegate object ModifyDelegate(object original);
@@ -59,7 +59,7 @@ namespace Cathei.BakingSheet.Internal
                 return Parent?.GetVerticalCount(row, indexer) ?? 1;
             }
 
-            public object GetValue(ISheetRow row, int vindex, IEnumerator<object> indexer)
+            public bool TryGetValue(ISheetRow row, int vindex, IEnumerator<object> indexer, out object value)
             {
                 object obj = row;
 
@@ -67,11 +67,19 @@ namespace Cathei.BakingSheet.Internal
                     obj = Parent.GetValue(row, vindex, indexer);
 
                 if (obj == null)
-                    return null;
+                {
+                    value = null;
+                    return false;
+                }
 
                 object index = Parent?.GetChildIndex(vindex, indexer);
+                return Getter(this, obj, index, out value);
+            }
 
-                return Getter(this, obj, index);
+            public object GetValue(ISheetRow row, int vindex, IEnumerator<object> indexer)
+            {
+                TryGetValue(row, vindex, indexer, out var value);
+                return value;
             }
 
             public void SetValue(ISheetRow row, int vindex, IEnumerator<object> indexer, object value)
@@ -85,11 +93,10 @@ namespace Cathei.BakingSheet.Internal
 
                 if (Parent == null)
                 {
-                    obj = Getter(this, row, null);
-                    obj = modifier(obj);
+                    Getter(this, row, null, out obj);
+                    modifier(obj);
 
                     // there would be no setter for root node
-                    // Setter(row, null, obj);
                     return;
                 }
 
@@ -99,8 +106,7 @@ namespace Cathei.BakingSheet.Internal
                         return null;
 
                     object index = Parent?.GetChildIndex(vindex, indexer);
-
-                    obj = Getter(this, parentObj, index);
+                    Getter(this, parentObj, index, out obj);
 
                     // for leaf nodes there might be no default constructor available
                     if (obj == null && !IsLeaf)

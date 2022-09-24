@@ -17,6 +17,7 @@ namespace Cathei.BakingSheet
         bool Contains(object key);
         void Add(object value);
 
+        new IEnumerator<ISheetRow> GetEnumerator();
         PropertyMap GetPropertyMap(SheetConvertingContext context);
         void PostLoad(SheetConvertingContext context);
         void VerifyAssets(SheetConvertingContext context);

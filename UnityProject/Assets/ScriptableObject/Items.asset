@@ -57,6 +57,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73c9f16a815c438f9dbeaa7d721117d9, type: 3}
   m_Name: Items
   m_EditorClassIdentifier: 
+  typeInfo: Cathei.BakingSheet.Examples.ItemSheet+Row
   rows:
   - {fileID: -9021641545117658535}
   - {fileID: -6987595940060057665}

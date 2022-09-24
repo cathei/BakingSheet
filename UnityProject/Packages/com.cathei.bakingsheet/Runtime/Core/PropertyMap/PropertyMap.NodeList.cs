@@ -93,7 +93,7 @@ namespace Cathei.BakingSheet.Internal
                 indexes.RemoveAt(current);
             }
 
-            private static object ValueGetter(Node child, object obj, object key)
+            private static bool ValueGetter(Node child, object obj, object key, out object value)
             {
                 if (obj is IList list)
                 {
@@ -101,10 +101,14 @@ namespace Cathei.BakingSheet.Internal
                     int idx = (int)key - 1;
 
                     if (idx < list.Count)
-                        return list[idx];
+                    {
+                        value = list[idx];
+                        return true;
+                    }
                 }
 
-                return null;
+                value = null;
+                return false;
             }
 
             private static void ValueSetter(Node child, object obj, object key, object value)

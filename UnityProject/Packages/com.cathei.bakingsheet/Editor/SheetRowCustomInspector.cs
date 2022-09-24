@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Cathei.BakingSheet.Internal;
 using Newtonsoft.Json.Linq;
@@ -11,10 +12,17 @@ namespace Cathei.BakingSheet.Editor
     [CustomEditor(typeof(SheetRowScriptableObject), true)]
     public class SheetRowCustomInspector : UnityEditor.Editor
     {
+        private SerializedProperty serializedRow;
+        private SerializedProperty unityReferences;
+
+        private void OnEnable()
+        {
+            serializedRow = serializedObject.FindProperty("serializedRow");
+            unityReferences = serializedObject.FindProperty("references");
+        }
+
         public override VisualElement CreateInspectorGUI()
         {
-            var serializedRow = serializedObject.FindProperty("serializedRow");
-
             var inspector = new VisualElement();
 
             var jObject = JObject.Parse(serializedRow.stringValue);
@@ -52,6 +60,12 @@ namespace Cathei.BakingSheet.Editor
 
         private void ExpandJsonObject(VisualElement parent, string label, JObject jObject)
         {
+            if (jObject.Count == 1 && jObject.TryGetValue("$ref", out var refToken))
+            {
+                ExpandUnityReference(parent, label, refToken);
+                return;
+            }
+
             var foldout = new Foldout
             {
                 text = label
@@ -102,6 +116,23 @@ namespace Cathei.BakingSheet.Editor
             {
                 label = nameof(ISheetRow.Id),
                 value = value
+            };
+
+            parent.Add(child);
+        }
+
+        private void ExpandUnityReference(VisualElement parent, string label, JToken jToken)
+        {
+            int refIndex = jToken.Value<int>();
+            UnityEngine.Object refObj = null;
+
+            if (0 <= refIndex && refIndex < unityReferences.arraySize)
+                refObj = unityReferences.GetArrayElementAtIndex(refIndex).objectReferenceValue;
+
+            var child = new ObjectField
+            {
+                label = label,
+                value = refObj,
             };
 
             parent.Add(child);

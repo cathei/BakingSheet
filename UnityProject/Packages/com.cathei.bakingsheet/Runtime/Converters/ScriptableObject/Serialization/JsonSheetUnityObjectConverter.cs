@@ -16,6 +16,12 @@ using Object = UnityEngine.Object;
 
 namespace Cathei.BakingSheet
 {
+    internal class JsonSheetUnityReference
+    {
+        [JsonProperty("$ref")]
+        public int Value { get; set; }
+    }
+
     public class JsonSheetUnityObjectConverter : JsonConverter<UnityEngine.Object>
     {
         private readonly List<Object> _references;
@@ -29,35 +35,37 @@ namespace Cathei.BakingSheet
             JsonReader reader, Type objectType, UnityEngine.Object existingValue,
             bool hasExistingValue, JsonSerializer serializer)
         {
-            if (!(reader.Value is int referenceIndex))
-                referenceIndex = -1;
+            var reference = serializer.Deserialize<JsonSheetUnityReference>(reader);
 
-            if (referenceIndex < 0)
+            if (reference == null || reference.Value < 0)
                 return null;
 
-            if (referenceIndex >= _references.Count)
+            if (reference.Value >= _references.Count)
                 throw new IndexOutOfRangeException();
 
-            return _references[referenceIndex];
+            return _references[reference.Value];
         }
 
         public override void WriteJson(
             JsonWriter writer, UnityEngine.Object value, JsonSerializer serializer)
         {
-            int referenceIndex = -1;
+            var reference = new JsonSheetUnityReference
+            {
+                Value = -1
+            };
 
             if (value != null)
             {
-                referenceIndex = _references.IndexOf(value);
+                reference.Value = _references.IndexOf(value);
 
-                if (referenceIndex < 0)
+                if (reference.Value < 0)
                 {
-                    referenceIndex = _references.Count;
+                    reference.Value = _references.Count;
                     _references.Add(value);
                 }
             }
 
-            writer.WriteValue(referenceIndex);
+            serializer.Serialize(writer, reference);
         }
     }
 }

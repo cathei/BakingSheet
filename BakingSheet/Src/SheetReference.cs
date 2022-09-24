@@ -12,6 +12,8 @@ namespace Cathei.BakingSheet
 
         object Id { get; set; }
         Type IdType { get; }
+
+        ISheetRow Ref { get; set; }
     }
 
     public partial class Sheet<TKey, TValue>
@@ -34,6 +36,13 @@ namespace Cathei.BakingSheet
 
             public Type IdType => typeof(TKey);
 
+            ISheetRow ISheetReference.Ref
+            {
+                get => Ref;
+                set => Ref = (TValue)value;
+            }
+
+            [Preserve]
             public Reference() { }
 
             public Reference(TKey id)
@@ -73,6 +82,11 @@ namespace Cathei.BakingSheet
             public override string ToString()
             {
                 return Id == null ? "(null)" : Id.ToString();
+            }
+
+            public bool IsValid()
+            {
+                return Ref != null;
             }
         }
     }
