@@ -10,27 +10,11 @@ namespace Cathei.BakingSheet
 {
     public class JsonSheetRowScriptableObject : SheetRowScriptableObject
     {
-        public static void ErrorHandler(ILogger logError, ErrorEventArgs err)
-        {
-            if (err.ErrorContext.Member?.ToString() == nameof(ISheetRow.Id) &&
-                err.ErrorContext.OriginalObject is ISheetRow &&
-                !(err.CurrentObject is ISheet))
-            {
-                // if Id has error, the error must be handled on the sheet level
-                return;
-            }
-
-            using (logError.BeginScope(err.ErrorContext.Path))
-                logError.LogError(err.ErrorContext.Error, err.ErrorContext.Error.Message);
-
-            err.ErrorContext.Handled = true;
-        }
-
-        protected virtual JsonSerializerSettings GetSettings(List<UnityEngine.Object> references)
+        private static JsonSerializerSettings GetSettings(List<UnityEngine.Object> references)
         {
             var settings = new JsonSerializerSettings
             {
-                Error = (_, err) => ErrorHandler(UnityLogger.Default, err),
+                Error = JsonSheetSOContractResolver.ErrorHandler,
                 ContractResolver = JsonSheetSOContractResolver.Instance
             };
 
@@ -41,6 +25,9 @@ namespace Cathei.BakingSheet
 
         protected override string SerializeRow(ISheetRow row, List<UnityEngine.Object> references)
         {
+            // initial reference values
+            references.Clear();
+
             var settings = GetSettings(references);
             return JsonConvert.SerializeObject(row, settings);
         }
@@ -52,9 +39,6 @@ namespace Cathei.BakingSheet
 
             if (string.IsNullOrEmpty(serializedRow))
                 return null;
-
-            // initial reference values
-            references.Clear();
 
             var settings = GetSettings(references);
             return (ISheetRow)JsonConvert.DeserializeObject(serializedRow, type, settings);

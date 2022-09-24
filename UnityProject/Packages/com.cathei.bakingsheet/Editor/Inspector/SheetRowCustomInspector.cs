@@ -60,7 +60,7 @@ namespace Cathei.BakingSheet.Editor
 
         private void ExpandJsonObject(VisualElement parent, string label, JObject jObject)
         {
-            if (jObject.Count == 1 && jObject.TryGetValue("$ref", out var refToken))
+            if (jObject.Count == 1 && jObject.TryGetValue("$asset", out var refToken))
             {
                 ExpandUnityReference(parent, label, refToken);
                 return;

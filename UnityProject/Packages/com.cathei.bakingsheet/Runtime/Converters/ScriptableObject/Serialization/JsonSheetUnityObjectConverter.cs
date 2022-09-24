@@ -18,7 +18,7 @@ namespace Cathei.BakingSheet
 {
     internal class JsonSheetUnityReference
     {
-        [JsonProperty("$ref")]
+        [JsonProperty("$asset")]
         public int Value { get; set; }
     }
 
@@ -41,7 +41,7 @@ namespace Cathei.BakingSheet
                 return null;
 
             if (reference.Value >= _references.Count)
-                throw new IndexOutOfRangeException();
+                throw new IndexOutOfRangeException($"Reference index {reference.Value} out of range {_references.Count}");
 
             return _references[reference.Value];
         }

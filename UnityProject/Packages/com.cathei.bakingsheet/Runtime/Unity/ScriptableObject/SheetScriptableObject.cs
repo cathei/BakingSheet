@@ -9,11 +9,11 @@ namespace Cathei.BakingSheet
 {
     public sealed class SheetScriptableObject : ScriptableObject
     {
-#if UNITY_EDITOR
-        [SerializeField] internal string typeInfo;
-#endif
-
         [SerializeField] private List<SheetRowScriptableObject> rows;
+
+#if UNITY_EDITOR
+        [SerializeField, HideInInspector] internal string typeInfo;
+#endif
 
         public IEnumerable<SheetRowScriptableObject> Rows => rows;
 

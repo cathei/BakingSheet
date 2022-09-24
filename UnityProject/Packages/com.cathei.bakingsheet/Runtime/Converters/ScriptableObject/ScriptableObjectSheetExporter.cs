@@ -4,18 +4,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
 namespace Cathei.BakingSheet
 {
-    public class ScriptableObjectSheetExporter : ISheetExporter
+    public class ScriptableObjectSheetExporter : ISheetExporter, ISheetFormatter
     {
         private readonly string _savePath;
+
+        public TimeZoneInfo TimeZoneInfo => TimeZoneInfo.Utc;
+        public IFormatProvider FormatProvider => CultureInfo.InvariantCulture;
 
         public ScriptableObjectSheetExporter(string path)
         {
@@ -26,7 +31,7 @@ namespace Cathei.BakingSheet
         {
             var rowToSO = new Dictionary<ISheetRow, SheetRowScriptableObject>();
 
-            var containerSO = GenerateAssets(_savePath, context, rowToSO);
+            var containerSO = GenerateAssets(_savePath, context, this, rowToSO);
 
             RemapReferences(context, rowToSO);
 
@@ -36,7 +41,8 @@ namespace Cathei.BakingSheet
         }
 
         private static SheetContainerScriptableObject GenerateAssets(
-            string savePath, SheetConvertingContext context, Dictionary<ISheetRow, SheetRowScriptableObject> rowToSO)
+            string savePath, SheetConvertingContext context, ISheetFormatter formatter,
+            Dictionary<ISheetRow, SheetRowScriptableObject> rowToSO)
         {
             var props = context.Container.GetSheetProperties();
 
@@ -45,6 +51,8 @@ namespace Cathei.BakingSheet
                 savePath = AssetDatabase.CreateFolder(
                     Path.GetDirectoryName(savePath), Path.GetFileName(savePath));
             }
+
+            var valueContext = new SheetValueConvertingContext(formatter, new SheetContractResolver());
 
             string containerPath = Path.Combine(savePath, "_Container.asset");
 
@@ -58,8 +66,7 @@ namespace Cathei.BakingSheet
 
             containerSO.Clear();
 
-            var existingRowSO = new Dictionary<object, SheetRowScriptableObject>();
-            var assetToDelete = new List<SheetRowScriptableObject>();
+            var existingRowSO = new Dictionary<string, SheetRowScriptableObject>();
 
             foreach (var prop in props)
             {
@@ -84,43 +91,39 @@ namespace Cathei.BakingSheet
                     sheetSO.typeInfo = sheet.RowType.FullName;
 
                     existingRowSO.Clear();
-                    assetToDelete.Clear();
 
                     foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(sheetPath))
                     {
                         if (!(asset is SheetRowScriptableObject rowSO))
                             continue;
 
-                        object rowId = rowSO.GetRow(sheet.RowType)?.Id;
+                        string rowIdStr = rowSO.name;
 
-                        if (rowId == null || !sheet.Contains(rowId))
-                        {
-                            assetToDelete.Add(rowSO);
-                            continue;
-                        }
-
-                        existingRowSO.Add(rowId, rowSO);
+                        existingRowSO.Add(rowIdStr, rowSO);
                     }
 
                     sheetSO.Clear();
 
                     foreach (var row in sheet)
                     {
-                        if (!existingRowSO.TryGetValue(row.Id, out var rowSO))
+                        string rowIdStr = valueContext.ValueToString(row.Id.GetType(), row.Id);
+
+                        if (!existingRowSO.TryGetValue(rowIdStr, out var rowSO))
                         {
                             rowSO = ScriptableObject.CreateInstance<JsonSheetRowScriptableObject>();
                             AssetDatabase.AddObjectToAsset(rowSO, sheetSO);
                         }
 
-                        rowSO.name = row.Id.ToString();
+                        rowSO.name = rowIdStr;
                         rowSO.SetRow(row);
 
                         sheetSO.Add(rowSO);
                         rowToSO.Add(row, rowSO);
+                        existingRowSO.Remove(rowIdStr);
                     }
 
                     // clear removed scriptable objects
-                    foreach (var rowSO in assetToDelete)
+                    foreach (var rowSO in existingRowSO.Values)
                         AssetDatabase.RemoveObjectFromAsset(rowSO);
 
                     containerSO.Add(sheetSO);

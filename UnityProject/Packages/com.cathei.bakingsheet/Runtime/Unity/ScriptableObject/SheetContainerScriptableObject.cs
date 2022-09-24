@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace Cathei.BakingSheet
 {
-    public class SheetContainerScriptableObject : ScriptableObject
+    public sealed class SheetContainerScriptableObject : ScriptableObject
     {
         [SerializeField] private List<SheetScriptableObject> sheets;
 

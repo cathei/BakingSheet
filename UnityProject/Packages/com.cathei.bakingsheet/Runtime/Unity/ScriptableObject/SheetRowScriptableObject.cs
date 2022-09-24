@@ -10,12 +10,6 @@ namespace Cathei.BakingSheet
 {
     public abstract class SheetRowScriptableObject : ScriptableObject, ISerializationCallbackReceiver
     {
-#if UNITY_EDITOR
-        // type metadata that used for editor type check
-        [SerializeField]
-        private string _typeMeta;
-#endif
-
         [SerializeField]
         private string serializedRow;
 
@@ -38,14 +32,6 @@ namespace Cathei.BakingSheet
 
             _row = DeserializeRow(typeof(T), serializedRow, references);
             return _row as T;
-        }
-
-        public ISheetRow GetRow(Type type)
-        {
-            if (_row != null)
-                return _row;
-
-            return _row = DeserializeRow(type, serializedRow, references);
         }
 
         public void SetRow<T>(T row) where T : ISheetRow

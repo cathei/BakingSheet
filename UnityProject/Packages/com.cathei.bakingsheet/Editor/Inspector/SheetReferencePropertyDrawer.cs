@@ -18,19 +18,18 @@ namespace Cathei.BakingSheet.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var assetProp = property.FindPropertyRelative("asset");
-            var typeInfoProp = property.FindPropertyRelative("typeInfo");
 
-            position = EditorGUI.PrefixLabel(position, label);
+            position = EditorGUI.PrefixLabel(position, new GUIContent(property.displayName));
 
             var content = new GUIContent();
-            content.text = "None";
+            content.text = "(None)";
 
             if (assetProp.objectReferenceValue != null)
                 content.text = assetProp.objectReferenceValue.name;
 
             if (EditorGUI.DropdownButton(position, content, FocusType.Keyboard))
             {
-                var dropdown = new SheetReferenceDropdown(typeInfoProp.stringValue, new AdvancedDropdownState());
+                var dropdown = new SheetReferenceDropdown(property, new AdvancedDropdownState());
                 dropdown.Show(position);
             }
         }

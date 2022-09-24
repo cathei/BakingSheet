@@ -1,11 +1,10 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System.Reflection;
-using Cathei.BakingSheet.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using UnityEngine;
+using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
@@ -61,6 +60,25 @@ namespace Cathei.BakingSheet
 
             return property;
         }
+
+        public static void ErrorHandler(object sender, ErrorEventArgs err)
+        {
+            var logError = UnityLogger.Default;
+
+            if (err.ErrorContext.Member?.ToString() == nameof(ISheetRow.Id) &&
+                err.ErrorContext.OriginalObject is ISheetRow &&
+                !(err.CurrentObject is ISheet))
+            {
+                // if Id has error, the error must be handled on the sheet level
+                return;
+            }
+
+            using (logError.BeginScope(err.ErrorContext.Path))
+                logError.LogError(err.ErrorContext.Error, err.ErrorContext.Error.Message);
+
+            err.ErrorContext.Handled = true;
+        }
+
     }
 }
 

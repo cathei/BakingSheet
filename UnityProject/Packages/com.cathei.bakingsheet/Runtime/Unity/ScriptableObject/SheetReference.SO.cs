@@ -17,14 +17,14 @@ namespace Cathei.BakingSheet
         [Serializable]
         public partial class Reference : IUnitySheetReference, ISerializationCallbackReceiver
         {
+            [SerializeField] private SheetRowScriptableObject asset;
+
 #if UNITY_EDITOR
             /// <summary>
             /// Row type to filter selection (Editor only)
             /// </summary>
-            [SerializeField] internal string typeInfo;
+            [SerializeField, HideInInspector] internal string typeInfo;
 #endif
-
-            [SerializeField] private SheetRowScriptableObject asset;
 
             SheetRowScriptableObject IUnitySheetReference.Asset
             {
