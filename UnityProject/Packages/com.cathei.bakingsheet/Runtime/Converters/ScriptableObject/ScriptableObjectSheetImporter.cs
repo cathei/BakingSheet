@@ -2,7 +2,7 @@
 
 using System.Threading.Tasks;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public class ScriptableObjectSheetImporter : ISheetImporter
     {

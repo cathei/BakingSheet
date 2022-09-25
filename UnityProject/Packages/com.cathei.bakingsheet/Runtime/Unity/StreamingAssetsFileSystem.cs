@@ -5,7 +5,7 @@ using System.IO;
 using Cathei.BakingSheet.Internal;
 using Better.StreamingAssets;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public class StreamingAssetsFileSystem : IFileSystem
     {

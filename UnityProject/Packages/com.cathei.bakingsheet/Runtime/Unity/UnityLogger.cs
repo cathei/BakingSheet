@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public class UnityLogger : ILogger
     {

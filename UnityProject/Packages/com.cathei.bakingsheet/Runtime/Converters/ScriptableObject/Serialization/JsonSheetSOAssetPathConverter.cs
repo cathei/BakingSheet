@@ -5,23 +5,54 @@ using Cathei.BakingSheet.Internal;
 using Cathei.BakingSheet.Unity;
 using Newtonsoft.Json;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
-    public class JsonSheetSOAssetPathConverter : JsonConverter<IUnitySheetDirectAssetPath>
+    internal struct JsonSerializedDirectAssetPath
     {
-        public override IUnitySheetDirectAssetPath ReadJson(
-            JsonReader reader, Type objectType, IUnitySheetDirectAssetPath existingValue,
+        [JsonProperty("$type")]
+        public string MetaType { get; set; }
+        public string RawValue { get; set; }
+        public UnityEngine.Object Asset { get; set; }
+    }
+
+    public class JsonSheetSOAssetPathConverter : JsonConverter<IUnitySheetAssetPath>
+    {
+        public override IUnitySheetAssetPath ReadJson(
+            JsonReader reader, Type objectType, IUnitySheetAssetPath existingValue,
             bool hasExistingValue, JsonSerializer serializer)
         {
-            existingValue ??= (IUnitySheetDirectAssetPath)Activator.CreateInstance(objectType);
-            existingValue.Asset = serializer.Deserialize<SheetRowScriptableObject>(reader);
+            var serialized = serializer.Deserialize<JsonSerializedDirectAssetPath?>(reader);
+            if (serialized == null)
+                return null;
+
+            existingValue ??= (IUnitySheetAssetPath)Activator.CreateInstance(objectType);
+            existingValue.RawValue = serialized?.RawValue;
+
+            if (existingValue is IUnitySheetDirectAssetPath directPath)
+                directPath.Asset = serialized?.Asset;
+
             return existingValue;
         }
 
         public override void WriteJson(
-            JsonWriter writer, IUnitySheetDirectAssetPath value, JsonSerializer serializer)
+            JsonWriter writer, IUnitySheetAssetPath value, JsonSerializer serializer)
         {
-            serializer.Serialize(writer, value.Asset);
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            var serialized = new JsonSerializedDirectAssetPath
+            {
+                MetaType = value.MetaType,
+                RawValue = value.RawValue,
+            };
+
+            if (value is IUnitySheetDirectAssetPath directPath)
+                serialized.Asset = directPath.Asset;
+
+            serializer.Serialize(writer, serialized);
         }
     }
 }

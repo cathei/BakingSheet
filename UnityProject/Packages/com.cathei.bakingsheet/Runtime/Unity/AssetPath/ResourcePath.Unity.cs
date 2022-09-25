@@ -4,9 +4,11 @@ using UnityEngine;
 
 namespace Cathei.BakingSheet.Unity
 {
-    public partial class ResourcePath
+    public partial class ResourcePath : IUnitySheetAssetPath
     {
         private UnityEngine.Object _asset;
+
+        string IUnitySheetAssetPath.MetaType => SheetMetaType.ResourcePath;
 
         public T Load<T>() where T : UnityEngine.Object
         {

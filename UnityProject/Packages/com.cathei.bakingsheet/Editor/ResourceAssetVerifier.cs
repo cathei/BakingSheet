@@ -1,7 +1,6 @@
-using System.IO;
+// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
 using System.Reflection;
-using Cathei.BakingSheet.Unity;
-using UnityEngine;
 
 namespace Cathei.BakingSheet.Unity
 {

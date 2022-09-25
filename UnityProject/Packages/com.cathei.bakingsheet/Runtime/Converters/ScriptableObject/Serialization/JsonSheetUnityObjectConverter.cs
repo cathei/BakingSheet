@@ -2,29 +2,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using Cathei.BakingSheet.Internal;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Object = UnityEngine.Object;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
-    internal class JsonSheetUnityReference
+    internal struct JsonSerializedUnityReference
     {
-        [JsonProperty("$asset")]
+        [JsonProperty("$type")]
+        public string MetaType { get; set; }
+
         public int Value { get; set; }
     }
 
     public class JsonSheetUnityObjectConverter : JsonConverter<UnityEngine.Object>
     {
-        private readonly List<Object> _references;
+        private readonly List<UnityEngine.Object> _references;
 
         public JsonSheetUnityObjectConverter(List<UnityEngine.Object> references)
         {
@@ -35,37 +27,39 @@ namespace Cathei.BakingSheet
             JsonReader reader, Type objectType, UnityEngine.Object existingValue,
             bool hasExistingValue, JsonSerializer serializer)
         {
-            var reference = serializer.Deserialize<JsonSheetUnityReference>(reader);
+            var serialized = serializer.Deserialize<JsonSerializedUnityReference?>(reader);
+            int referenceIndex = serialized?.Value ?? -1;
 
-            if (reference == null || reference.Value < 0)
+            if (referenceIndex < 0)
                 return null;
 
-            if (reference.Value >= _references.Count)
-                throw new IndexOutOfRangeException($"Reference index {reference.Value} out of range {_references.Count}");
+            if (referenceIndex >= _references.Count)
+                throw new IndexOutOfRangeException($"Reference index {referenceIndex} out of range {_references.Count}");
 
-            return _references[reference.Value];
+            return _references[referenceIndex];
         }
 
         public override void WriteJson(
             JsonWriter writer, UnityEngine.Object value, JsonSerializer serializer)
         {
-            var reference = new JsonSheetUnityReference
+            var serialized = new JsonSerializedUnityReference
             {
+                MetaType = SheetMetaType.UnityObject,
                 Value = -1
             };
 
             if (value != null)
             {
-                reference.Value = _references.IndexOf(value);
+                serialized.Value = _references.IndexOf(value);
 
-                if (reference.Value < 0)
+                if (serialized.Value < 0)
                 {
-                    reference.Value = _references.Count;
+                    serialized.Value = _references.Count;
                     _references.Add(value);
                 }
             }
 
-            serializer.Serialize(writer, reference);
+            serializer.Serialize(writer, serialized);
         }
     }
 }

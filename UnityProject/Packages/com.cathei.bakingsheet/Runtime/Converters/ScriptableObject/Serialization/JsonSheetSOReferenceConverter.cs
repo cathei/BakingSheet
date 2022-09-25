@@ -4,7 +4,7 @@ using System;
 using Cathei.BakingSheet.Internal;
 using Newtonsoft.Json;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public class JsonSheetSOReferenceConverter : JsonConverter<IUnitySheetReference>
     {

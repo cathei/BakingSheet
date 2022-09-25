@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
+using Cathei.BakingSheet.Unity;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
-using UnityEditor.UIElements;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Cathei.BakingSheet.Editor
 {

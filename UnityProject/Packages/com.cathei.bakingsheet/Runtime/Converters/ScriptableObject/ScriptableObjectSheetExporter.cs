@@ -6,16 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
-using Cathei.BakingSheet.Unity;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public class ScriptableObjectSheetExporter : ISheetExporter, ISheetFormatter
     {
@@ -179,7 +176,9 @@ namespace Cathei.BakingSheet
                 {
                     for (int vindex = 0; vindex < verticalCount; ++vindex)
                     {
-                        var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
+                        if (!node.TryGetValue(row, vindex, indexes.GetEnumerator(), out var obj))
+                            continue;
+
                         mapper(context, obj, state);
 
                         // setting back for value type struct

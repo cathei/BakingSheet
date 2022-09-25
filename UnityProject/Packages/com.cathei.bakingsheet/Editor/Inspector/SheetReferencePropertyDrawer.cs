@@ -1,10 +1,7 @@
-using System.IO;
+// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
 using UnityEditor;
-using UnityEditor.IMGUI.Controls;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UIElements;
-using Image = UnityEngine.UI.Image;
 
 namespace Cathei.BakingSheet.Editor
 {

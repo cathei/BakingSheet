@@ -3,10 +3,8 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Microsoft.Extensions.Logging;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public class JsonSheetRowScriptableObject : SheetRowScriptableObject
     {

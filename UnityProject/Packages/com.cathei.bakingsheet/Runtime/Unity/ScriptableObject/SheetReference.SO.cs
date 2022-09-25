@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Cathei.BakingSheet.Internal;
+using Cathei.BakingSheet.Unity;
 using UnityEditor.VersionControl;
 using UnityEngine;
 

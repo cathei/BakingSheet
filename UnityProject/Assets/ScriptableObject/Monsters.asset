@@ -26,7 +26,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
   m_Name: MONSTER004
   m_EditorClassIdentifier: 
-  serializedRow: '{"Name":"Gargoyle","Damage":0,"DropGold":2000,"SpawnEventStart":null,"SpawnEventEnd":null,"Arr":[{"DropItem":{"$asset":0},"DropItemProb":0.5},{"DropItem":{"$asset":1},"DropItemProb":0.5}],"Id":"MONSTER004"}'
+  serializedRow: '{"Name":"Gargoyle","Damage":0,"DropGold":2000,"SpawnEventStart":null,"SpawnEventEnd":null,"Arr":[{"DropItem":{"$type":"ref","Value":0},"DropItemProb":0.5},{"DropItem":{"$type":"ref","Value":1},"DropItemProb":0.5}],"Id":"MONSTER004"}'
   references:
   - {fileID: 4233915278454756689, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
   - {fileID: 5453112154380986827, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
   m_Name: MONSTER005
   m_EditorClassIdentifier: 
-  serializedRow: '{"Name":"Dragon","Damage":0,"DropGold":10000,"SpawnEventStart":"2020-10-01T00:00:00Z","SpawnEventEnd":"2020-10-31T23:59:59Z","Arr":[{"DropItem":{"$asset":0},"DropItemProb":0.1},{"DropItem":{"$asset":1},"DropItemProb":0.1},{"DropItem":{"$asset":2},"DropItemProb":0.1}],"Id":"MONSTER005"}'
+  serializedRow: '{"Name":"Dragon","Damage":0,"DropGold":10000,"SpawnEventStart":"2020-10-01T00:00:00Z","SpawnEventEnd":"2020-10-31T23:59:59Z","Arr":[{"DropItem":{"$type":"ref","Value":0},"DropItemProb":0.1},{"DropItem":{"$type":"ref","Value":1},"DropItemProb":0.1},{"DropItem":{"$type":"ref","Value":2},"DropItemProb":0.1}],"Id":"MONSTER005"}'
   references:
   - {fileID: -1791245553295392676, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
   - {fileID: 8757290401692025903, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}

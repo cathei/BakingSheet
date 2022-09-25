@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
   m_Name: DUNGEON001
   m_EditorClassIdentifier: 
-  serializedRow: '{"Name":"Easy Field","Monsters":[{"$asset":0}],"Items":[{"$asset":1},{"$asset":2}],"Id":"DUNGEON001"}'
+  serializedRow: '{"Name":"Easy Field","Monsters":[{"$type":"ref","Value":0}],"Items":[{"$type":"ref","Value":1},{"$type":"ref","Value":2}],"Id":"DUNGEON001"}'
   references:
   - {fileID: -6726713019636638802, guid: 1ecf53350457b47a69876903336664ff, type: 2}
   - {fileID: 4233915278454756689, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
   m_Name: DUNGEON003
   m_EditorClassIdentifier: 
-  serializedRow: "{\"Name\":\"Dragon\u2019s Nest\",\"Monsters\":[{\"$asset\":0},{\"$asset\":1},{\"$asset\":2}],\"Items\":[{\"$asset\":3}],\"Id\":\"DUNGEON003\"}"
+  serializedRow: "{\"Name\":\"Dragon\u2019s Nest\",\"Monsters\":[{\"$type\":\"ref\",\"Value\":0},{\"$type\":\"ref\",\"Value\":1},{\"$type\":\"ref\",\"Value\":2}],\"Items\":[{\"$type\":\"ref\",\"Value\":3}],\"Id\":\"DUNGEON003\"}"
   references:
   - {fileID: 5414325024743753120, guid: 1ecf53350457b47a69876903336664ff, type: 2}
   - {fileID: -1922703050843039608, guid: 1ecf53350457b47a69876903336664ff, type: 2}
@@ -64,7 +64,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
   m_Name: DUNGEON002
   m_EditorClassIdentifier: 
-  serializedRow: '{"Name":"Expert Zone","Monsters":[{"$asset":0},{"$asset":1}],"Items":[{"$asset":2},{"$asset":3}],"Id":"DUNGEON002"}'
+  serializedRow: '{"Name":"Expert Zone","Monsters":[{"$type":"ref","Value":0},{"$type":"ref","Value":1}],"Items":[{"$type":"ref","Value":2},{"$type":"ref","Value":3}],"Id":"DUNGEON002"}'
   references:
   - {fileID: -6726713019636638802, guid: 1ecf53350457b47a69876903336664ff, type: 2}
   - {fileID: -1889792796856742001, guid: 1ecf53350457b47a69876903336664ff, type: 2}

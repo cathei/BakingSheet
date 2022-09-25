@@ -13,7 +13,7 @@ namespace Cathei.BakingSheet.Examples
         {
             public class Row : SheetRow
             {
-                [Resource] public string ResourcePath { get; set; }
+                 public ResourcePath ResourcePath { get; set; }
             }
         }
 
@@ -35,7 +35,7 @@ namespace Cathei.BakingSheet.Examples
                 new VerificationSheet.Row
                 {
                     Id = "Row1",
-                    ResourcePath = "SamplePrefab1"
+                    ResourcePath = new ResourcePath("SamplePrefab1");
                 },
                 new VerificationSheet.Row
                 {

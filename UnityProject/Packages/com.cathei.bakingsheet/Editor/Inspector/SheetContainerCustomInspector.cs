@@ -1,11 +1,8 @@
-using System;
-using System.IO;
-using Cathei.BakingSheet.Internal;
-using Newtonsoft.Json.Linq;
+// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
+using Cathei.BakingSheet.Unity;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Cathei.BakingSheet.Editor
 {

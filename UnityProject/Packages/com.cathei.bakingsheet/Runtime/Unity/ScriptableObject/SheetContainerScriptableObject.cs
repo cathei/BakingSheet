@@ -6,7 +6,7 @@ using Cathei.BakingSheet.Internal;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public sealed class SheetContainerScriptableObject : ScriptableObject
     {

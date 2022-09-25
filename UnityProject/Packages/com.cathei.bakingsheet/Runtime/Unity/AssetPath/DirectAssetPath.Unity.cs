@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Cathei.BakingSheet.Unity
 {
-    public interface IUnitySheetDirectAssetPath : ISheetAssetPath
+    public interface IUnitySheetDirectAssetPath : IUnitySheetAssetPath
     {
         UnityEngine.Object Asset { get; set; }
     }
@@ -15,6 +15,8 @@ namespace Cathei.BakingSheet.Unity
     public partial class DirectAssetPath : IUnitySheetDirectAssetPath
     {
         private UnityEngine.Object _asset;
+
+        string IUnitySheetAssetPath.MetaType => SheetMetaType.DirectAssetPath;
 
         UnityEngine.Object IUnitySheetDirectAssetPath.Asset
         {

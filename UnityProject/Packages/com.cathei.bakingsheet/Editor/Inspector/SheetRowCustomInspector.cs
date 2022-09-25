@@ -1,10 +1,9 @@
-using System;
-using System.IO;
-using Cathei.BakingSheet.Internal;
+// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
+using Cathei.BakingSheet.Unity;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Cathei.BakingSheet.Editor
@@ -14,16 +13,19 @@ namespace Cathei.BakingSheet.Editor
     {
         private SerializedProperty serializedRow;
         private SerializedProperty unityReferences;
+        private StyleSheet styleSheet;
 
         private void OnEnable()
         {
             serializedRow = serializedObject.FindProperty("serializedRow");
             unityReferences = serializedObject.FindProperty("references");
+            styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.cathei.bakingsheet/Editor/StyleSheet.uss");
         }
 
         public override VisualElement CreateInspectorGUI()
         {
             var inspector = new VisualElement();
+            inspector.styleSheets.Add(styleSheet);
 
             var jObject = JObject.Parse(serializedRow.stringValue);
 
@@ -60,10 +62,14 @@ namespace Cathei.BakingSheet.Editor
 
         private void ExpandJsonObject(VisualElement parent, string label, JObject jObject)
         {
-            if (jObject.Count == 1 && jObject.TryGetValue("$asset", out var refToken))
+            if (jObject.TryGetValue("$type", out var metaType))
             {
-                ExpandUnityReference(parent, label, refToken);
-                return;
+                switch (metaType.Value<string>())
+                {
+                    case SheetMetaType.UnityObject:
+                        ExpandUnityReference(parent, label, jObject.GetValue("Value"));
+                        return;
+                }
             }
 
             var foldout = new Foldout
@@ -78,6 +84,9 @@ namespace Cathei.BakingSheet.Editor
 
             foreach (var pair in jObject)
             {
+                if (pair.Key.StartsWith("$"))
+                    continue;
+
                 ExpandJsonToken(box, pair.Key, pair.Value);
             }
         }
@@ -102,10 +111,11 @@ namespace Cathei.BakingSheet.Editor
             var child = new TextField
             {
                 label = label,
-                value = jToken.Value<string>()
+                value = jToken.Value<string>(),
+                isReadOnly = true
             };
 
-            child.isReadOnly = true;
+            child.AddToClassList("readonly");
 
             parent.Add(child);
         }
@@ -115,11 +125,30 @@ namespace Cathei.BakingSheet.Editor
             var child = new TextField
             {
                 label = nameof(ISheetRow.Id),
-                value = value
+                value = value,
+                isReadOnly = true
             };
 
+            child.AddToClassList("readonly");
+
             parent.Add(child);
+
+            // var button = new Button
+            // {
+            //     text = "Change"
+            // };
+            //
+            // button.RegisterCallback<ClickEvent, TextField>(HandleNameChange, child);
+            //
+            // child.Add(button);
         }
+
+        // private void HandleNameChange(ClickEvent evt, TextField child)
+        // {
+        //     serializedObject.targetObject.name = child.text;
+        //     serializedObject.ApplyModifiedProperties();
+        //     AssetDatabase.SaveAssets();
+        // }
 
         private void ExpandUnityReference(VisualElement parent, string label, JToken jToken)
         {
@@ -135,6 +164,7 @@ namespace Cathei.BakingSheet.Editor
                 value = refObj,
             };
 
+            child.AddToClassList("readonly");
             parent.Add(child);
         }
     }

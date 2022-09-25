@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.Logging;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public class JsonSheetSOContractResolver : DefaultContractResolver
     {

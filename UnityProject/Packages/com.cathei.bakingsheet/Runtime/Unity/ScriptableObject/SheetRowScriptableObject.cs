@@ -6,7 +6,7 @@ using Cathei.BakingSheet.Internal;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public abstract class SheetRowScriptableObject : ScriptableObject, ISerializationCallbackReceiver
     {
