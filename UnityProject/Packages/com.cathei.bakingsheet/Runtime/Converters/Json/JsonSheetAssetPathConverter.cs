@@ -17,11 +17,11 @@ namespace Cathei.BakingSheet
 
             if (string.IsNullOrEmpty(path))
             {
-                existingValue.RelativePath = null;
+                existingValue.RawValue = null;
                 return existingValue;
             }
 
-            existingValue.RelativePath = path;
+            existingValue.RawValue = path;
             return existingValue;
         }
 
@@ -33,7 +33,7 @@ namespace Cathei.BakingSheet
                 return;
             }
 
-            writer.WriteValue(value.RelativePath);
+            writer.WriteValue(value.RawValue);
         }
     }
 }

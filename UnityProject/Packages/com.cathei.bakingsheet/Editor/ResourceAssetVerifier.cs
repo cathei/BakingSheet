@@ -1,24 +1,26 @@
 using System.IO;
+using System.Reflection;
+using Cathei.BakingSheet.Unity;
 using UnityEngine;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
-    public class ResourceAssetVerifier : SheetVerifier<ResourceAttribute, string>
+    public class ResourcePathVerifier : SheetVerifier<ResourcePath>
     {
         // any string column with ResourceAttribute will be passed through the verify process
         // return value is the error string
-        public override string Verify(ResourceAttribute attribute, string path)
+        public override string Verify(PropertyInfo propertyInfo, ResourcePath assetPath)
         {
-            if (string.IsNullOrEmpty(path))
+            if (!assetPath.IsValid())
                 return null;
 
-            path = Path.Combine(attribute.Prefix ?? "", path);
+            // var fullPath = assetPath.FullPath;
 
-            var obj = Resources.Load(path);
+            var obj = assetPath.Load<UnityEngine.Object>();
             if (obj != null)
                 return null;
 
-            return $"Resource {path} not found!";
+            return $"Resource {assetPath.FullPath} not found!";
         }
     }
 }

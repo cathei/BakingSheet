@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Cathei.BakingSheet.Unity;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -69,16 +70,16 @@ namespace Cathei.BakingSheet.Tests
 
         public static IEnumerable<object[]> AssetPathValueToStringTestData()
         {
-            yield return new object[] { new DirectAssetPath { RelativePath = "MyPng" }, "MyPng" };
-            yield return new object[] { new DirectAssetPath { RelativePath = "123" }, "123" };
-            yield return new object[] { new DirectAssetPath { RelativePath = "Nested/MyPng" }, "Nested/MyPng" };
-            yield return new object[] { new DirectAssetPath { RelativePath = null }, null };
-            yield return new object[] { new DirectAssetPath { RelativePath = "" }, null };
-            yield return new object[] { new TestPngAssetPath { RelativePath = "MyPng" }, "MyPng" };
-            yield return new object[] { new TestPngAssetPath { RelativePath = "123" }, "123" };
-            yield return new object[] { new TestPngAssetPath { RelativePath = "Nested/MyPng" }, "Nested/MyPng"};
-            yield return new object[] { new TestPngAssetPath { RelativePath = null }, null };
-            yield return new object[] { new TestPngAssetPath { RelativePath = "" }, null };
+            yield return new object[] { new DirectAssetPath { RawValue = "MyPng" }, "MyPng" };
+            yield return new object[] { new DirectAssetPath { RawValue = "123" }, "123" };
+            yield return new object[] { new DirectAssetPath { RawValue = "Nested/MyPng" }, "Nested/MyPng" };
+            yield return new object[] { new DirectAssetPath { RawValue = null }, null };
+            yield return new object[] { new DirectAssetPath { RawValue = "" }, null };
+            yield return new object[] { new TestPngAssetPath { RawValue = "MyPng" }, "MyPng" };
+            yield return new object[] { new TestPngAssetPath { RawValue = "123" }, "123" };
+            yield return new object[] { new TestPngAssetPath { RawValue = "Nested/MyPng" }, "Nested/MyPng"};
+            yield return new object[] { new TestPngAssetPath { RawValue = null }, null };
+            yield return new object[] { new TestPngAssetPath { RawValue = "" }, null };
         }
 
         [Theory]

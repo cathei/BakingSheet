@@ -136,13 +136,8 @@ namespace Cathei.BakingSheet
                 {
                     foreach (var verifier in context.Verifiers)
                     {
-                        if (!verifier.TargetType.IsAssignableFrom(node.ValueType))
+                        if (!verifier.CanVerify(node.PropertyInfo, node.ValueType))
                             continue;
-
-                        if (!node.PropertyInfo.IsDefined(verifier.TargetAttribute))
-                            continue;
-
-                        var attributes = node.PropertyInfo.GetCustomAttributes(verifier.TargetAttribute);
 
                         foreach (var row in Items)
                         {
@@ -154,13 +149,10 @@ namespace Cathei.BakingSheet
                                 for (int vindex = 0; vindex < verticalCount; ++vindex)
                                 {
                                     var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
+                                    var err = verifier.Verify(node.PropertyInfo, obj);
 
-                                    foreach (var att in attributes)
-                                    {
-                                        var err = verifier.Verify(att, obj);
-                                        if (err != null)
-                                            context.Logger.LogError("Verification: {Error}", err);
-                                    }
+                                    if (err != null)
+                                        context.Logger.LogError("Verification: {Error}", err);
                                 }
                             }
                         }

@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public partial class ResourcePath
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Cathei.BakingSheet.Unity;
 using UnityEditor;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -53,7 +54,7 @@ namespace Cathei.BakingSheet.Examples
             sheetContainer.PostLoad();
 
             // call SheetVerifier instances you want to process
-            sheetContainer.Verify(new ResourceAssetVerifier());
+            sheetContainer.Verify(new ResourcePathVerifier());
 
             Debug.Log("End of sheet verification");
         }

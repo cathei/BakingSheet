@@ -12,11 +12,11 @@ namespace Cathei.BakingSheet.Internal
 
             if (string.IsNullOrEmpty(value))
             {
-                assetPath.RelativePath = null;
+                assetPath.RawValue = null;
                 return assetPath;
             }
 
-            assetPath.RelativePath = value;
+            assetPath.RawValue = value;
             return assetPath;
         }
 
@@ -25,7 +25,7 @@ namespace Cathei.BakingSheet.Internal
             if (!value.IsValid())
                 return null;
 
-            return value.RelativePath;
+            return value.RawValue;
         }
     }
 }

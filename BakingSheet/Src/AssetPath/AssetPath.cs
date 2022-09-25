@@ -8,25 +8,38 @@ namespace Cathei.BakingSheet
     public abstract class AssetPath : ISheetAssetPath
     {
         [Preserve]
-        public string RelativePath { get; set; }
+        public string RawValue { get; set; }
 
         public virtual string BasePath => string.Empty;
         public virtual string Extension => string.Empty;
+
+        protected string fullPath;
+
+        protected virtual void Parse()
+        {
+            fullPath = Path.Combine(BasePath, RawValue + Extension);
+        }
 
         public virtual string FullPath
         {
             get
             {
-                if (string.IsNullOrEmpty(RelativePath))
+                if (!this.IsValid())
                     return null;
 
-                return Path.Combine(BasePath, RelativePath + Extension);
+                if (fullPath == null)
+                    Parse();
+
+                return fullPath;
             }
         }
+    }
 
-        public virtual bool IsValid()
+    public static class AssetPathExtensions
+    {
+        public static bool IsValid(this ISheetAssetPath assetPath)
         {
-            return !string.IsNullOrEmpty(RelativePath);
+            return !string.IsNullOrEmpty(assetPath?.RawValue);
         }
     }
 }

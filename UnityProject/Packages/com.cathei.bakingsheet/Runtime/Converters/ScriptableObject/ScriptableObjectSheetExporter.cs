@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
+using Cathei.BakingSheet.Unity;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using UnityEditor;

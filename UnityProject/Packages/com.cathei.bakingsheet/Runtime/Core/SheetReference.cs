@@ -14,7 +14,6 @@ namespace Cathei.BakingSheet
         Type IdType { get; }
 
         ISheetRow Ref { get; set; }
-        bool IsValid();
     }
 
     public partial class Sheet<TKey, TValue>
@@ -84,11 +83,14 @@ namespace Cathei.BakingSheet
             {
                 return Id == null ? "(null)" : Id.ToString();
             }
+        }
+    }
 
-            public bool IsValid()
-            {
-                return Ref != null;
-            }
+    public static class SheetReferenceExtensions
+    {
+        public static bool IsValid(this ISheetReference reference)
+        {
+            return reference?.Ref != null;
         }
     }
 }

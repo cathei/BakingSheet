@@ -2,6 +2,7 @@
 
 using System;
 using Cathei.BakingSheet.Internal;
+using Cathei.BakingSheet.Unity;
 using Newtonsoft.Json;
 
 namespace Cathei.BakingSheet
