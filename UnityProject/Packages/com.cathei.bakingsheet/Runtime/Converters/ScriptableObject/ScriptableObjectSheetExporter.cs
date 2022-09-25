@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using UnityEditor;
@@ -151,39 +152,75 @@ namespace Cathei.BakingSheet
 
                     foreach (var (node, indexes) in propertyMap.TraverseLeaf())
                     {
-                        if (!typeof(ISheetReference).IsAssignableFrom(node.ValueType))
-                            continue;
-
-                        foreach (var row in sheet)
+                        if (typeof(IUnitySheetReference).IsAssignableFrom(node.ValueType))
                         {
-                            int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
-
-                            using (context.Logger.BeginScope(row.Id))
-                            using (context.Logger.BeginScope(node.FullPath, indexes))
-                            {
-                                for (int vindex = 0; vindex < verticalCount; ++vindex)
-                                {
-                                    var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
-
-                                    if (!(obj is IUnitySheetReference refer))
-                                        continue;
-
-                                    if (refer.Ref == null)
-                                        continue;
-
-                                    if (!rowToSO.TryGetValue(refer.Ref, out var asset))
-                                    {
-                                        context.Logger.LogError("Failed to find reference \"{ReferenceId}\" from Asset", refer.Id);
-                                        continue;
-                                    }
-
-                                    refer.Asset = asset;
-                                }
-                            }
+                            ProcessRemap(context, sheet, node, indexes, SheetReferenceMapping, rowToSO);
+                        }
+                        else if (typeof(IUnitySheetDirectAssetPath).IsAssignableFrom(node.ValueType))
+                        {
+                            ProcessRemap(context, sheet, node, indexes, AssetReferenceMapping, 0);
                         }
                     }
                 }
             }
+        }
+
+        private static void ProcessRemap<TState>(SheetConvertingContext context, ISheet sheet,
+            PropertyMap.Node node, IEnumerable<object> indexes,
+            Action<SheetConvertingContext, object, TState> mapper, TState state)
+        {
+            foreach (var row in sheet)
+            {
+                int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
+
+                using (context.Logger.BeginScope(row.Id))
+                using (context.Logger.BeginScope(node.FullPath, indexes))
+                {
+                    for (int vindex = 0; vindex < verticalCount; ++vindex)
+                    {
+                        var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
+                        mapper(context, obj, state);
+                    }
+                }
+            }
+        }
+
+        private static void SheetReferenceMapping(
+            SheetConvertingContext context, object obj, Dictionary<ISheetRow, SheetRowScriptableObject> rowToSO)
+        {
+            if (!(obj is IUnitySheetReference refer))
+                return;
+
+            if (refer.Ref == null)
+                return;
+
+            if (!rowToSO.TryGetValue(refer.Ref, out var asset))
+            {
+                context.Logger.LogError("Failed to find reference \"{ReferenceId}\" from Asset", refer.Id);
+                return;
+            }
+
+            refer.Asset = asset;
+        }
+
+        private static void AssetReferenceMapping(SheetConvertingContext context, object obj, int _)
+        {
+            if (!(obj is IUnitySheetDirectAssetPath path))
+                return;
+
+            if (!path.IsValid())
+                return;
+
+            var fullPath = path.FullPath;
+            var asset = UnityEditor.AssetDatabase.LoadMainAssetAtPath(fullPath);
+
+            if (asset == null)
+            {
+                context.Logger.LogError("Failed to find asset \"{AssetPath}\" from Asset", fullPath);
+                return;
+            }
+
+            path.Asset = asset;
         }
 
         private static void SaveAssets(SheetContainerScriptableObject containerSO)

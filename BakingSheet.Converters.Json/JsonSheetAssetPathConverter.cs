@@ -17,17 +17,23 @@ namespace Cathei.BakingSheet
 
             if (string.IsNullOrEmpty(path))
             {
-                existingValue.FullPath = null;
+                existingValue.RelativePath = null;
                 return existingValue;
             }
 
-            existingValue.FullPath = $"{existingValue.Prefix}{path}{existingValue.Postfix}";
+            existingValue.RelativePath = path;
             return existingValue;
         }
 
         public override void WriteJson(JsonWriter writer, ISheetAssetPath value, JsonSerializer serializer)
         {
-            writer.WriteValue(AssetPathValueConverter.ExtractPath(value));
+            if (!value.IsValid())
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            writer.WriteValue(value.RelativePath);
         }
     }
 }

@@ -6,9 +6,12 @@ namespace Cathei.BakingSheet
 {
     public interface ISheetAssetPath
     {
-        string FullPath { get; set; }
+        string RelativePath { get; set; }
+        string FullPath { get; }
 
-        string Prefix { get; }
-        string Postfix { get; }
+        string BasePath { get; }
+        string Extension { get; }
+
+        bool IsValid();
     }
 }

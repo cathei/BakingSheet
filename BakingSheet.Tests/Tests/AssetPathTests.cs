@@ -23,17 +23,17 @@ namespace Cathei.BakingSheet.Tests
 
         public class TestPngAssetPath : AssetPath
         {
-            public override string Prefix => "MyPath/";
-            public override string Postfix => ".png";
+            public override string BasePath => "MyPath/";
+            public override string Extension => ".png";
         }
 
         public static IEnumerable<object[]> AssetPathStringToValueTestData()
         {
-            yield return new object[] { typeof(AssetPath), "MyPng", "MyPng" };
-            yield return new object[] { typeof(AssetPath), "123", "123" };
-            yield return new object[] { typeof(AssetPath), "Nested/MyPng", "Nested/MyPng" };
-            yield return new object[] { typeof(AssetPath), null, null };
-            yield return new object[] { typeof(AssetPath), "", null };
+            yield return new object[] { typeof(DirectAssetPath), "MyPng", "MyPng" };
+            yield return new object[] { typeof(DirectAssetPath), "123", "123" };
+            yield return new object[] { typeof(DirectAssetPath), "Nested/MyPng", "Nested/MyPng" };
+            yield return new object[] { typeof(DirectAssetPath), null, null };
+            yield return new object[] { typeof(DirectAssetPath), "", null };
             yield return new object[] { typeof(TestPngAssetPath), "MyPng", "MyPath/MyPng.png" };
             yield return new object[] { typeof(TestPngAssetPath), "123", "MyPath/123.png" };
             yield return new object[] { typeof(TestPngAssetPath), "Nested/MyPng", "MyPath/Nested/MyPng.png" };
@@ -69,16 +69,16 @@ namespace Cathei.BakingSheet.Tests
 
         public static IEnumerable<object[]> AssetPathValueToStringTestData()
         {
-            yield return new object[] { new AssetPath { FullPath = "MyPng" }, "MyPng" };
-            yield return new object[] { new AssetPath { FullPath = "123" }, "123" };
-            yield return new object[] { new AssetPath { FullPath = "Nested/MyPng" }, "Nested/MyPng" };
-            yield return new object[] { new AssetPath { FullPath = null }, null };
-            yield return new object[] { new AssetPath { FullPath = "" }, null };
-            yield return new object[] { new TestPngAssetPath { FullPath = "MyPath/MyPng.png" }, "MyPng" };
-            yield return new object[] { new TestPngAssetPath { FullPath = "MyPath/123.png" }, "123" };
-            yield return new object[] { new TestPngAssetPath { FullPath = "MyPath/Nested/MyPng.png" }, "Nested/MyPng"};
-            yield return new object[] { new TestPngAssetPath { FullPath = null }, null };
-            yield return new object[] { new TestPngAssetPath { FullPath = "" }, null };
+            yield return new object[] { new DirectAssetPath { RelativePath = "MyPng" }, "MyPng" };
+            yield return new object[] { new DirectAssetPath { RelativePath = "123" }, "123" };
+            yield return new object[] { new DirectAssetPath { RelativePath = "Nested/MyPng" }, "Nested/MyPng" };
+            yield return new object[] { new DirectAssetPath { RelativePath = null }, null };
+            yield return new object[] { new DirectAssetPath { RelativePath = "" }, null };
+            yield return new object[] { new TestPngAssetPath { RelativePath = "MyPng" }, "MyPng" };
+            yield return new object[] { new TestPngAssetPath { RelativePath = "123" }, "123" };
+            yield return new object[] { new TestPngAssetPath { RelativePath = "Nested/MyPng" }, "Nested/MyPng"};
+            yield return new object[] { new TestPngAssetPath { RelativePath = null }, null };
+            yield return new object[] { new TestPngAssetPath { RelativePath = "" }, null };
         }
 
         [Theory]

@@ -12,35 +12,20 @@ namespace Cathei.BakingSheet.Internal
 
             if (string.IsNullOrEmpty(value))
             {
-                assetPath.FullPath = null;
+                assetPath.RelativePath = null;
                 return assetPath;
             }
 
-            assetPath.FullPath = $"{assetPath.Prefix}{value}{assetPath.Postfix}";
+            assetPath.RelativePath = value;
             return assetPath;
         }
 
         protected override string ValueToString(Type type, ISheetAssetPath value, SheetValueConvertingContext context)
         {
-            return ExtractPath(value);
-        }
-
-        public static string ExtractPath(ISheetAssetPath value)
-        {
-            if (string.IsNullOrEmpty(value?.FullPath))
+            if (!value.IsValid())
                 return null;
 
-            string path = value.FullPath;
-
-            int start = 0, end = path.Length;
-
-            if (path.StartsWith(value.Prefix))
-                start += value.Prefix.Length;
-
-            if (path.EndsWith(value.Postfix))
-                end -= value.Postfix.Length;
-
-            return path.Substring(start, end - start);
+            return value.RelativePath;
         }
     }
 }

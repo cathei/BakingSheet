@@ -14,6 +14,7 @@ namespace Cathei.BakingSheet
         Type IdType { get; }
 
         ISheetRow Ref { get; set; }
+        bool IsValid();
     }
 
     public partial class Sheet<TKey, TValue>

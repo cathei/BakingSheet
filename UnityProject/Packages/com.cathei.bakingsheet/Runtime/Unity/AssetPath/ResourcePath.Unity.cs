@@ -8,13 +8,13 @@ namespace Cathei.BakingSheet
     {
         private UnityEngine.Object _asset;
 
-        public UnityEngine.Object Load()
+        public T Load<T>() where T : UnityEngine.Object
         {
             if (_asset != null)
-                return _asset;
+                return _asset as T;
 
             _asset = Resources.Load(FullPath);
-            return _asset;
+            return _asset as T;
         }
     }
 }
