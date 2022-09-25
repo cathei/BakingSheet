@@ -42,6 +42,7 @@ namespace Cathei.BakingSheet
 
             var settings = GetSettings(references);
             return (ISheetRow)JsonConvert.DeserializeObject(serializedRow, type, settings);
+
         }
     }
 }

@@ -154,17 +154,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hero:
     asset: {fileID: 107211345608050729, guid: d23e22ed8f4864aa2a9ffb35beda7bfe, type: 2}
-    typeInfo: Cathei.BakingSheet.Examples.HeroSheet+Row
   constant:
     asset: {fileID: -905956753305311065, guid: 2e8ae7191abe94dd2848b34bbb2f063c, type: 2}
-    typeInfo: Cathei.BakingSheet.Examples.ConstantSheet+Row
   dungeons:
   - asset: {fileID: -9166154618765681184, guid: 6f6e9c3ec8746402ab7588c04e0b39cc, type: 2}
-    typeInfo: Cathei.BakingSheet.Examples.DungeonSheet+Row
   - asset: {fileID: 2841144990882946770, guid: 6f6e9c3ec8746402ab7588c04e0b39cc, type: 2}
-    typeInfo: Cathei.BakingSheet.Examples.DungeonSheet+Row
   - asset: {fileID: 2018696215140539133, guid: 6f6e9c3ec8746402ab7588c04e0b39cc, type: 2}
-    typeInfo: Cathei.BakingSheet.Examples.DungeonSheet+Row
 --- !u!4 &1056821183
 Transform:
   m_ObjectHideFlags: 0

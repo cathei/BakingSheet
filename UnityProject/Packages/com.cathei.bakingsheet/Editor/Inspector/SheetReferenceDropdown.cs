@@ -12,19 +12,17 @@ namespace Cathei.BakingSheet.Editor
     public class SheetReferenceDropdown : AdvancedDropdown
     {
         private readonly SerializedProperty _property;
-        private readonly SerializedProperty _assetProp;
+        private readonly string _label;
         private readonly string _targetTypeInfo;
 
         // private List<UnityEngine.Object> _selections = new List<UnityEngine.Object>();
 
         public SheetReferenceDropdown(
-            SerializedProperty property, AdvancedDropdownState state) : base(state)
+            SerializedProperty property, string label, string targetTypeInfo, AdvancedDropdownState state) : base(state)
         {
             _property = property;
-            _assetProp = property.FindPropertyRelative("asset");
-
-            var typeInfoProp = property.FindPropertyRelative("typeInfo");
-            _targetTypeInfo = typeInfoProp.stringValue;
+            _label = label;
+            _targetTypeInfo = targetTypeInfo;
 
             var minSize = base.minimumSize;
             minSize.y = 300f;
@@ -33,7 +31,7 @@ namespace Cathei.BakingSheet.Editor
 
         protected override AdvancedDropdownItem BuildRoot()
         {
-            var root = new AdvancedDropdownItem(_assetProp.displayName);
+            var root = new AdvancedDropdownItem(_label);
 
             var nullItem = new AdvancedDropdownItem("(None)");
             nullItem.id = 0;
@@ -70,7 +68,7 @@ namespace Cathei.BakingSheet.Editor
         {
             base.ItemSelected(item);
 
-            _assetProp.objectReferenceInstanceIDValue = item.id;
+            _property.objectReferenceInstanceIDValue = item.id;
             _property.serializedObject.ApplyModifiedProperties();
         }
     }

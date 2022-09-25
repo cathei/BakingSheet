@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Cathei.BakingSheet.Internal;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace Cathei.BakingSheet
@@ -12,19 +13,14 @@ namespace Cathei.BakingSheet
         public SheetRowScriptableObject Asset { get; set; }
     }
 
+    internal class UnitySheetReferenceAttribute : PropertyAttribute { }
+
     public partial class Sheet<TKey, TValue>
     {
         [Serializable]
-        public partial class Reference : IUnitySheetReference, ISerializationCallbackReceiver
+        public partial struct Reference : IUnitySheetReference
         {
-            [SerializeField] private SheetRowScriptableObject asset;
-
-#if UNITY_EDITOR
-            /// <summary>
-            /// Row type to filter selection (Editor only)
-            /// </summary>
-            [SerializeField, HideInInspector] internal string typeInfo;
-#endif
+            [SerializeField, UnitySheetReference] private SheetRowScriptableObject asset;
 
             SheetRowScriptableObject IUnitySheetReference.Asset
             {
@@ -32,22 +28,12 @@ namespace Cathei.BakingSheet
                 set => asset = value;
             }
 
-            public void OnBeforeSerialize()
+            partial void EnsureLoadReference()
             {
-                // do nothing
-            }
-
-            public void OnAfterDeserialize()
-            {
-#if UNITY_EDITOR
-                typeInfo = typeof(TValue).FullName;
-#endif
-
                 if (asset == null)
                     return;
 
-                Ref = asset.GetRow<TValue>();
-                Id = Ref != null ? Ref.Id : default;
+                reference = asset.GetRow<TValue>();
             }
         }
     }

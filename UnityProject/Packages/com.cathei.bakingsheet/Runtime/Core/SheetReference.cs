@@ -13,7 +13,8 @@ namespace Cathei.BakingSheet
         object Id { get; set; }
         Type IdType { get; }
 
-        ISheetRow Ref { get; set; }
+        ISheetRow Ref { get; }
+        bool IsValid();
     }
 
     public partial class Sheet<TKey, TValue>
@@ -21,12 +22,24 @@ namespace Cathei.BakingSheet
         /// <summary>
         /// Cross-sheet reference column to this Sheet.
         /// </summary>
-        public sealed partial class Reference : ISheetReference
+        public partial struct Reference : ISheetReference
         {
             [Preserve]
             public TKey Id { get; private set; }
+
             [Preserve]
-            public TValue Ref { get; private set; }
+            private TValue reference;
+
+            [Preserve]
+            public TValue Ref
+            {
+                get
+                {
+                    EnsureLoadReference();
+                    return reference;
+                }
+                private set => reference = value;
+            }
 
             object ISheetReference.Id
             {
@@ -36,19 +49,11 @@ namespace Cathei.BakingSheet
 
             public Type IdType => typeof(TKey);
 
-            ISheetRow ISheetReference.Ref
-            {
-                get => Ref;
-                set => Ref = (TValue)value;
-            }
+            ISheetRow ISheetReference.Ref => Ref;
 
-            [Preserve]
-            public Reference() { }
-
-            public Reference(TKey id)
+            public Reference(TKey id) : this()
             {
                 Id = id;
-                Ref = null;
             }
 
             void ISheetReference.Map(SheetConvertingContext context, ISheet sheet)
@@ -71,7 +76,13 @@ namespace Cathei.BakingSheet
 
             public override bool Equals(object obj)
             {
-                return obj is Reference refer && this == refer;
+                if (!(obj is Reference other))
+                    return false;
+
+                if (Id == null)
+                    return other.Id == null;
+
+                return Id.Equals(other.Id);
             }
 
             public override int GetHashCode()
@@ -83,14 +94,16 @@ namespace Cathei.BakingSheet
             {
                 return Id == null ? "(null)" : Id.ToString();
             }
-        }
-    }
 
-    public static class SheetReferenceExtensions
-    {
-        public static bool IsValid(this ISheetReference reference)
-        {
-            return reference?.Ref != null;
+            public bool IsValid()
+            {
+                return Ref != null;
+            }
+
+            /// <summary>
+            /// Each Engine counterpart implements this
+            /// </summary>
+            partial void EnsureLoadReference();
         }
     }
 }

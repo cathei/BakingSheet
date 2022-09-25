@@ -97,17 +97,10 @@ namespace Cathei.BakingSheet
                                 if (!node.TryGetValue(row, vindex, indexes.GetEnumerator(), out var obj))
                                     continue;
 
-                                // path is valid but not assigned
-                                if (obj == null)
-                                {
-                                    // create default value for reference
-                                    obj = Activator.CreateInstance(node.ValueType);
-                                    node.SetValue(row, vindex, indexes.GetEnumerator(), obj);
-                                }
-
                                 if (obj is ISheetReference refer)
                                 {
                                     refer.Map(context, sheet);
+                                    node.SetValue(row, vindex, indexes.GetEnumerator(), obj);
                                 }
                             }
                         }

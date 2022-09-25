@@ -181,6 +181,10 @@ namespace Cathei.BakingSheet
                     {
                         var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
                         mapper(context, obj, state);
+
+                        // setting back for value type struct
+                        if (node.ValueType.IsValueType)
+                            node.SetValue(row, vindex, indexes.GetEnumerator(), obj);
                     }
                 }
             }
@@ -192,7 +196,7 @@ namespace Cathei.BakingSheet
             if (!(obj is IUnitySheetReference refer))
                 return;
 
-            if (refer.Ref == null)
+            if (!refer.IsValid())
                 return;
 
             if (!rowToSO.TryGetValue(refer.Ref, out var asset))
