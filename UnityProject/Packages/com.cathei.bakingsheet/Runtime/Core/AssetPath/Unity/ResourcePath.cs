@@ -8,40 +8,31 @@ namespace Cathei.BakingSheet.Unity
     /// <summary>
     /// AssetPath representing path to Unity's Resource folder
     /// </summary>
-    public partial class ResourcePath : AssetPath
+    public partial class ResourcePath : ISheetAssetPath
     {
-        private string subAssetName;
+        public string RawValue { get; }
+        public string FullPath { get; }
+        public string SubAssetName { get; }
 
-        protected override void Parse()
+        public virtual string BasePath => string.Empty;
+
+        public ResourcePath(string rawValue)
         {
+            RawValue = rawValue;
+
+            if (string.IsNullOrEmpty(RawValue))
+                return;
+
             var match = DirectAssetPath.PathRegex.Match(RawValue);
 
             if (!match.Success)
-            {
-                fullPath = string.Empty;
-                subAssetName = string.Empty;
                 return;
-            }
 
-            var pathGroup = match.Groups[0];
-            var subAssetGroup = match.Groups[1];
+            var pathGroup = match.Groups[1];
+            var subAssetGroup = match.Groups[2];
 
-            fullPath = Path.Combine(BasePath, pathGroup.Value);
-            subAssetName = subAssetGroup.Value;
-        }
-
-        public string SubAssetName
-        {
-            get
-            {
-                if (!this.IsValid())
-                    return null;
-
-                if (fullPath == null)
-                    Parse();
-
-                return subAssetName;
-            }
+            FullPath = Path.Combine(BasePath, pathGroup.Value);
+            SubAssetName = subAssetGroup.Value;
         }
     }
 }

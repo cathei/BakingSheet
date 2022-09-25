@@ -26,6 +26,16 @@ namespace Cathei.BakingSheet.Tests
         {
             public override string BasePath => "MyPath/";
             public override string Extension => ".png";
+
+            public TestPngAssetPath(string rawValue) : base(rawValue) { }
+        }
+
+        public class TestAddressablePath : AddressablePath
+        {
+            public override string BasePath => "Addr";
+            public override string Extension => ".asset";
+
+            public TestAddressablePath(string rawValue) : base(rawValue) { }
         }
 
         public static IEnumerable<object[]> AssetPathStringToValueTestData()
@@ -33,6 +43,7 @@ namespace Cathei.BakingSheet.Tests
             yield return new object[] { typeof(DirectAssetPath), "MyPng", "MyPng" };
             yield return new object[] { typeof(DirectAssetPath), "123", "123" };
             yield return new object[] { typeof(DirectAssetPath), "Nested/MyPng", "Nested/MyPng" };
+            yield return new object[] { typeof(DirectAssetPath), "Nested/MyPng[sprite]", "Nested/MyPng" };
             yield return new object[] { typeof(DirectAssetPath), null, null };
             yield return new object[] { typeof(DirectAssetPath), "", null };
             yield return new object[] { typeof(TestPngAssetPath), "MyPng", "MyPath/MyPng.png" };
@@ -40,6 +51,10 @@ namespace Cathei.BakingSheet.Tests
             yield return new object[] { typeof(TestPngAssetPath), "Nested/MyPng", "MyPath/Nested/MyPng.png" };
             yield return new object[] { typeof(TestPngAssetPath), null, null };
             yield return new object[] { typeof(TestPngAssetPath), "", null };
+            yield return new object[] { typeof(TestAddressablePath), "MySubAsset[subasset]", "Addr/MySubAsset.asset[subasset]" };
+            yield return new object[] { typeof(TestAddressablePath), "Nested/MyPng", "Addr/Nested/MyPng.asset" };
+            yield return new object[] { typeof(TestAddressablePath), null, null };
+            yield return new object[] { typeof(TestAddressablePath), "", null };
         }
 
         [Theory]
@@ -70,16 +85,21 @@ namespace Cathei.BakingSheet.Tests
 
         public static IEnumerable<object[]> AssetPathValueToStringTestData()
         {
-            yield return new object[] { new DirectAssetPath { RawValue = "MyPng" }, "MyPng" };
-            yield return new object[] { new DirectAssetPath { RawValue = "123" }, "123" };
-            yield return new object[] { new DirectAssetPath { RawValue = "Nested/MyPng" }, "Nested/MyPng" };
-            yield return new object[] { new DirectAssetPath { RawValue = null }, null };
-            yield return new object[] { new DirectAssetPath { RawValue = "" }, null };
-            yield return new object[] { new TestPngAssetPath { RawValue = "MyPng" }, "MyPng" };
-            yield return new object[] { new TestPngAssetPath { RawValue = "123" }, "123" };
-            yield return new object[] { new TestPngAssetPath { RawValue = "Nested/MyPng" }, "Nested/MyPng"};
-            yield return new object[] { new TestPngAssetPath { RawValue = null }, null };
-            yield return new object[] { new TestPngAssetPath { RawValue = "" }, null };
+            yield return new object[] { new DirectAssetPath("MyPng"), "MyPng" };
+            yield return new object[] { new DirectAssetPath("123"), "123" };
+            yield return new object[] { new DirectAssetPath("Nested/MyPng"), "Nested/MyPng" };
+            yield return new object[] { new DirectAssetPath("Nested/MyPng[sprite]"), "Nested/MyPng[sprite]" };
+            yield return new object[] { new DirectAssetPath(null), null };
+            yield return new object[] { new DirectAssetPath(""), null };
+            yield return new object[] { new TestPngAssetPath("MyPng"), "MyPng" };
+            yield return new object[] { new TestPngAssetPath("123"), "123" };
+            yield return new object[] { new TestPngAssetPath("Nested/MyPng"), "Nested/MyPng"};
+            yield return new object[] { new TestPngAssetPath(null), null };
+            yield return new object[] { new TestPngAssetPath(""), null };
+            yield return new object[] { new TestAddressablePath("MySubAsset[subasset]"), "MySubAsset[subasset]" };
+            yield return new object[] { new TestAddressablePath("Nested/MyPng"), "Nested/MyPng" };
+            yield return new object[] { new TestAddressablePath(null), null };
+            yield return new object[] { new TestAddressablePath(""), null };
         }
 
         [Theory]

@@ -8,43 +8,35 @@ namespace Cathei.BakingSheet.Unity
     /// <summary>
     /// AssetPath representing path to Unity's Addressable Assets
     /// </summary>
-    public partial class AddressablePath : AssetPath
+    public partial class AddressablePath : ISheetAssetPath
     {
-        private string subAssetName;
+        public string RawValue { get; }
+        public string FullPath { get; }
+        public string SubAssetName { get; }
 
-        protected override void Parse()
+        public virtual string BasePath => string.Empty;
+        public virtual string Extension => string.Empty;
+
+        public AddressablePath(string rawValue)
         {
+            RawValue = rawValue;
+
+            if (string.IsNullOrEmpty(RawValue))
+                return;
+
             var match = DirectAssetPath.PathRegex.Match(RawValue);
 
             if (!match.Success)
-            {
-                fullPath = string.Empty;
-                subAssetName = string.Empty;
                 return;
-            }
 
-            var pathGroup = match.Groups[0];
-            var subAssetGroup = match.Groups[1];
+            var pathGroup = match.Groups[1];
+            var subAssetGroup = match.Groups[2];
 
-            fullPath = Path.Combine(BasePath, $"{pathGroup.Value}{Extension}");
-            subAssetName = subAssetGroup.Value;
+            FullPath = Path.Combine(BasePath, $"{pathGroup.Value}{Extension}");
+            SubAssetName = subAssetGroup.Value;
 
-            if (!string.IsNullOrEmpty(subAssetName))
-                fullPath += $"[{subAssetName}]";
-        }
-
-        public string SubAssetName
-        {
-            get
-            {
-                if (!this.IsValid())
-                    return null;
-
-                if (fullPath == null)
-                    Parse();
-
-                return subAssetName;
-            }
+            if (!string.IsNullOrEmpty(SubAssetName))
+                FullPath += $"[{SubAssetName}]";
         }
     }
 }

@@ -8,16 +8,7 @@ namespace Cathei.BakingSheet.Internal
     {
         protected override ISheetAssetPath StringToValue(Type type, string value, SheetValueConvertingContext context)
         {
-            ISheetAssetPath assetPath = (ISheetAssetPath)Activator.CreateInstance(type);
-
-            if (string.IsNullOrEmpty(value))
-            {
-                assetPath.RawValue = null;
-                return assetPath;
-            }
-
-            assetPath.RawValue = value;
-            return assetPath;
+            return (ISheetAssetPath)Activator.CreateInstance(type, value);
         }
 
         protected override string ValueToString(Type type, ISheetAssetPath value, SheetValueConvertingContext context)

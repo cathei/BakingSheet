@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Cathei.BakingSheet.Internal;
+using Cathei.BakingSheet.Unity;
 using UnityEditor;
 using UnityEngine;
 using Newtonsoft.Json;
@@ -47,7 +48,7 @@ namespace Cathei.BakingSheet.Examples
 
             var googleConverter = new GoogleSheetConverter("1iWMZVI4FgtGbig4EgPIun_BRbzp4ulqRIzINZQl-AFI", GoogleCredential, TimeZoneInfo.Utc);
 
-            var sheetContainer = new Google.SheetContainer(new UnityLogger());
+            var sheetContainer = new Google.SheetContainer(UnityLogger.Default);
 
             await sheetContainer.Bake(googleConverter);
 

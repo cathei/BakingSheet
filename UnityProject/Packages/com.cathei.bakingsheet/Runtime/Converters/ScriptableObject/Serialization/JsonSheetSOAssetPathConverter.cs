@@ -22,16 +22,7 @@ namespace Cathei.BakingSheet.Unity
             bool hasExistingValue, JsonSerializer serializer)
         {
             var serialized = serializer.Deserialize<JsonSerializedDirectAssetPath?>(reader);
-            if (serialized == null)
-                return null;
-
-            existingValue ??= (IUnitySheetAssetPath)Activator.CreateInstance(objectType);
-            existingValue.RawValue = serialized?.RawValue;
-
-            if (existingValue is IUnitySheetDirectAssetPath directPath)
-                directPath.Asset = serialized?.Asset;
-
-            return existingValue;
+            return (IUnitySheetAssetPath)Activator.CreateInstance(objectType, serialized?.RawValue);
         }
 
         public override void WriteJson(

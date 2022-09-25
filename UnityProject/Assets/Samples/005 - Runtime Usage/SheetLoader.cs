@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cathei.BakingSheet.Unity;
 using UnityEngine;
 
 namespace Cathei.BakingSheet.Examples

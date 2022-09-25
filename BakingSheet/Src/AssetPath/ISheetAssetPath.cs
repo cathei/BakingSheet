@@ -6,10 +6,7 @@ namespace Cathei.BakingSheet
 {
     public interface ISheetAssetPath
     {
-        string RawValue { get; set; }
+        string RawValue { get; }
         string FullPath { get; }
-
-        string BasePath { get; }
-        string Extension { get; }
     }
 }

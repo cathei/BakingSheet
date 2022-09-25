@@ -10,19 +10,8 @@ namespace Cathei.BakingSheet
     {
         public override ISheetAssetPath ReadJson(JsonReader reader, Type objectType, ISheetAssetPath existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            if (existingValue == null)
-                existingValue = (ISheetAssetPath)Activator.CreateInstance(objectType);
-
             string path = (string)reader.Value;
-
-            if (string.IsNullOrEmpty(path))
-            {
-                existingValue.RawValue = null;
-                return existingValue;
-            }
-
-            existingValue.RawValue = path;
-            return existingValue;
+            return (ISheetAssetPath)Activator.CreateInstance(objectType, path);
         }
 
         public override void WriteJson(JsonWriter writer, ISheetAssetPath value, JsonSerializer serializer)

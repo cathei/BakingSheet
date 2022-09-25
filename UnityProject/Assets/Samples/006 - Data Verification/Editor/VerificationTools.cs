@@ -35,17 +35,17 @@ namespace Cathei.BakingSheet.Examples
                 new VerificationSheet.Row
                 {
                     Id = "Row1",
-                    ResourcePath = new ResourcePath("SamplePrefab1");
+                    ResourcePath = new ResourcePath("SamplePrefab1")
                 },
                 new VerificationSheet.Row
                 {
                     Id = "Row2",
-                    ResourcePath = "SamplePrefab2"
+                    ResourcePath = new ResourcePath("SamplePrefab2")
                 },
                 new VerificationSheet.Row
                 {
                     Id = "Row3",
-                    ResourcePath = "SamplePrefab3"
+                    ResourcePath = new ResourcePath("SamplePrefab3")
                 },
             };
 

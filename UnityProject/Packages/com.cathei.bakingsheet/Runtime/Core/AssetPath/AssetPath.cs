@@ -5,33 +5,27 @@ using Cathei.BakingSheet.Internal;
 
 namespace Cathei.BakingSheet
 {
-    public abstract class AssetPath : ISheetAssetPath
+    /// <summary>
+    /// Generic ISheetAssetPath implementation
+    /// All derived class must have constructor with single string parameter
+    /// </summary>
+    public class AssetPath : ISheetAssetPath
     {
-        [Preserve]
-        public string RawValue { get; set; }
+        public string RawValue { get; }
+        public string FullPath { get; }
 
         public virtual string BasePath => string.Empty;
         public virtual string Extension => string.Empty;
 
-        protected string fullPath;
-
-        protected virtual void Parse()
+        [Preserve]
+        public AssetPath(string rawValue)
         {
-            fullPath = Path.Combine(BasePath, RawValue + Extension);
-        }
+            RawValue = rawValue;
 
-        public virtual string FullPath
-        {
-            get
-            {
-                if (!this.IsValid())
-                    return null;
+            if (string.IsNullOrEmpty(RawValue))
+                return;
 
-                if (fullPath == null)
-                    Parse();
-
-                return fullPath;
-            }
+            FullPath = Path.Combine(BasePath, RawValue + Extension);
         }
     }
 
