@@ -25,7 +25,12 @@ namespace Cathei.BakingSheet
             if (string.IsNullOrEmpty(RawValue))
                 return;
 
-            FullPath = Path.Combine(BasePath, RawValue + Extension);
+            string filePath = RawValue;
+
+            if (!string.IsNullOrEmpty(Extension))
+                filePath = $"{filePath}.{Extension}";
+
+            FullPath = Path.Combine(BasePath, filePath);
         }
     }
 

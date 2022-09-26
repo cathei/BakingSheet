@@ -25,7 +25,7 @@ namespace Cathei.BakingSheet.Tests
         public class TestPngAssetPath : AssetPath
         {
             public override string BasePath => "MyPath/";
-            public override string Extension => ".png";
+            public override string Extension => "png";
 
             public TestPngAssetPath(string rawValue) : base(rawValue) { }
         }
@@ -33,7 +33,7 @@ namespace Cathei.BakingSheet.Tests
         public class TestAddressablePath : AddressablePath
         {
             public override string BasePath => "Addr";
-            public override string Extension => ".asset";
+            public override string Extension => "asset";
 
             public TestAddressablePath(string rawValue) : base(rawValue) { }
         }

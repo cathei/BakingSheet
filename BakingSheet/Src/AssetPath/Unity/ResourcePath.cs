@@ -28,11 +28,11 @@ namespace Cathei.BakingSheet.Unity
             if (!match.Success)
                 return;
 
-            var pathGroup = match.Groups[1];
-            var subAssetGroup = match.Groups[2];
+            var filePath = match.Groups[1].Value;
+            var subAssetName = match.Groups[2].Value;
 
-            FullPath = Path.Combine(BasePath, pathGroup.Value);
-            SubAssetName = subAssetGroup.Value;
+            FullPath = Path.Combine(BasePath, filePath);
+            SubAssetName = subAssetName;
         }
     }
 }
