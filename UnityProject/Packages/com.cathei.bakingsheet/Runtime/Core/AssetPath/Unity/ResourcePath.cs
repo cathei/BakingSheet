@@ -7,6 +7,7 @@ namespace Cathei.BakingSheet.Unity
 {
     /// <summary>
     /// AssetPath representing path to Unity's Resource folder
+    /// User can specify sub asset name with square bracket "My/Asset/Path[SubAssetName]"
     /// </summary>
     public partial class ResourcePath : ISheetAssetPath
     {

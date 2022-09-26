@@ -188,6 +188,10 @@ namespace Cathei.BakingSheet.Internal
             node.SetValue(row, vindex, _indexes.GetEnumerator(), context.StringToValue(node.ValueType, value));
         }
 
+        /// <summary>
+        /// Updating possible index and keys to match the rows in target sheet
+        /// </summary>
+        /// <param name="sheet">Target sheet</param>
         public void UpdateIndex(ISheet sheet)
         {
             foreach (var row in sheet)
@@ -199,8 +203,11 @@ namespace Cathei.BakingSheet.Internal
             }
         }
 
-        // UpdateCount is required to get correct result
-        // index list are returned just to feed back, only valid on enumeration loop
+        /// <summary>
+        /// Traverse each leaf node
+        /// Calling UpdateCount first is required to get correct result
+        /// index list are returned just to feed back, only valid on enumeration loop
+        /// </summary>
         public IEnumerable<(Node, IEnumerable<object>)> TraverseLeaf()
         {
             _indexes.Clear();

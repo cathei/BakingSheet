@@ -9,6 +9,7 @@ namespace Cathei.BakingSheet.Unity
     /// <summary>
     /// Direct asset reference to Unity's Assets folder
     /// Note that this is only supported when you are using ScriptableObject exporter in Unity
+    /// User can specify sub asset name with square bracket "Assets/My/Asset/Path.png[SubAssetName]"
     /// </summary>
     public partial class DirectAssetPath : ISheetAssetPath
     {
