@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Internal
 {
-    // property map for a sheet
+    /// <summary>
+    /// Tree structure represents assignable properties in sheet rows.
+    /// </summary>
     public partial class PropertyMap
     {
         private NodeObject Root { get; }
@@ -121,6 +123,14 @@ namespace Cathei.BakingSheet.Internal
             }
         }
 
+        /// <summary>
+        /// Set value of a specific property of a row.
+        /// </summary>
+        /// <param name="row">Target row.</param>
+        /// <param name="vindex">Vertical index of the row.</param>
+        /// <param name="path">Path to the node (Column name).</param>
+        /// <param name="value">Value to assign.</param>
+        /// <param name="formatter">Format provider to convert value to object.</param>
         public void SetValue(ISheetRow row, int vindex, string path, string value, ISheetFormatter formatter)
         {
             Node node = null;

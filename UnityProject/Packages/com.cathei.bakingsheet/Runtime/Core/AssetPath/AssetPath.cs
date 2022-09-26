@@ -6,8 +6,8 @@ using Cathei.BakingSheet.Internal;
 namespace Cathei.BakingSheet
 {
     /// <summary>
-    /// Generic ISheetAssetPath implementation
-    /// All derived class must have constructor with single string parameter
+    /// Generic ISheetAssetPath implementation.
+    /// All derived class must have constructor with single string parameter.
     /// </summary>
     public class AssetPath : ISheetAssetPath
     {

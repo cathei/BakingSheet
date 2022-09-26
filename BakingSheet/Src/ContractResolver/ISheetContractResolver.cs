@@ -6,7 +6,7 @@ using System.Reflection;
 namespace Cathei.BakingSheet
 {
     /// <summary>
-    /// Interface for contract resolver that determines and caches value converter
+    /// Interface for contract resolver that determines and caches value converter.
     /// </summary>
     public interface ISheetContractResolver
     {

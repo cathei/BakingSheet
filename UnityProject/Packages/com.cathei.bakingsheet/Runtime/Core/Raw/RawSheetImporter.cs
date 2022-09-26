@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
 {
+    /// <summary>
+    /// Generic sheet importer for cell-based Spreadsheet sources.
+    /// </summary>
     public abstract class RawSheetImporter : ISheetImporter, ISheetFormatter
     {
         protected abstract Task<bool> LoadData();

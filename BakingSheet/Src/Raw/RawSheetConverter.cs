@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
 {
+    /// <summary>
+    /// Generic sheet converter for cell-based Spreadsheet sources.
+    /// </summary>
     public abstract class RawSheetConverter : RawSheetImporter, ISheetConverter
     {
         public bool SplitHeader { get; set; }

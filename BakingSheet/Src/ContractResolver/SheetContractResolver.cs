@@ -9,7 +9,7 @@ using Cathei.BakingSheet.Internal;
 namespace Cathei.BakingSheet
 {
     /// <summary>
-    /// Default implementation for contract resolver that determines and caches value converter
+    /// Default implementation for contract resolver that determines and caches value converter.
     /// </summary>
     public class SheetContractResolver : ISheetContractResolver
     {
@@ -26,15 +26,15 @@ namespace Cathei.BakingSheet
         }
 
         /// <summary>
-        /// Create default contract resolver
-        /// Using singleton Instance is preferred
+        /// Create default contract resolver.
+        /// Using singleton Instance is preferred.
         /// </summary>
         public SheetContractResolver() : this(null) { }
 
         /// <summary>
-        /// Create default contract resolver with additional value converters
+        /// Create default contract resolver with additional value converters.
         /// </summary>
-        /// <param name="converters">Additional value converters</param>
+        /// <param name="converters">Additional value converters.</param>
         public SheetContractResolver(IEnumerable<ISheetValueConverter> converters)
         {
             var list = new List<ISheetValueConverter>();

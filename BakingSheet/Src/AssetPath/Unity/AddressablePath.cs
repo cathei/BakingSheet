@@ -6,8 +6,8 @@ using Cathei.BakingSheet.Internal;
 namespace Cathei.BakingSheet.Unity
 {
     /// <summary>
-    /// AssetPath representing path to Unity's Addressable Assets
-    /// User can specify sub asset name with square bracket "My/Asset/Path.png[SubAssetName]"
+    /// AssetPath representing path to Unity's Addressable Assets.
+    /// User can specify sub asset name with square bracket "My/Asset/Path.png[SubAssetName]".
     /// </summary>
     public partial class AddressablePath : ISheetAssetPath
     {

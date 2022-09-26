@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
 {
+    /// <summary>
+    /// Single page of a Spreadsheet workbook for importing.
+    /// </summary>
     public interface IRawSheetImporterPage
     {
         string GetCell(int col, int row);
@@ -21,7 +24,7 @@ namespace Cathei.BakingSheet.Raw
         }
 
         /// <summary>
-        /// If the row has no value in all valid column it count as empty row
+        /// If the row has no value in all valid column it count as empty row.
         /// </summary>
         public static bool IsEmptyRow(this IRawSheetImporterPage page, int row)
         {
@@ -35,7 +38,7 @@ namespace Cathei.BakingSheet.Raw
         }
 
         /// <summary>
-        /// If the column has any value until current row, it count as valid column
+        /// If the column has any value until current row, it count as valid column.
         /// </summary>
         private static bool IsValidColumn(IRawSheetImporterPage page, int col, int row)
         {
