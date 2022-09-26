@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Cathei.BakingSheet.Unity;
+﻿using Cathei.BakingSheet.Unity;
 using UnityEngine;
 
 namespace Cathei.BakingSheet.Examples
@@ -13,6 +9,7 @@ namespace Cathei.BakingSheet.Examples
 
         private async void Start()
         {
+#if BAKINGSHEET_BETTERSTREAMINGASSETS
             Debug.Log("Scene loaded.");
 
             // If you're using StreamingAssets from Android, StreamingAssetsFileSystem must be used
@@ -26,6 +23,7 @@ namespace Cathei.BakingSheet.Examples
             Debug.Log(Sheet.Heroes["HERO001"].Count);
             Debug.Log(Sheet.Heroes["HERO001"].GetLevel(5).RequiredItem.Ref.Name);
             Debug.Log(Sheet.Items["ITEM_POTION001"].Name);
+#endif
         }
     }
 }

@@ -11,6 +11,17 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.cathei.betterstreamingassets",
+            "expression": "1.0.0",
+            "define": "BAKINGSHEET_BETTERSTREAMINGASSETS"
+        },
+        {
+            "name": "com.gwiazdorrr.betterstreamingassets",
+            "expression": "1.0.0",
+            "define": "BAKINGSHEET_BETTERSTREAMINGASSETS"
+        }
+    ],
     "noEngineReferences": false
 }
