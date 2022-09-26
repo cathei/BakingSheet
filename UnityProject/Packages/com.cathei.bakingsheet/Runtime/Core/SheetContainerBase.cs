@@ -14,7 +14,7 @@ namespace Cathei.BakingSheet
     public abstract class SheetContainerBase
     {
         private ILogger _logger;
-        private PropertyInfo[] _sheetProperties;
+        private Dictionary<string, PropertyInfo> _sheetProperties;
 
         public virtual ISheetContractResolver ContractResolver => SheetContractResolver.Instance;
 
@@ -23,14 +23,14 @@ namespace Cathei.BakingSheet
             _logger = logger;
         }
 
-        public IEnumerable<PropertyInfo> GetSheetProperties()
+        public IReadOnlyDictionary<string, PropertyInfo> GetSheetProperties()
         {
             if (_sheetProperties == null)
             {
                 _sheetProperties = GetType()
                     .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                     .Where(p => typeof(ISheet).IsAssignableFrom(p.PropertyType))
-                    .ToArray();
+                    .ToDictionary(x => x.Name);
             }
 
             return _sheetProperties;
@@ -77,16 +77,16 @@ namespace Cathei.BakingSheet
                 Logger = _logger,
             };
 
-            foreach (var prop in GetSheetProperties())
+            foreach (var pair in GetSheetProperties())
             {
-                if (prop.GetValue(this) is ISheet sheet)
+                if (pair.Value.GetValue(this) is ISheet sheet)
                 {
-                    sheet.Name = prop.Name;
+                    sheet.Name = pair.Key;
                     sheet.PostLoad(context);
                 }
                 else
                 {
-                    context.Logger.LogError("Failed to find sheet: {SheetName}", prop.Name);
+                    context.Logger.LogError("Failed to find sheet: {SheetName}", pair.Key);
                 }
             }
         }
@@ -100,9 +100,9 @@ namespace Cathei.BakingSheet
                 Verifiers = verifiers
             };
 
-            foreach (var prop in GetSheetProperties())
+            foreach (var pair in GetSheetProperties())
             {
-                if (prop.GetValue(this) is ISheet sheet)
+                if (pair.Value.GetValue(this) is ISheet sheet)
                 {
                     sheet.VerifyAssets(context);
                 }

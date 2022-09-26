@@ -63,11 +63,11 @@ namespace Cathei.BakingSheet
         {
             var sheetProps = context.Container.GetSheetProperties();
 
-            foreach (var prop in sheetProps)
+            foreach (var pair in sheetProps)
             {
-                using (context.Logger.BeginScope(prop.Name))
+                using (context.Logger.BeginScope(pair.Key))
                 {
-                    var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
+                    var path = Path.Combine(_loadPath, $"{pair.Key}.{Extension}");
 
                     if (!_fileSystem.Exists(path))
                         continue;
@@ -78,8 +78,8 @@ namespace Cathei.BakingSheet
                     using (var reader = new StreamReader(stream))
                         data = await reader.ReadToEndAsync();
 
-                    var sheet = Deserialize(data, prop.PropertyType, context.Logger) as ISheet;
-                    prop.SetValue(context.Container, sheet);
+                    var sheet = Deserialize(data, pair.Value.PropertyType, context.Logger) as ISheet;
+                    pair.Value.SetValue(context.Container, sheet);
                 }
             }
 
@@ -92,14 +92,14 @@ namespace Cathei.BakingSheet
 
             _fileSystem.CreateDirectory(_loadPath);
 
-            foreach (var prop in sheetProps)
+            foreach (var pair in sheetProps)
             {
-                using (context.Logger.BeginScope(prop.Name))
+                using (context.Logger.BeginScope(pair.Key))
                 {
-                    var sheet = prop.GetValue(context.Container);
-                    var data = Serialize(sheet, prop.PropertyType, context.Logger);
+                    var sheet = pair.Value.GetValue(context.Container);
+                    var data = Serialize(sheet, pair.Value.PropertyType, context.Logger);
 
-                    var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
+                    var path = Path.Combine(_loadPath, $"{pair.Key}.{Extension}");
 
                     using (var stream = _fileSystem.OpenWrite(path))
                     using (var writer = new StreamWriter(stream))

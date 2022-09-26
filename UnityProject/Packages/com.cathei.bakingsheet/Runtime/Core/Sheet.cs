@@ -60,7 +60,7 @@ namespace Cathei.BakingSheet
 
         public virtual void PostLoad(SheetConvertingContext context)
         {
-            var rowTypeToSheet = context.Container.GetSheetProperties()
+            var rowTypeToSheet = context.Container.GetSheetProperties().Values
                 .Select(p => p.GetValue(context.Container) as ISheet)
                 .Where(x => x != null)
                 .ToDictionary(x => x.RowType);

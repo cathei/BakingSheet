@@ -43,8 +43,6 @@ namespace Cathei.BakingSheet.Unity
             string savePath, SheetConvertingContext context, ISheetFormatter formatter,
             Dictionary<ISheetRow, SheetRowScriptableObject> rowToSO)
         {
-            var props = context.Container.GetSheetProperties();
-
             if (!AssetDatabase.IsValidFolder(savePath))
             {
                 savePath = AssetDatabase.CreateFolder(
@@ -67,11 +65,11 @@ namespace Cathei.BakingSheet.Unity
 
             var existingRowSO = new Dictionary<string, SheetRowScriptableObject>();
 
-            foreach (var prop in props)
+            foreach (var pair in context.Container.GetSheetProperties())
             {
-                using (context.Logger.BeginScope(prop.Name))
+                using (context.Logger.BeginScope(pair.Key))
                 {
-                    var sheet = prop.GetValue(context.Container) as ISheet;
+                    var sheet = pair.Value.GetValue(context.Container) as ISheet;
 
                     if (sheet == null)
                         continue;
@@ -135,18 +133,18 @@ namespace Cathei.BakingSheet.Unity
         private static void RemapReferences(
             SheetConvertingContext context, Dictionary<ISheetRow, SheetRowScriptableObject> rowToSO)
         {
-            var props = context.Container.GetSheetProperties();
-
-            foreach (var prop in props)
+            foreach (var pair in context.Container.GetSheetProperties())
             {
-                using (context.Logger.BeginScope(prop.Name))
+                using (context.Logger.BeginScope(pair.Key))
                 {
-                    var sheet = prop.GetValue(context.Container) as ISheet;
+                    var sheet = pair.Value.GetValue(context.Container) as ISheet;
 
                     if (sheet == null)
                         continue;
 
                     var propertyMap = sheet.GetPropertyMap(context);
+
+                    propertyMap.UpdateIndex(sheet);
 
                     foreach (var (node, indexes) in propertyMap.TraverseLeaf())
                     {

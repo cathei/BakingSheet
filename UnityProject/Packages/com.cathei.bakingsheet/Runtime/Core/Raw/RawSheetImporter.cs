@@ -46,21 +46,19 @@ namespace Cathei.BakingSheet.Raw
                 _isLoaded = true;
             }
 
-            var sheetProps = context.Container.GetSheetProperties();
-
-            foreach (var prop in sheetProps)
+            foreach (var pair in context.Container.GetSheetProperties())
             {
-                using (context.Logger.BeginScope(prop.Name))
+                using (context.Logger.BeginScope(pair.Key))
                 {
-                    var page = GetPage(prop.Name);
+                    var page = GetPage(pair.Key);
 
                     if (page == null)
                         continue;
 
-                    var sheet = Activator.CreateInstance(prop.PropertyType) as ISheet;
+                    var sheet = Activator.CreateInstance(pair.Value.PropertyType) as ISheet;
 
                     page.Import(this, context, sheet);
-                    prop.SetValue(context.Container, sheet);
+                    pair.Value.SetValue(context.Container, sheet);
                 }
             }
 

@@ -24,11 +24,11 @@ namespace Cathei.BakingSheet.Raw
 
         public async Task<bool> Export(SheetConvertingContext context)
         {
-            foreach (var prop in context.Container.GetSheetProperties())
+            foreach (var pair in context.Container.GetSheetProperties())
             {
-                using (context.Logger.BeginScope(prop.Name))
+                using (context.Logger.BeginScope(pair.Key))
                 {
-                    var sheet = prop.GetValue(context.Container) as ISheet;
+                    var sheet = pair.Value.GetValue(context.Container) as ISheet;
                     if (sheet == null)
                         continue;
 
