@@ -40,10 +40,10 @@ namespace Cathei.BakingSheet.Tests
 
         public static IEnumerable<object[]> AssetPathStringToValueTestData()
         {
-            yield return new object[] { typeof(DirectAssetPath), "MyPng", "MyPng" };
-            yield return new object[] { typeof(DirectAssetPath), "123", "123" };
-            yield return new object[] { typeof(DirectAssetPath), "Nested/MyPng", "Nested/MyPng" };
-            yield return new object[] { typeof(DirectAssetPath), "Nested/MyPng[sprite]", "Nested/MyPng" };
+            yield return new object[] { typeof(DirectAssetPath), "MyPng", "Assets/MyPng" };
+            yield return new object[] { typeof(DirectAssetPath), "123", "Assets/123" };
+            yield return new object[] { typeof(DirectAssetPath), "Nested/MyPng", "Assets/Nested/MyPng" };
+            yield return new object[] { typeof(DirectAssetPath), "Nested/MyPng[sprite]", "Assets/Nested/MyPng" };
             yield return new object[] { typeof(DirectAssetPath), null, null };
             yield return new object[] { typeof(DirectAssetPath), "", null };
             yield return new object[] { typeof(TestPngAssetPath), "MyPng", "MyPath/MyPng.png" };

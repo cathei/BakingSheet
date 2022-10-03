@@ -6,11 +6,10 @@ using Newtonsoft.Json;
 
 namespace Cathei.BakingSheet.Unity
 {
-    internal struct JsonSerializedUnityReference
+    internal class JsonSerializedUnityReference
     {
-        [JsonProperty("$type")]
+        [JsonProperty(SheetMetaType.PropertyName)]
         public string MetaType { get; set; }
-
         public int Value { get; set; }
     }
 
@@ -27,7 +26,7 @@ namespace Cathei.BakingSheet.Unity
             JsonReader reader, Type objectType, UnityEngine.Object existingValue,
             bool hasExistingValue, JsonSerializer serializer)
         {
-            var serialized = serializer.Deserialize<JsonSerializedUnityReference?>(reader);
+            var serialized = serializer.Deserialize<JsonSerializedUnityReference>(reader);
             int referenceIndex = serialized?.Value ?? -1;
 
             if (referenceIndex < 0)

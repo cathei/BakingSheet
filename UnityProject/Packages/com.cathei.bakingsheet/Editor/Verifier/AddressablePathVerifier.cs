@@ -4,16 +4,15 @@ using System.Reflection;
 
 namespace Cathei.BakingSheet.Unity
 {
+    /// <summary>
+    /// Verifies if asset at resource path exists.
+    /// </summary>
     public class ResourcePathVerifier : SheetVerifier<ResourcePath>
     {
-        // any string column with ResourceAttribute will be passed through the verify process
-        // return value is the error string
         public override string Verify(PropertyInfo propertyInfo, ResourcePath assetPath)
         {
             if (!assetPath.IsValid())
                 return null;
-
-            // var fullPath = assetPath.FullPath;
 
             var obj = assetPath.Load<UnityEngine.Object>();
             if (obj != null)

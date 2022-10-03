@@ -32,7 +32,7 @@ namespace Cathei.BakingSheet.Unity
 
             var containerSO = GenerateAssets(_savePath, context, this, rowToSO);
 
-            RemapReferences(context, rowToSO);
+            MapReferences(context, rowToSO);
 
             SaveAssets(containerSO);
 
@@ -130,7 +130,7 @@ namespace Cathei.BakingSheet.Unity
             return containerSO;
         }
 
-        private static void RemapReferences(
+        private static void MapReferences(
             SheetConvertingContext context, Dictionary<ISheetRow, SheetRowScriptableObject> rowToSO)
         {
             foreach (var pair in context.Container.GetSheetProperties())
@@ -150,18 +150,18 @@ namespace Cathei.BakingSheet.Unity
                     {
                         if (typeof(IUnitySheetReference).IsAssignableFrom(node.ValueType))
                         {
-                            ProcessRemap(context, sheet, node, indexes, SheetReferenceMapping, rowToSO);
+                            MapReferencesInSheet(context, sheet, node, indexes, SheetReferenceMapping, rowToSO);
                         }
                         else if (typeof(IUnitySheetDirectAssetPath).IsAssignableFrom(node.ValueType))
                         {
-                            ProcessRemap(context, sheet, node, indexes, AssetReferenceMapping, 0);
+                            MapReferencesInSheet(context, sheet, node, indexes, AssetReferenceMapping, 0);
                         }
                     }
                 }
             }
         }
 
-        private static void ProcessRemap<TState>(SheetConvertingContext context, ISheet sheet,
+        private static void MapReferencesInSheet<TState>(SheetConvertingContext context, ISheet sheet,
             PropertyMap.Node node, IEnumerable<object> indexes,
             Action<SheetConvertingContext, object, TState> mapper, TState state)
         {

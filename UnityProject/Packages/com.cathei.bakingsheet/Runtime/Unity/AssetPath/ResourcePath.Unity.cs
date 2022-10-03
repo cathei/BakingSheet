@@ -12,10 +12,26 @@ namespace Cathei.BakingSheet.Unity
 
         public T Load<T>() where T : UnityEngine.Object
         {
+            if (!this.IsValid())
+                return null;
+
             if (_asset != null)
                 return _asset as T;
 
-            _asset = Resources.Load(FullPath);
+            if (string.IsNullOrEmpty(SubAssetName))
+            {
+                _asset = Resources.Load(FullPath);
+            }
+            else
+            {
+                var candiates = Resources.LoadAll<T>(FullPath);
+
+                foreach (var candidate in candiates)
+                {
+                    // candidate.name
+                }
+            }
+
             return _asset as T;
         }
     }
