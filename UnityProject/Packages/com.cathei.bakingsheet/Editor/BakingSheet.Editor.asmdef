@@ -2,7 +2,8 @@
     "name": "BakingSheet.Editor",
     "rootNamespace": "",
     "references": [
-        "BakingSheet"
+        "BakingSheet",
+        "Unity.Addressables.Editor"
     ],
     "includePlatforms": [
         "Editor"

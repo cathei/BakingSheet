@@ -25,16 +25,21 @@ namespace Cathei.BakingSheet.Unity
             _row = null;
         }
 
-        public T GetRow<T>() where T : class, ISheetRow
+        internal T GetRow<T>() where T : class, ISheetRow
         {
-            if (_row != null)
-                return _row as T;
-
-            _row = DeserializeRow(typeof(T), serializedRow, references);
-            return _row as T;
+            return GetRow(typeof(T)) as T;
         }
 
-        public void SetRow<T>(T row) where T : ISheetRow
+        internal ISheetRow GetRow(Type type)
+        {
+            if (_row != null)
+                return _row;
+
+            _row = DeserializeRow(type, serializedRow, references);
+            return _row;
+        }
+
+        internal void SetRow<T>(T row) where T : ISheetRow
         {
             _row = row;
         }

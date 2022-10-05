@@ -52,6 +52,6 @@ namespace Cathei.BakingSheet.Unity
                     Debug.LogError(message);
                     break;
             }
-        } 
+        }
     }
 }

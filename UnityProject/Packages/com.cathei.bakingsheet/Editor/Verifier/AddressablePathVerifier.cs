@@ -1,24 +1,53 @@
 // BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#if BAKINGSHEET_ADDRESSABLES
+
+using System.Collections.Generic;
 using System.Reflection;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEngine;
 
 namespace Cathei.BakingSheet.Unity
 {
     /// <summary>
     /// Verifies if asset at resource path exists.
     /// </summary>
-    public class ResourcePathVerifier : SheetVerifier<ResourcePath>
+    public class AddressablePathVerifier : SheetVerifier<AddressablePath>
     {
-        public override string Verify(PropertyInfo propertyInfo, ResourcePath assetPath)
+        private readonly Dictionary<string, AddressableAssetEntry> _addressToEntry;
+
+        public AddressablePathVerifier()
+        {
+            // "Addressable" doesn't have to way to find entry by address, seriously?
+            _addressToEntry = new Dictionary<string, AddressableAssetEntry>();
+
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            var buffer = new List<AddressableAssetEntry>();
+
+            foreach (var group in settings.groups)
+            {
+                foreach (var entry in group.entries)
+                {
+                    entry.GatherAllAssets(buffer, true, true, true);
+
+                    foreach (var subEntry in buffer)
+                        _addressToEntry[subEntry.address] = subEntry;
+                }
+            }
+        }
+
+        public override string Verify(PropertyInfo propertyInfo, AddressablePath assetPath)
         {
             if (!assetPath.IsValid())
                 return null;
 
-            var obj = assetPath.Load<UnityEngine.Object>();
-            if (obj != null)
+            if (_addressToEntry.ContainsKey(assetPath.FullPath))
                 return null;
 
-            return $"Resource {assetPath.FullPath} not found!";
+            return $"Addressable {assetPath.FullPath} not found!";
         }
     }
 }
+
+#endif

@@ -24,11 +24,13 @@ namespace Cathei.BakingSheet.Unity
             }
             else
             {
-                var candiates = Resources.LoadAll<T>(FullPath);
+                var candidates = Resources.LoadAll(FullPath);
 
-                foreach (var candidate in candiates)
+                // skip the first asset (main asset)
+                for (int i = 1; i < candidates.Length; ++i)
                 {
-                    // candidate.name
+                    if (candidates[i].name == SubAssetName)
+                        _asset = candidates[i];
                 }
             }
 

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
@@ -214,7 +215,18 @@ namespace Cathei.BakingSheet.Unity
                 return;
 
             var fullPath = path.FullPath;
-            var asset = UnityEditor.AssetDatabase.LoadMainAssetAtPath(fullPath);
+
+            UnityEngine.Object asset;
+
+            if (string.IsNullOrEmpty(path.SubAssetName))
+            {
+                asset = AssetDatabase.LoadMainAssetAtPath(fullPath);
+            }
+            else
+            {
+                var assets = AssetDatabase.LoadAllAssetRepresentationsAtPath(fullPath);
+                asset = assets.FirstOrDefault(x => x.name == path.SubAssetName);
+            }
 
             if (asset == null)
             {
