@@ -11,6 +11,7 @@ namespace Cathei.BakingSheet.Examples
         {
             public DirectAssetPath Direct { get; set; }
             public ResourcePath Resource { get; set; }
+            public AddressablePath Addressable { get; set; }
         }
     }
 }
