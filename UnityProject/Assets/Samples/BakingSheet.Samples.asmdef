@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "BakingSheet",
-        "BakingSheet.Json"
+        "BakingSheet.Json",
+        "BakingSheet.ScriptableObject"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
