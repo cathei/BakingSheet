@@ -13,7 +13,7 @@ namespace Cathei.BakingSheet.Unity
             var settings = new JsonSerializerSettings
             {
                 Error = JsonSheetSOContractResolver.ErrorHandler,
-                ContractResolver = JsonSheetSOContractResolver.Instance
+                ContractResolver = JsonSheetSOContractResolver.Instance,
             };
 
             settings.Converters.Add(new JsonSheetUnityObjectConverter(references));

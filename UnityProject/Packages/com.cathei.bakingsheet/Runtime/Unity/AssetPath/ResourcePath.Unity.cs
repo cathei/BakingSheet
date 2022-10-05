@@ -18,23 +18,25 @@ namespace Cathei.BakingSheet.Unity
             if (_asset != null)
                 return _asset as T;
 
-            if (string.IsNullOrEmpty(SubAssetName))
-            {
-                _asset = Resources.Load(FullPath);
-            }
-            else
-            {
-                var candidates = Resources.LoadAll(FullPath);
-
-                // skip the first asset (main asset)
-                for (int i = 1; i < candidates.Length; ++i)
-                {
-                    if (candidates[i].name == SubAssetName)
-                        _asset = candidates[i];
-                }
-            }
-
+            _asset = Load(FullPath, SubAssetName);
             return _asset as T;
+        }
+
+        internal static UnityEngine.Object Load(string fullPath, string subAssetName)
+        {
+            if (string.IsNullOrEmpty(subAssetName))
+                return Resources.Load(fullPath);
+
+            var candidates = Resources.LoadAll(fullPath);
+
+            // skip the first asset (main asset)
+            for (int i = 1; i < candidates.Length; ++i)
+            {
+                if (candidates[i].name == subAssetName)
+                    return candidates[i];
+            }
+
+            return null;
         }
     }
 }

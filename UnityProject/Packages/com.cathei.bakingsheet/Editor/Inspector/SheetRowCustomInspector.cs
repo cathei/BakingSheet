@@ -75,6 +75,9 @@ namespace Cathei.BakingSheet.Editor
                         return;
 
                     case SheetMetaType.ResourcePath:
+                        ExpandResourcePath(parent, label, jObject.SelectToken("FullPath"), jObject.SelectToken("SubAssetName"));
+                        return;
+
                     case SheetMetaType.AddressablePath:
                         ExpandJsonToken(parent, label, jObject.GetValue("RawValue"));
                         return;
@@ -171,21 +174,32 @@ namespace Cathei.BakingSheet.Editor
             {
                 label = label,
                 value = refObj,
+                objectType = typeof(UnityEngine.Object)
             };
 
             child.AddToClassList("readonly");
             parent.Add(child);
         }
 
-        // private void ExpandResourcePath(VisualElement parent, string label, JToken jToken)
-        // {
-        //     string path = jToken?.Value<string>();
-        //     UnityEngine.Object refObj = null;
-        //
-        //     if (!string.IsNullOrEmpty(path))
-        //     {
-        //
-        //     }
-        // }
+        private void ExpandResourcePath(VisualElement parent, string label, JToken pathToken, JToken subAssetToken)
+        {
+            string path = pathToken?.Value<string>();
+            string subAssetName = subAssetToken?.Value<string>();
+
+            UnityEngine.Object refObj = null;
+
+            if (!string.IsNullOrEmpty(path))
+                refObj = ResourcePath.Load(path, subAssetName);
+
+            var child = new ObjectField
+            {
+                label = label,
+                value = refObj,
+                objectType = typeof(UnityEngine.Object)
+            };
+
+            child.AddToClassList("readonly");
+            parent.Add(child);
+        }
     }
 }

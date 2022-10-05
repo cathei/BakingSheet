@@ -11,9 +11,17 @@ namespace Cathei.BakingSheet.Unity
     {
         [JsonProperty(SheetMetaType.PropertyName)]
         public string MetaType { get; set; }
+
+        [JsonProperty]
         public string RawValue { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public UnityEngine.Object Asset { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string FullPath { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string SubAssetName { get; set; }
     }
 
