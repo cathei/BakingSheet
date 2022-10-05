@@ -69,6 +69,15 @@ namespace Cathei.BakingSheet.Editor
                     case SheetMetaType.UnityObject:
                         ExpandUnityReference(parent, label, jObject.GetValue("Value"));
                         return;
+
+                    case SheetMetaType.DirectAssetPath:
+                        ExpandUnityReference(parent, label, jObject.SelectToken("Asset.Value"));
+                        return;
+
+                    case SheetMetaType.ResourcePath:
+                    case SheetMetaType.AddressablePath:
+                        ExpandJsonToken(parent, label, jObject.GetValue("RawValue"));
+                        return;
                 }
             }
 
@@ -152,7 +161,7 @@ namespace Cathei.BakingSheet.Editor
 
         private void ExpandUnityReference(VisualElement parent, string label, JToken jToken)
         {
-            int refIndex = jToken.Value<int>();
+            int refIndex = jToken?.Value<int>() ?? -1;
             UnityEngine.Object refObj = null;
 
             if (0 <= refIndex && refIndex < unityReferences.arraySize)
@@ -167,5 +176,16 @@ namespace Cathei.BakingSheet.Editor
             child.AddToClassList("readonly");
             parent.Add(child);
         }
+
+        // private void ExpandResourcePath(VisualElement parent, string label, JToken jToken)
+        // {
+        //     string path = jToken?.Value<string>();
+        //     UnityEngine.Object refObj = null;
+        //
+        //     if (!string.IsNullOrEmpty(path))
+        //     {
+        //
+        //     }
+        // }
     }
 }

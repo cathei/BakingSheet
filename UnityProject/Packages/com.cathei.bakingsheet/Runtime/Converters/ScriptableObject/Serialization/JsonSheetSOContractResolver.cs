@@ -29,7 +29,7 @@ namespace Cathei.BakingSheet.Unity
                 return contract;
             }
 
-            if (typeof(IUnitySheetDirectAssetPath).IsAssignableFrom(objectType))
+            if (typeof(IUnitySheetAssetPath).IsAssignableFrom(objectType))
             {
                 var contract = base.CreateContract(objectType);
                 contract.Converter = new JsonSheetSOAssetPathConverter();

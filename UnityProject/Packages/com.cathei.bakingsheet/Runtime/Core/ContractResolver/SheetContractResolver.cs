@@ -26,16 +26,11 @@ namespace Cathei.BakingSheet
         }
 
         /// <summary>
-        /// Create default contract resolver.
-        /// Using singleton Instance is preferred.
-        /// </summary>
-        public SheetContractResolver() : this(null) { }
-
-        /// <summary>
         /// Create default contract resolver with additional value converters.
+        /// If you do not use any additional converter, use singleton Instance instead.
         /// </summary>
         /// <param name="converters">Additional value converters.</param>
-        public SheetContractResolver(IEnumerable<ISheetValueConverter> converters)
+        public SheetContractResolver(params ISheetValueConverter[] converters)
         {
             var list = new List<ISheetValueConverter>();
 

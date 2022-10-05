@@ -7,6 +7,7 @@ namespace Cathei.BakingSheet
     /// <summary>
     /// Interface for any asset paths.
     /// They will serialized as string of raw value.
+    /// All implementing class must have constructor with single string parameter.
     /// </summary>
     public interface ISheetAssetPath
     {

@@ -12,8 +12,10 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Cathei.BakingSheet.Unity
 {
-    public partial class AddressablePath
+    public partial class AddressablePath : IUnitySheetAssetPath
     {
+        public string MetaType => SheetMetaType.AddressablePath;
+
         private AsyncOperationHandle _handle;
 
         public AsyncOperationHandle<T> LoadAsync<T>() where T : UnityEngine.Object

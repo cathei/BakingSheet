@@ -13,6 +13,8 @@ namespace Cathei.BakingSheet.Unity
         public string MetaType { get; set; }
         public string RawValue { get; set; }
         public UnityEngine.Object Asset { get; set; }
+        public string FullPath { get; set; }
+        public string SubAssetName { get; set; }
     }
 
     public class JsonSheetSOAssetPathConverter : JsonConverter<IUnitySheetAssetPath>
@@ -46,7 +48,14 @@ namespace Cathei.BakingSheet.Unity
             };
 
             if (value is IUnitySheetDirectAssetPath directPath)
+            {
                 serialized.Asset = directPath.Asset;
+            }
+            else
+            {
+                serialized.FullPath = value.FullPath;
+                serialized.SubAssetName = value.SubAssetName;
+            }
 
             serializer.Serialize(writer, serialized);
         }
