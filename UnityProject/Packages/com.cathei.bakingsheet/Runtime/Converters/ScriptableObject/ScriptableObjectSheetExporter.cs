@@ -22,6 +22,8 @@ namespace Cathei.BakingSheet.Unity
         public TimeZoneInfo TimeZoneInfo => TimeZoneInfo.Utc;
         public IFormatProvider FormatProvider => CultureInfo.InvariantCulture;
 
+        public SheetContainerScriptableObject Result { get; private set; }
+
         public ScriptableObjectSheetExporter(string path)
         {
             _savePath = path;
@@ -36,6 +38,8 @@ namespace Cathei.BakingSheet.Unity
             MapReferences(context, rowToSO);
 
             SaveAssets(containerSO);
+
+            Result = containerSO;
 
             return Task.FromResult(true);
         }

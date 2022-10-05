@@ -27,7 +27,7 @@ namespace Cathei.BakingSheet.Examples
 
             await sheetContainer.Store(exporter);
 
-            Debug.Log("Sheet exporting to ScriptableObject completed");
+            Debug.Log("Sheet exporting to ScriptableObject completed.", exporter.Result);
         }
     }
 }
