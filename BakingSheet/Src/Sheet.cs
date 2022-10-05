@@ -1,6 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
@@ -40,6 +41,8 @@ namespace Cathei.BakingSheet
 
         bool ISheet.Contains(object key) => Contains((TKey)key);
         void ISheet.Add(object value) => Add((TValue)value);
+
+        public new Enumerator GetEnumerator() => new Enumerator(this);
         IEnumerator<ISheetRow> ISheet.GetEnumerator() => GetEnumerator();
 
         protected override TKey GetKeyForItem(TValue item)
@@ -160,6 +163,29 @@ namespace Cathei.BakingSheet
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Struct enumerator for Sheet.
+        /// </summary>
+        public struct Enumerator : IEnumerator<TValue>
+        {
+            private readonly Sheet<TKey, TValue> _sheet;
+            private int _index;
+
+            public Enumerator(Sheet<TKey, TValue> sheet)
+            {
+                _sheet = sheet;
+                _index = -1;
+            }
+
+            public bool MoveNext() => ++_index < _sheet.Count;
+            public TValue Current => _sheet[_index];
+
+            object IEnumerator.Current => Current;
+            void IEnumerator.Reset() => _index = -1;
+
+            public void Dispose() { }
         }
     }
 

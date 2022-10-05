@@ -27,7 +27,7 @@ namespace Cathei.BakingSheet
         where TRow : ISheetRow
     { }
 
-    public interface ISheet<TKey, out TRow> : ISheet<TRow>
+    public interface ISheet<in TKey, out TRow> : ISheet<TRow>
         where TRow : ISheetRow
     {
         TRow this[TKey key] { get; }
@@ -42,7 +42,7 @@ namespace Cathei.BakingSheet
         object Id { get; }
     }
 
-    public interface ISheetRow<TKey> : ISheetRow
+    public interface ISheetRow<out TKey> : ISheetRow
     {
         new TKey Id { get; }
     }
@@ -58,8 +58,7 @@ namespace Cathei.BakingSheet
         Type ElemType { get; }
     }
 
-    public interface ISheetRowArray<out TElem> : ISheetRowArray, IReadOnlyList<TElem>
-        where TElem : ISheetRowElem
+    public interface ISheetRowArray<out TElem> : ISheetRowArray, IReadOnlyList<TElem> where TElem : ISheetRowElem
     {
         new IReadOnlyList<TElem> Arr { get; }
     }

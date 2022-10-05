@@ -54,7 +54,8 @@ namespace Cathei.BakingSheet
         public TElem this[int idx] => Arr[idx];
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        public IEnumerator<TElem> GetEnumerator() => Arr.GetEnumerator();
+        IEnumerator<TElem> IEnumerable<TElem>.GetEnumerator() => GetEnumerator();
+        public Enumerator GetEnumerator() => new Enumerator(Arr.GetEnumerator());
 
         public override void PostLoad(SheetConvertingContext context)
         {
@@ -81,6 +82,27 @@ namespace Cathei.BakingSheet
                     Arr[idx].VerifyAssets(context);
                 }
             }
+        }
+
+        /// <summary>
+        /// Struct enumerator for SheetRowArray.
+        /// </summary>
+        public struct Enumerator : IEnumerator<TElem>
+        {
+            private List<TElem>.Enumerator _enumerator;
+
+            public Enumerator(List<TElem>.Enumerator enumerator)
+            {
+                _enumerator = enumerator;
+            }
+
+            public bool MoveNext() => _enumerator.MoveNext();
+            public TElem Current => _enumerator.Current;
+
+            void IEnumerator.Reset() => ((IEnumerator)_enumerator).Reset();
+            object IEnumerator.Current => Current;
+
+            public void Dispose() => _enumerator.Dispose();
         }
     }
 

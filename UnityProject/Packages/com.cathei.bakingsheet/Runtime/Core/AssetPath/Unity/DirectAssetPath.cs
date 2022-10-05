@@ -19,7 +19,7 @@ namespace Cathei.BakingSheet.Unity
         public string FullPath { get; }
         public string SubAssetName { get; }
 
-        public virtual string BasePath => string.Empty;
+        public virtual string BasePath => "Assets";
         public virtual string Extension => string.Empty;
 
         public DirectAssetPath(string rawValue)
