@@ -9,7 +9,6 @@ namespace Cathei.BakingSheet.Unity
 {
     public interface IUnitySheetDirectAssetPath : IUnitySheetAssetPath
     {
-        string SubAssetName { get; }
         UnityEngine.Object Asset { get; set; }
     }
 
