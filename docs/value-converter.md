@@ -31,7 +31,7 @@ You can specify your custom `SheetValueConverter` with `SheetValueConverterAttri
 
 You can specify on specific Type,
 ```csharp
-[SheetValueConverter(typeof(MyTypeConverter)]
+[SheetValueConverter(typeof(MyTypeConverter))]
 public class MyType
 {
     // ...
