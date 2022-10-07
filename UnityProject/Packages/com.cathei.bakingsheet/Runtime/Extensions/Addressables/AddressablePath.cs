@@ -2,11 +2,6 @@
 
 #if BAKINGSHEET_ADDRESSABLES
 
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Cathei.BakingSheet.Internal;
-using Better.StreamingAssets;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
