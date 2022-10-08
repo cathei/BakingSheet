@@ -1,5 +1,6 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+using System;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -33,7 +34,7 @@ namespace Cathei.BakingSheet
                 return contract;
             }
 
-            if (objectType.IsEnum)
+            if (objectType.IsEnum || Nullable.GetUnderlyingType(objectType)?.IsEnum == true)
             {
                 var contract = base.CreateContract(objectType);
                 contract.Converter = new StringEnumConverter();
