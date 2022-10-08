@@ -61,13 +61,8 @@ namespace Cathei.BakingSheet
 
         PropertyMap ISheet.GetPropertyMap(SheetConvertingContext context) => GetPropertyMap(context);
 
-        public virtual void PostLoad(SheetConvertingContext context)
+        void ISheet.MapReferences(SheetConvertingContext context, Dictionary<Type, ISheet> rowTypeToSheet)
         {
-            var rowTypeToSheet = context.Container.GetSheetProperties().Values
-                .Select(p => p.GetValue(context.Container) as ISheet)
-                .Where(x => x != null)
-                .ToDictionary(x => x.RowType);
-
             using (context.Logger.BeginScope(Name))
             {
                 var propertyMap = GetPropertyMap(context);
@@ -83,16 +78,17 @@ namespace Cathei.BakingSheet
 
                     if (!rowTypeToSheet.TryGetValue(referenceRowType, out var sheet))
                     {
-                        context.Logger.LogError("Failed to find sheet for {ReferenceType}", node.ValueType);
+                        context.Logger.LogError("Failed to find sheet for {ReferenceType} reference", referenceRowType);
                         continue;
                     }
 
                     foreach (var row in Items)
                     {
+                        string fullPath = string.Format(node.FullPath, indexes);
                         int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
 
                         using (context.Logger.BeginScope(row.Id))
-                        using (context.Logger.BeginScope(node.FullPath, indexes))
+                        using (context.Logger.BeginScope(fullPath))
                         {
                             for (int vindex = 0; vindex < verticalCount; ++vindex)
                             {
@@ -109,7 +105,13 @@ namespace Cathei.BakingSheet
                         }
                     }
                 }
+            }
+        }
 
+        public virtual void PostLoad(SheetConvertingContext context)
+        {
+            using (context.Logger.BeginScope(Name))
+            {
                 foreach (var row in Items)
                 {
                     using (context.Logger.BeginScope(row.Id))
@@ -137,8 +139,10 @@ namespace Cathei.BakingSheet
 
                         foreach (var row in Items)
                         {
+                            string fullPath = string.Format(node.FullPath, indexes);
+
                             using (context.Logger.BeginScope(row.Id))
-                            using (context.Logger.BeginScope(node.FullPath, indexes))
+                            using (context.Logger.BeginScope(fullPath))
                             {
                                 int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
 

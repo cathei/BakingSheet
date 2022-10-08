@@ -218,7 +218,7 @@ namespace Cathei.BakingSheet.Internal
         /// Calling UpdateCount first is required to get correct result
         /// index list are returned just to feed back, only valid on enumeration loop
         /// </summary>
-        public IEnumerable<(Node, IEnumerable<object>)> TraverseLeaf()
+        public IEnumerable<(Node, IReadOnlyList<object>)> TraverseLeaf()
         {
             _indexes.Clear();
 

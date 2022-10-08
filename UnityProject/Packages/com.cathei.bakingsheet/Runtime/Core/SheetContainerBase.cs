@@ -1,5 +1,6 @@
 // BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -77,18 +78,38 @@ namespace Cathei.BakingSheet
                 Logger = _logger,
             };
 
-            foreach (var pair in GetSheetProperties())
+            var properties = GetSheetProperties();
+
+            var rowTypeToSheet = new Dictionary<Type, ISheet>(properties.Count);
+
+            foreach (var pair in properties)
             {
-                if (pair.Value.GetValue(this) is ISheet sheet)
-                {
-                    sheet.Name = pair.Key;
-                    sheet.PostLoad(context);
-                }
-                else
+                var sheet = pair.Value.GetValue(this) as ISheet;
+
+                if (sheet == null)
                 {
                     context.Logger.LogError("Failed to find sheet: {SheetName}", pair.Key);
+                    continue;
                 }
+
+                sheet.Name = pair.Key;
+
+                if (rowTypeToSheet.ContainsKey(sheet.RowType))
+                {
+                    // row type must be unique in a sheet container
+                    context.Logger.LogError("Duplicated Row type is used for {SheetName}", pair.Key);
+                    continue;
+                }
+
+                rowTypeToSheet.Add(sheet.RowType, sheet);
             }
+
+            // making sure all references are mapped before calling PostLoad
+            foreach (var sheet in rowTypeToSheet.Values)
+                sheet.MapReferences(context, rowTypeToSheet);
+
+            foreach (var sheet in rowTypeToSheet.Values)
+                sheet.PostLoad(context);
         }
 
         public virtual void Verify(params SheetVerifier[] verifiers)
