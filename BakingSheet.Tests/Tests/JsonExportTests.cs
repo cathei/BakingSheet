@@ -171,5 +171,41 @@ namespace Cathei.BakingSheet.Tests
 
             _fileSystem.VerifyTestData(Path.Combine("testdata", "Dict.json"), "[{\"Dict\":{\"A\":10.0,\"B\":20.0},\"Arr\":[{\"NestedDict\":{\"2034\":[\"X\",\"YYY\",\"ZZZZZ\"]},\"Value\":0}],\"Id\":\"Dict1\"},{\"Dict\":{\"C\":10.0,\"B\":20.0},\"Arr\":[],\"Id\":\"Dict2\"},{\"Dict\":null,\"Arr\":[{\"NestedDict\":null,\"Value\":8},{\"NestedDict\":null,\"Value\":65}],\"Id\":\"Empty\"}]");
         }
+
+        [Fact]
+        public async Task TestExportTypesJson()
+        {
+            _container.Types = new TestTypeSheet()
+            {
+                new TestTypeSheet.Row
+                {
+                    Id = TestEnum.Alpha,
+                    IntColumn = 123,
+                    FloatColumn = 5.13f,
+                    DecimalColumn = 10.03m,
+                    EnumColumn = TestEnum.Charlie,
+                    DateTimeColumn = new DateTime(2020, 10, 3),
+                    TimeSpanColumn = TimeSpan.FromHours(2)
+                },
+                new TestTypeSheet.Row
+                {
+                    Id = TestEnum.Bravo,
+                    IntColumn = -999,
+                    FloatColumn = -12.13f,
+                    DecimalColumn = -0.002m,
+                    EnumColumn = null,
+                    DateTimeColumn = new DateTime(1994, 5, 13),
+                    TimeSpanColumn = TimeSpan.FromSeconds(15)
+                },
+            };
+
+            _container.PostLoad();
+
+            var result = await _container.Store(_converter);
+
+            _logger.VerifyNoError();
+
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Types.json"), "[{\"IntColumn\":123,\"FloatColumn\":5.13,\"DecimalColumn\":10.03,\"DateTimeColumn\":\"2020-10-03T00:00:00\",\"TimeSpanColumn\":\"02:00:00\",\"EnumColumn\":\"Charlie\",\"Id\":\"Alpha\"},{\"IntColumn\":-999,\"FloatColumn\":-12.13,\"DecimalColumn\":-0.002,\"DateTimeColumn\":\"1994-05-13T00:00:00\",\"TimeSpanColumn\":\"00:00:15\",\"EnumColumn\":null,\"Id\":\"Bravo\"}]");
+        }
     }
 }

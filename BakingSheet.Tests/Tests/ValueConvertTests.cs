@@ -20,6 +20,11 @@ namespace Cathei.BakingSheet.Tests
             _fileSystem.Dispose();
         }
 
+        private enum TestEnum
+        {
+            Apple, Banana, Cherry, Durian
+        }
+
         public static IEnumerable<object[]> GetStringToValueTestData()
         {
             yield return new object[] { typeof(int), "3", 3 };
@@ -29,6 +34,8 @@ namespace Cathei.BakingSheet.Tests
             yield return new object[] { typeof(string), "abcd", "abcd" };
             yield return new object[] { typeof(TimeSpan), "20:00", new TimeSpan(20, 0, 0) };
             yield return new object[] { typeof(TimeSpan), "12:34:56", new TimeSpan(12, 34, 56) };
+            yield return new object[] { typeof(TestEnum), "Durian", TestEnum.Durian };
+            yield return new object[] { typeof(TestEnum?), "Banana", TestEnum.Banana };
         }
 
         [Theory]
@@ -51,6 +58,8 @@ namespace Cathei.BakingSheet.Tests
             yield return new object[] { typeof(string), "abcd", "abcd" };
             yield return new object[] { typeof(TimeSpan), new TimeSpan(20, 0, 0), "20:00:00" };
             yield return new object[] { typeof(TimeSpan), new TimeSpan(12, 34, 56), "12:34:56" };
+            yield return new object[] { typeof(TestEnum), TestEnum.Durian, "Durian" };
+            yield return new object[] { typeof(TestEnum?), TestEnum.Banana, "Banana" };
         }
 
         [Theory]

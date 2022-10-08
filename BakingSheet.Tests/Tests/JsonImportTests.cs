@@ -141,5 +141,23 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal("YYY", _container.Dict["Dict1"][0].NestedDict[2034][1]);
             Assert.Null(_container.Dict["Empty"].Dict);
         }
+
+        [Fact]
+        public async Task TestImportTypesJson()
+        {
+            _fileSystem.SetTestData(Path.Combine("testdata", "Types.json"), "[{\"IntColumn\":123,\"FloatColumn\":5.13,\"DecimalColumn\":10.03,\"DateTimeColumn\":\"2020-10-03T00:00:00\",\"TimeSpanColumn\":\"02:00:00\",\"EnumColumn\":\"Charlie\",\"Id\":\"Alpha\"},{\"IntColumn\":-999,\"FloatColumn\":-12.13,\"DecimalColumn\":-0.002,\"DateTimeColumn\":\"1994-05-13T00:00:00\",\"TimeSpanColumn\":\"00:00:15\",\"EnumColumn\":null,\"Id\":\"Bravo\"}]");
+
+            var result = await _container.Bake(_converter);
+
+            _logger.VerifyNoError();
+
+            Assert.True(result);
+            Assert.Equal(2, _container.Types.Count);
+            Assert.Equal(123, _container.Types[0].IntColumn);
+            Assert.Equal(TestEnum.Charlie, _container.Types[TestEnum.Alpha].EnumColumn);
+            Assert.Equal(-0.002m, _container.Types[1].DecimalColumn);
+            Assert.Equal(new DateTime(1994, 5, 13), _container.Types[TestEnum.Bravo].DateTimeColumn);
+            Assert.Null(_container.Types[1].EnumColumn);
+        }
     }
 }
