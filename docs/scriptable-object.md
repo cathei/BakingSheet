@@ -66,3 +66,13 @@ Note that while you can reference value of each row with this way, `PostLoad` wi
 
 ![ScriptableObject DirectAssetPath](../.github/images/so_direct.png)
 
+## Should I use ScriptableObject converter or JSON converter?
+Depends on your usage. If you'd like to integrate data with Unity editor or use Addressable assets to update datasheet, you can go for ScriptableObject converter.
+
+If you rather manage your data as raw JSON, or wants to send it directly over wire, then you can use JSON converter.
+
+## How do I keep my references when I changed Id?
+You can open the ScriptableObject file directly from your IDE, find & replace name of sub-assets to match with new Id.
+
+This way you can keep all the references to your ScriptableObject when importing again.
+

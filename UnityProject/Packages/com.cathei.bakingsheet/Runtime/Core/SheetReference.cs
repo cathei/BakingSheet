@@ -58,9 +58,18 @@ namespace Cathei.BakingSheet
 
             void ISheetReference.Map(SheetConvertingContext context, ISheet sheet)
             {
+                EnsureLoadReference();
+
                 if (sheet is ISheet<TKey, TValue> referSheet)
                 {
-                    Ref = referSheet[Id];
+                    if (Ref == null)
+                    {
+                        Ref = referSheet[Id];
+                    }
+                    else if (Ref != referSheet[Id])
+                    {
+                        context.Logger.LogError("Found different reference than originally set for \"{ReferenceId}\"", Id);
+                    }
                 }
 
                 if (Id != null && Ref == null)

@@ -84,7 +84,7 @@ namespace Cathei.BakingSheet
 
                     foreach (var row in Items)
                     {
-                        string fullPath = string.Format(node.FullPath, indexes);
+                        string fullPath = string.Format(node.FullPath, indexes.ToArray());
                         int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
 
                         using (context.Logger.BeginScope(row.Id))
@@ -139,7 +139,7 @@ namespace Cathei.BakingSheet
 
                         foreach (var row in Items)
                         {
-                            string fullPath = string.Format(node.FullPath, indexes);
+                            string fullPath = string.Format(node.FullPath, indexes.ToArray());
 
                             using (context.Logger.BeginScope(row.Id))
                             using (context.Logger.BeginScope(fullPath))

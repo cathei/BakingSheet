@@ -35,6 +35,7 @@ namespace Cathei.BakingSheet
                     return;
 
                 reference = asset.GetRow<TValue>();
+                Id = reference.Id;
             }
         }
     }
