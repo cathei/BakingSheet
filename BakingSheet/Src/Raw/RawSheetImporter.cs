@@ -3,6 +3,7 @@
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
@@ -26,7 +27,7 @@ namespace Cathei.BakingSheet.Raw
             FormatProvider = formatProvider ?? CultureInfo.InvariantCulture;
         }
 
-        public virtual void Reset()
+        [UsedImplicitly] public virtual void Reset()
         {
             _isLoaded = false;
         }

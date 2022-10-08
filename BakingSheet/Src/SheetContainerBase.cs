@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
@@ -12,6 +13,7 @@ namespace Cathei.BakingSheet
     /// <summary>
     /// Represents a Container, workbook that holds multiple Sheet.
     /// </summary>
+    [UsedImplicitly(ImplicitUseTargetFlags.Members | (ImplicitUseTargetFlags)4/*ImplicitUseTargetFlags.WithInheritors*/)]
     public abstract class SheetContainerBase
     {
         private ILogger _logger;

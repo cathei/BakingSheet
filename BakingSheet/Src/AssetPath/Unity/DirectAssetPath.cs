@@ -3,6 +3,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Cathei.BakingSheet.Internal;
+using JetBrains.Annotations;
 
 namespace Cathei.BakingSheet.Unity
 {
@@ -22,6 +23,7 @@ namespace Cathei.BakingSheet.Unity
         public virtual string BasePath => "Assets";
         public virtual string Extension => string.Empty;
 
+        [Preserve, UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
         public DirectAssetPath(string rawValue)
         {
             RawValue = rawValue;

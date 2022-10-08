@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cathei.BakingSheet.Internal;
+using JetBrains.Annotations;
 
 namespace Cathei.BakingSheet
 {
@@ -11,6 +12,7 @@ namespace Cathei.BakingSheet
     /// Represents a Row of a Sheet.
     /// </summary>
     /// <typeparam name="TKey">Type of Id column.</typeparam>
+    [UsedImplicitly(ImplicitUseTargetFlags.Members | (ImplicitUseTargetFlags)4/*ImplicitUseTargetFlags.WithInheritors*/)]
     public abstract class SheetRow<TKey> : ISheetRow<TKey>
     {
         [Preserve]
@@ -25,6 +27,7 @@ namespace Cathei.BakingSheet
     /// <summary>
     /// Represents an Element of Row Array.
     /// </summary>
+    [UsedImplicitly(ImplicitUseTargetFlags.Members | (ImplicitUseTargetFlags)4/*ImplicitUseTargetFlags.WithInheritors*/)]
     public abstract class SheetRowElem : ISheetRowElem
     {
         [NonSerialized]

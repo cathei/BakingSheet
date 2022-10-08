@@ -2,6 +2,7 @@
 
 using System.IO;
 using Cathei.BakingSheet.Internal;
+using JetBrains.Annotations;
 
 namespace Cathei.BakingSheet
 {
@@ -16,7 +17,7 @@ namespace Cathei.BakingSheet
         public virtual string BasePath => string.Empty;
         public virtual string Extension => string.Empty;
 
-        [Preserve]
+        [Preserve, UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
         public AssetPath(string rawValue)
         {
             RawValue = rawValue;
