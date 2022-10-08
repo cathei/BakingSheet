@@ -55,7 +55,7 @@ public class ResourcePathVerifier : SheetVerifier<ResourcePath>
 }
 ```
 
-`ResourcePathVerifier` can verify any `ResourcePath` column. Additionally you can specify more information with `PropertyInfo`.
+`ResourcePathVerifier` can verify any `ResourcePath` column. Additionally you can specify more metadata with attributes and query from `PropertyInfo`.
 ```csharp
 public class PrefabSheet : Sheet<PrefabSheet.Row>
 {
@@ -68,5 +68,5 @@ public class PrefabSheet : Sheet<PrefabSheet.Row>
 
 Then, you can call `SheetContainerBase.Verify` after loading your sheet.
 ```csharp
-sheetContainer.Verify(new ResourceVerifier() /*, new OtherVerifier()... */);
+sheetContainer.Verify(new ResourcePathVerifier() /*, new OtherVerifier()... */);
 ```

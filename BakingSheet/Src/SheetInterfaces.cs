@@ -19,6 +19,8 @@ namespace Cathei.BakingSheet
 
         new IEnumerator<ISheetRow> GetEnumerator();
         PropertyMap GetPropertyMap(SheetConvertingContext context);
+
+        void MapReferences(SheetConvertingContext context, Dictionary<Type, ISheet> rowTypeToSheet);
         void PostLoad(SheetConvertingContext context);
         void VerifyAssets(SheetConvertingContext context);
     }
