@@ -5,8 +5,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.nuget.newtonsoft-json": "3.0.2",
-        "com.cathei.betterstreamingassets": "1.6.0"
+        "com.unity.nuget.newtonsoft-json": "3.0.2"
       }
     },
     "com.cathei.betterstreamingassets": {
