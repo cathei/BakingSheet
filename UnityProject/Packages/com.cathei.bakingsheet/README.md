@@ -54,6 +54,8 @@ Or install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/
 openupm add com.cathei.bakingsheet
 ```
 
+If you are planning to use StreamingAssets folder on Android, install [BetterStreamingAssets](docs/streaming-assets.md) as well.
+
 ### Need help?
 Before you start, we want to mention that if you have problem or need help, you can always ask directly on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
 

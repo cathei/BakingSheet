@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.cathei.betterstreamingassets": "https://github.com/cathei/BetterStreamingAssets-Package.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.addressables": "1.16.19",
     "com.unity.ide.rider": "3.0.15",

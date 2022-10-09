@@ -68,5 +68,6 @@ public class PrefabSheet : Sheet<PrefabSheet.Row>
 
 Then, you can call `SheetContainerBase.Verify` after loading your sheet.
 ```csharp
-sheetContainer.Verify(new ResourcePathVerifier() /*, new OtherVerifier()... */);
+sheetContainer.Verify(
+    new ResourcePathVerifier(), new AddressablePathVerifier()/*, new OtherVerifier()... */);
 ```
