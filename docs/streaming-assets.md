@@ -6,12 +6,12 @@ StreamingAssets is compressed `jar` file in Android builds, so default `FileSyst
 
 BakingSheet includes `StreamingAssetsFileSystem` to support this. It is required to install [BetterStreamingAssets](https://github.com/gwiazdorrr/BetterStreamingAssets) package to use.
 
-To install `BetterStreamingAssets`, you can either install git package via `Add package from git url...`,
+To install `BetterStreamingAssets`, install git package via `Add package from git url...`.
 ```
 https://github.com/cathei/BetterStreamingAssets-Package.git
 ```
 
-Or using OpenUPM,
+You can also use [OpenUPM](https://openupm.com/packages/com.cathei.betterstreamingassets/).
 ```
 openupm add com.cathei.betterstreamingassets
 ```
