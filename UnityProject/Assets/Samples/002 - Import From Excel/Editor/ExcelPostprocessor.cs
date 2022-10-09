@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cathei.BakingSheet.Unity;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,6 +28,14 @@ namespace Cathei.BakingSheet.Examples
 
                 // bake sheets from excel converter
                 await sheetContainer.Bake(excelConverter);
+
+                // (optional) verify that data is correct
+                sheetContainer.Verify(
+#if BAKINGSHEET_ADDRESSABLES
+                    new AddressablePathVerifier(),
+#endif
+                    new ResourcePathVerifier()
+                );
 
                 // create json converter to path
                 var jsonConverter = new JsonSheetConverter(jsonPath);

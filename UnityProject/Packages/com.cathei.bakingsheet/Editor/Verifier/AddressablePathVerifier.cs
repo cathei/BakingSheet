@@ -29,7 +29,16 @@ namespace Cathei.BakingSheet.Unity
             {
                 foreach (var entry in group.entries)
                 {
+                    buffer.Clear();
+
                     entry.GatherAllAssets(buffer, true, true, true);
+
+                    // still have to loop and gather sub assets
+                    // because if addressable has folder entry it will not add sub asset of the asset
+                    int count = buffer.Count;
+
+                    for (int i = 0; i < count; ++i)
+                        buffer[i].GatherAllAssets(buffer, false, false, true);
 
                     foreach (var subEntry in buffer)
                         _addressToEntry[subEntry.address] = subEntry;
