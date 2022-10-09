@@ -1,5 +1,6 @@
 // BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+using System.Linq;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -19,11 +20,12 @@ namespace Cathei.BakingSheet.Unity
         private const string CsvSubDirectory = "/Runtime/Converters/Csv";
         private const string GoogleSubDirectory = "/Runtime/Converters/Google";
 
+        private const string CsvDefiningSymbol = "BAKINGSHEET_RUNTIME_CSVCONVERTER";
+        private const string GoogleDefiningSymbol = "BAKINGSHEET_RUNTIME_GOOGLECONVERTER";
+
         [InitializeOnLoadMethod]
         private static void RegisterCallback()
         {
-            Debug.Log("RegisterCallback");
-
             // this is just failsafe register for when Unity finally fix their bug
             BuildUtilities.RegisterShouldIncludeInBuildCallback(
                 new BakingSheetPluginImportCallback(BakingSheetPackagePath));
@@ -40,26 +42,19 @@ namespace Cathei.BakingSheet.Unity
 
         public bool ShouldIncludeInBuild(string absolutePath)
         {
-            Debug.Log("ShouldInclude: " + absolutePath);
+            // We will evaluate from build settings instead of using #if
+            // Because it can give confusion when building via script
+            // TODO: still cannot get extraScriptingDefines and there is no API for it
 
-            // TODO: is there any other way to evaluate defining symbol from script?
+            var currentGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            PlayerSettings.GetScriptingDefineSymbolsForGroup(currentGroup, out var currentSymbols);
+
             // We have to check with Contains because Unity gives damn absolute path
-
             if (absolutePath.Contains(CsvSubDirectory))
-            {
-#if BAKINGSHEET_RUNTIME_CSVCONVERTER
-                return true;
-#endif
-                return false;
-            }
+                return currentSymbols.Contains(CsvDefiningSymbol);
 
             if (absolutePath.Contains(GoogleSubDirectory))
-            {
-#if BAKINGSHEET_RUNTIME_GOOGLECONVERTER
-                return true;
-#endif
-                return false;
-            }
+                return currentSymbols.Contains(GoogleDefiningSymbol);
 
             // fallback to default
             return true;
