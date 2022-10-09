@@ -73,6 +73,7 @@ await sheetContainer.Bake(importers.ToArray());
 > **Warning**  
 > This is an advanced topic. I recommend you to use this approach Develop environment only, for live-reload without exporting sheet.
 
-Since BakingSheet is an Embedded Package, you can edit the content of it. In Unity's Project view, go to folder `Packages/BakingSheet/Runtime/Converters/Google`. Set `BakingSheet.Google` assembly definition's Platforms to `Any Platform`. Also set all other `Google.*` dlls in same folder Platforms to `Any Platform`.
+By adding `BAKINGSHEET_RUNTIME_GOOGLECONVERTER` defining symbol, Google sheet converter will be included on your build.
 
-Now, copy the `link.xml` anywhere under `Assets` folder. You can use `GoogleSheetConverter` on runtime platforms now.
+Additionally for AOT platforms, copy `Runtime/Converters/Google/link.xml` under BakingSheet's package into your `Assets` directory.
+
