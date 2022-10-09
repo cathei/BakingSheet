@@ -25,24 +25,25 @@ namespace Cathei.BakingSheet.Editor
             if (githubVersion != null && info.version != githubVersion)
                 throw new InvalidOperationException("Package version does not match GitHub ref");
 
-            string savePath = GetPackagePath("BakingSheet", info.version);
-
-            AssetDatabase.ExportPackage(
-                new[] { PackagePath }, savePath, ExportPackageOptions.Recurse);
+            // string savePath = GetPackagePath("BakingSheet", info.version);
+            //
+            // AssetDatabase.ExportPackage(
+            //     new[] { PackagePath }, savePath, ExportPackageOptions.Recurse);
 
             string sampleSavePath = GetPackagePath("BakingSheet.Samples", info.version);
 
             AssetDatabase.ExportPackage(
                 new[] { SamplePath }, sampleSavePath, ExportPackageOptions.Recurse);
 
-            var bsaInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(BsaPath);
+            // var bsaInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(BsaPath);
+            //
+            // string bsaSavePath = GetPackagePath("BetterStreamingAssets", bsaInfo.version);
+            //
+            // AssetDatabase.ExportPackage(
+            //     new[] { BsaPath }, bsaSavePath, ExportPackageOptions.Recurse);
 
-            string bsaSavePath = GetPackagePath("BetterStreamingAssets", bsaInfo.version);
-
-            AssetDatabase.ExportPackage(
-                new[] { BsaPath }, bsaSavePath, ExportPackageOptions.Recurse);
-
-            Debug.Log($"Generating Unity Package Completed: {savePath} {sampleSavePath} {bsaSavePath}");
+            // Debug.Log($"Generating Unity Package Completed: {savePath} {sampleSavePath} {bsaSavePath}");
+            Debug.Log($"Generating Unity Package Completed: {sampleSavePath}");
         }
 
         [MenuItem("BakingSheet/Generate Package (AssetStore)")]
