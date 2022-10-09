@@ -4,15 +4,15 @@
     "references": [
         "BakingSheet"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "UNITY_EDITOR || BAKINGSHEET_RUNTIME_GOOGLECONVERTER"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

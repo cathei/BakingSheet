@@ -600,3 +600,11 @@ You can prevent this by either using `Low` stripping level, or adding own `link.
   <assembly fullname="MyCompany.MyGame.Sheet" preserve="all"/>
 </linker>
 ```
+
+## Optional Script Defining Symbols
+There is few optional symbols that can be defined for runtime usage. By default only JSON and ScriptableObject converters will be included to the build.
+
+| Symbol                              | Effect                                  |
+|-------------------------------------|-----------------------------------------|
+| BAKINGSHEET_RUNTIME_GOOGLECONVERTER | Include Google Converter to your build. |
+| BAKINGSHEET_RUNTIME_CSVCONVERTER    | Include CSV Converter to your build.    |
