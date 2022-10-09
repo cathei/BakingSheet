@@ -23,7 +23,7 @@ namespace Cathei.BakingSheet.Examples
 
             await sheetContainer.Bake(importer);
 
-            var exporter = new ScriptableObjectSheetExporter("Assets/ScriptableObject");
+            var exporter = new ScriptableObjectSheetExporter("Assets/Samples/Extras/ScriptableObject");
 
             await sheetContainer.Store(exporter);
 
