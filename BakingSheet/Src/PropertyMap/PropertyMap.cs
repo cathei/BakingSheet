@@ -195,7 +195,8 @@ namespace Cathei.BakingSheet.Internal
                 return;
             }
 
-            node.SetValue(row, vindex, _indexes.GetEnumerator(), context.StringToValue(node.ValueType, value));
+            node.SetValue(row, vindex, _indexes.GetEnumerator(),
+                node.ValueConverter.StringToValue(node.ValueType, value, context));
         }
 
         /// <summary>

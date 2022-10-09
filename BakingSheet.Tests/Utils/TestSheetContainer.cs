@@ -57,12 +57,26 @@ namespace Cathei.BakingSheet.Tests
     {
         public class Row : SheetRow<TestEnum>
         {
+            [SheetValueConverter(typeof(MyIntConverter))]
             public int IntColumn { get; set; }
             public float FloatColumn { get; set; }
             public decimal DecimalColumn { get; set; }
             public DateTime DateTimeColumn { get; set; }
             public TimeSpan TimeSpanColumn { get; set; }
             public TestEnum? EnumColumn { get; set; }
+        }
+    }
+
+    public class MyIntConverter : SheetValueConverter<int>
+    {
+        protected override int StringToValue(Type type, string value, SheetValueConvertingContext context)
+        {
+            return int.Parse(value) - 1;
+        }
+
+        protected override string ValueToString(Type type, int value, SheetValueConvertingContext context)
+        {
+            return (value + 1).ToString();
         }
     }
 

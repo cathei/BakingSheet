@@ -90,7 +90,7 @@ namespace Cathei.BakingSheet.Tests
         [Fact]
         public async Task TestImportDuplicatedRow()
         {
-            _fileSystem.SetTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn\nAlpha,1\nCharlie,2\nAlpha,3\nBravo,4");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn\nAlpha,2\nCharlie,3\nAlpha,4\nBravo,5");
 
             var result = await _container.Bake(_converter);
 

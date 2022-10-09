@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Cathei.BakingSheet.Tests
@@ -25,6 +26,22 @@ namespace Cathei.BakingSheet.Tests
             Apple, Banana, Cherry, Durian
         }
 
+        [SheetValueConverter(typeof(MyStructConverter))]
+        private readonly record struct MyStruct(string MyString);
+
+        private class MyStructConverter : SheetValueConverter<MyStruct>
+        {
+            protected override MyStruct StringToValue(Type type, string value, SheetValueConvertingContext context)
+            {
+                return new MyStruct(new string(value.Reverse().ToArray()));
+            }
+
+            protected override string ValueToString(Type type, MyStruct value, SheetValueConvertingContext context)
+            {
+                return new string(value.MyString.Reverse().ToArray());
+            }
+        }
+
         public static IEnumerable<object[]> GetStringToValueTestData()
         {
             yield return new object[] { typeof(int), "3", 3 };
@@ -36,6 +53,7 @@ namespace Cathei.BakingSheet.Tests
             yield return new object[] { typeof(TimeSpan), "12:34:56", new TimeSpan(12, 34, 56) };
             yield return new object[] { typeof(TestEnum), "Durian", TestEnum.Durian };
             yield return new object[] { typeof(TestEnum?), "Banana", TestEnum.Banana };
+            yield return new object[] { typeof(MyStruct), "Banana", new MyStruct("ananaB") };
         }
 
         [Theory]
@@ -60,6 +78,7 @@ namespace Cathei.BakingSheet.Tests
             yield return new object[] { typeof(TimeSpan), new TimeSpan(12, 34, 56), "12:34:56" };
             yield return new object[] { typeof(TestEnum), TestEnum.Durian, "Durian" };
             yield return new object[] { typeof(TestEnum?), TestEnum.Banana, "Banana" };
+            yield return new object[] { typeof(MyStruct), new MyStruct("ananaB"), "Banana" };
         }
 
         [Theory]

@@ -53,13 +53,13 @@ namespace Cathei.BakingSheet.Tests
 
             _logger.VerifyNoError();
 
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn,FloatColumn,DecimalColumn,DateTimeColumn,TimeSpanColumn,EnumColumn\nAlpha,876543210,\"123456,79\",\"163025412,32\",22/08/1994 22:34:12,13:05:10,Charlie\n");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn,FloatColumn,DecimalColumn,DateTimeColumn,TimeSpanColumn,EnumColumn\nAlpha,876543211,\"123456,79\",\"163025412,32\",22/08/1994 22:34:12,13:05:10,Charlie\n");
         }
 
         [Fact]
         public async Task TestImportCultureInfoCsv()
         {
-            _fileSystem.SetTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn,FloatColumn,DecimalColumn,DateTimeColumn,TimeSpanColumn\nAlpha,876543210,\"123456,79\",\"163025412,32\",22/08/1994 22:34:12,13:05:10\n");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn,FloatColumn,DecimalColumn,DateTimeColumn,TimeSpanColumn\nAlpha,876543211,\"123456,79\",\"163025412,32\",22/08/1994 22:34:12,13:05:10\n");
 
             var converter = new CsvSheetConverter(
                 "testdata", TimeZoneInfo.Utc, fileSystem: _fileSystem,

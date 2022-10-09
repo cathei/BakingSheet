@@ -89,7 +89,7 @@ namespace Cathei.BakingSheet.Raw
                     for (int vindex = 0; vindex < verticalCount; ++vindex)
                     {
                         var value = node.GetValue(sheetRow, vindex, indexes.GetEnumerator());
-                        var valueString = valueContext.ValueToString(node.ValueType, value);
+                        var valueString = node.ValueConverter.ValueToString(node.ValueType, value, valueContext);
                         page.SetCell(pageColumn, pageRow + vindex, valueString);
                     }
 
