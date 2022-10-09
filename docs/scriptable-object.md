@@ -6,7 +6,7 @@ ScriptableObject exporter and importer uses Unity's ScriptableObject asset as da
 So you can inspect the data, reference specific row from MonoBehaviour, or even make it Addressable.
 
 ## Exporting Scriptable Object
-You can create ScriptableObject assets using `ScriptableObjectExporter`.
+You can create ScriptableObject assets using `ScriptableObjectSheetExporter`.
 The path is the base path of ScriptableObject will be saved, relative to project path.
 ```csharp
 var exporter = new ScriptableObjectSheetExporter("Assets/ScriptableObject");
@@ -17,7 +17,7 @@ You can inspect each row from Unity's inspector.
 ![ScriptableObject Inspector](../.github/images/so_export.png)
 
 ## Importing Scriptable Object
-You can import from ScriptableObject assets using `ScriptableObjectImporter`. A reference to `SheetContainerScriptableObject` is required.
+You can import from ScriptableObject assets using `ScriptableObjectSheetImporter`. A reference to `SheetContainerScriptableObject` is required.
 ```csharp
 public class SheetManager : MonoBehaviour
 {
