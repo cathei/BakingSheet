@@ -2,7 +2,6 @@
 
 using System.IO;
 using System.Text.RegularExpressions;
-using Cathei.BakingSheet.Internal;
 
 namespace Cathei.BakingSheet.Unity
 {

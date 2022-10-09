@@ -5,7 +5,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Cathei.BakingSheet.Internal;
-using Better.StreamingAssets;
 
 namespace Cathei.BakingSheet.Unity
 {

@@ -1,7 +1,6 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
-using Cathei.BakingSheet.Internal;
 using Newtonsoft.Json;
 
 namespace Cathei.BakingSheet

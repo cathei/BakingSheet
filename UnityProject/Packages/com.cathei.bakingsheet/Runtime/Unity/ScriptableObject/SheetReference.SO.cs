@@ -1,10 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
-using System.Collections.Generic;
-using Cathei.BakingSheet.Internal;
 using Cathei.BakingSheet.Unity;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace Cathei.BakingSheet

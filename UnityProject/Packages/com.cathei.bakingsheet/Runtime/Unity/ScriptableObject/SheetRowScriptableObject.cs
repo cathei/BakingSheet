@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Cathei.BakingSheet.Internal;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Cathei.BakingSheet.Unity
 {
