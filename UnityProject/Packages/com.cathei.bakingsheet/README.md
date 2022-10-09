@@ -3,9 +3,10 @@
 # BakingSheet 🍞
 Easy datasheet management for C# and Unity. Supports Excel, Google Sheet, JSON and CSV format. It has been used for several mobile games that released on Google Play and AppStore.
 
-## 4.0 is here!
+## BakingSheet 4.0 is here!
 With BakingSheet 4.0, you can [export and import with Unity's ScriptableObject](docs/scriptable-object.md).
-Also, there is major support for [AssetPath](docs/asset-path.md) customizing [ValueConverter](docs/value-converter.md) has been added!
+Also, major support for [AssetPath](docs/asset-path.md) and customizable [ValueConverter](docs/value-converter.md) has been added!
+Note that .unitypackage will not be provided anymore. Please [add git package from Package manager, or install via OpenUPM](#install).
 
 ## Concept
 Throughout all stage of game development, you'll need to deal with various data. Characters, stats, stages, currencies and so on! If you're using Unity, scriptable object and inspector is not good enough for mass edition and lacks powerful features like functions or fill up. With BakingSheet your designers can use existing spreadsheet editor, while you, the programmer, can directly use C# object without messy parsing logics or code generations.
@@ -41,9 +42,14 @@ Don't trust me that it's better than using ScriptableObject? You might change yo
 * [Customizable data verification](docs/data-verification.md)
 
 ## Install
-Download with [NuGet](https://www.nuget.org/packages?q=BakingSheet) or download [.unitypackage release](https://github.com/cathei/BakingSheet/releases)
+For C# projects or server, download with [NuGet](https://www.nuget.org/packages?q=BakingSheet).
 
-You can also install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/)
+For Unity projects, add git package from Package Manager.
+```
+https://github.com/cathei/BakingSheet.git?path=UnityProject/Package/com.cathei.bakingsheet#v4.0.0
+```
+
+Or install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/).
 ```
 openupm add com.cathei.bakingsheet
 ```
@@ -123,7 +129,7 @@ You can add as many sheets you want as properties of your `SheetContainer`. This
 Converters are simple implementation import/export records from datasheet sources. These come as separated library, as it's user's decision to select datasheet source.
 User can have converting process, to convert datasheet to other format ahead of time and not include heavy converters in production applications.
 
-BakingSheet supports four basic converters. They're included in .unitypackage as well.
+BakingSheet supports four basic converters. They're included in Unity package as well.
 
 | Package Name                                                                                   | Format                       | Supports Import | Supports Export |
 |------------------------------------------------------------------------------------------------|------------------------------|-----------------|-----------------|
@@ -195,7 +201,7 @@ await sheetContainer.Bake(jsonConverter);
 You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON.
 
 > **Note**  
-> For AOT platforms (iOS, Android), read about [AOT Code Stripping](#about-aot-code-stripping).
+> For AOT platforms (iOS, Android), read about [AOT Code Stripping](#about-aot-code-stripping-unity).
 
 > **Note**  
 > If you are using `StreamingAssets` on Android, also see [Reading From StreamingAssets](docs/streaming-assets.md).
@@ -587,7 +593,7 @@ public class ExcelPostprocessor : AssetPostprocessor
 }
 ```
 
-## About AOT Code Stripping
+## About AOT Code Stripping (Unity)
 If you are working on AOT (IL2CPP) environment, you would have option called `Managed Stripping Level` in your Player Settings. Since BakingSheet uses reflection, if you set stripping level `Medium` or `High`, the stripper might remove the code piece that required. Especially some property setters.
 
 You can prevent this by either using `Low` stripping level, or adding own `link.xml` to preserve your sheet classes. The below is simplest example of `link.xml`. If you want to know more about it, see [Unity's Documentation](https://docs.unity3d.com/Manual/ManagedCodeStripping.html#LinkXMLAnnotation).
@@ -601,10 +607,10 @@ You can prevent this by either using `Low` stripping level, or adding own `link.
 </linker>
 ```
 
-## Optional Script Defining Symbols
+## Optional Script Defining Symbols (Unity)
 There is few optional symbols that can be defined for runtime usage. By default only JSON and ScriptableObject converters will be included to the build.
 
-| Symbol                              | Effect                                  |
-|-------------------------------------|-----------------------------------------|
-| BAKINGSHEET_RUNTIME_GOOGLECONVERTER | Include Google Converter to your build. |
-| BAKINGSHEET_RUNTIME_CSVCONVERTER    | Include CSV Converter to your build.    |
+| Symbol                              | Effect                                                                                                                                                   |
+|-------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| BAKINGSHEET_RUNTIME_GOOGLECONVERTER | Include Google Converter to your build.<br/>See also: [Google Sheet Converter](docs/google-sheet-import.md#how-to-use-google-sheet-converter-on-runtime) |
+| BAKINGSHEET_RUNTIME_CSVCONVERTER    | Include CSV Converter to your build.                                                                                                                     |
