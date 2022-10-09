@@ -20,8 +20,7 @@ namespace Cathei.BakingSheet.Examples
                 var csvPath = Path.GetDirectoryName(csvAsset);
                 var resultPath = Path.Combine(Application.streamingAssetsPath, "CSV");
 
-                var logger = new UnityLogger();
-                var sheetContainer = new SheetContainer(logger);
+                var sheetContainer = new SheetContainer();
 
                 // create csv converter from path
                 var csvImporter = new CsvSheetConverter(csvPath, TimeZoneInfo.Utc);

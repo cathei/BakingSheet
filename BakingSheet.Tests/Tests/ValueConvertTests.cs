@@ -2,10 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 using Xunit;
 
 namespace Cathei.BakingSheet.Tests
@@ -24,13 +20,22 @@ namespace Cathei.BakingSheet.Tests
             _fileSystem.Dispose();
         }
 
+        private enum TestEnum
+        {
+            Apple, Banana, Cherry, Durian
+        }
+
         public static IEnumerable<object[]> GetStringToValueTestData()
         {
             yield return new object[] { typeof(int), "3", 3 };
+            yield return new object[] { typeof(int?), "3", 3 };
+            yield return new object[] { typeof(int?), null, null };
             yield return new object[] { typeof(float), "3.14", 3.14f };
             yield return new object[] { typeof(string), "abcd", "abcd" };
             yield return new object[] { typeof(TimeSpan), "20:00", new TimeSpan(20, 0, 0) };
             yield return new object[] { typeof(TimeSpan), "12:34:56", new TimeSpan(12, 34, 56) };
+            yield return new object[] { typeof(TestEnum), "Durian", TestEnum.Durian };
+            yield return new object[] { typeof(TestEnum?), "Banana", TestEnum.Banana };
         }
 
         [Theory]
@@ -38,7 +43,8 @@ namespace Cathei.BakingSheet.Tests
         public void TestStringToValue(Type type, string data, object expected)
         {
             var converter = new CsvSheetConverter("csvdata", TimeZoneInfo.Utc, fileSystem: _fileSystem);
-            var value = converter.StringToValue(type, data);
+            var context = new SheetValueConvertingContext(converter, SheetContractResolver.Instance);
+            var value = context.StringToValue(type, data);
 
             Assert.Equal(expected, value);
         }
@@ -46,10 +52,14 @@ namespace Cathei.BakingSheet.Tests
         public static IEnumerable<object[]> GetValueToStringTestData()
         {
             yield return new object[] { typeof(int), 3, "3" };
+            yield return new object[] { typeof(int?), 3, "3" };
+            yield return new object[] { typeof(int?), null, null };
             yield return new object[] { typeof(float), 3.14f, "3.14" };
             yield return new object[] { typeof(string), "abcd", "abcd" };
             yield return new object[] { typeof(TimeSpan), new TimeSpan(20, 0, 0), "20:00:00" };
             yield return new object[] { typeof(TimeSpan), new TimeSpan(12, 34, 56), "12:34:56" };
+            yield return new object[] { typeof(TestEnum), TestEnum.Durian, "Durian" };
+            yield return new object[] { typeof(TestEnum?), TestEnum.Banana, "Banana" };
         }
 
         [Theory]
@@ -57,7 +67,8 @@ namespace Cathei.BakingSheet.Tests
         public void TestValueToString(Type type, object value, string expected)
         {
             var converter = new CsvSheetConverter("csvdata", TimeZoneInfo.Utc, fileSystem: _fileSystem);
-            var data = converter.ValueToString(type, value);
+            var context = new SheetValueConvertingContext(converter, SheetContractResolver.Instance);
+            var data = context.ValueToString(type, value);
 
             Assert.Equal(expected, data);
         }
@@ -73,7 +84,8 @@ namespace Cathei.BakingSheet.Tests
         public void TestStringToDateTime(Type type, string data, object expected, TimeZoneInfo timeZoneInfo)
         {
             var converter = new CsvSheetConverter("csvdata", timeZoneInfo, fileSystem: _fileSystem);
-            var value = converter.StringToValue(type, data);
+            var context = new SheetValueConvertingContext(converter, SheetContractResolver.Instance);
+            var value = context.StringToValue(type, data);
 
             Assert.Equal(expected, value);
         }
@@ -89,7 +101,8 @@ namespace Cathei.BakingSheet.Tests
         public void TestDateTimeToString(Type type, object value, string expected, TimeZoneInfo timeZoneInfo)
         {
             var converter = new CsvSheetConverter("csvdata", timeZoneInfo, fileSystem: _fileSystem);
-            var data = converter.ValueToString(type, value);
+            var context = new SheetValueConvertingContext(converter, SheetContractResolver.Instance);
+            var data = context.ValueToString(type, value);
 
             Assert.Equal(expected, data);
         }

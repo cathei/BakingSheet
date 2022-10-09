@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8612783690875345874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: HERO003
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Name":"Assassin","Strength":140,"Inteligence":100,"Vitality":80,"Arr":[{"StatMultiplier":1.0,"RequiredExp":0,"RequiredItem":null},{"StatMultiplier":1.2,"RequiredExp":10,"RequiredItem":null},{"StatMultiplier":1.4,"RequiredExp":20,"RequiredItem":null},{"StatMultiplier":1.6,"RequiredExp":40,"RequiredItem":null},{"StatMultiplier":2.0,"RequiredExp":100,"RequiredItem":{"$type":"ref","Value":0}}],"Id":"HERO003"}'
+  references:
+  - {fileID: 6378575936028295508, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c9f16a815c438f9dbeaa7d721117d9, type: 3}
+  m_Name: Heroes
+  m_EditorClassIdentifier: 
+  rows:
+  - {fileID: 7143358573701240944}
+  - {fileID: 107211345608050729}
+  - {fileID: -8612783690875345874}
+  typeInfo: Cathei.BakingSheet.Examples.HeroSheet+Row
+--- !u!114 &107211345608050729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: HERO002
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Name":"Mage","Strength":60,"Inteligence":160,"Vitality":80,"Arr":[{"StatMultiplier":1.0,"RequiredExp":0,"RequiredItem":null},{"StatMultiplier":1.2,"RequiredExp":10,"RequiredItem":null},{"StatMultiplier":1.4,"RequiredExp":20,"RequiredItem":null},{"StatMultiplier":1.6,"RequiredExp":40,"RequiredItem":null},{"StatMultiplier":2.0,"RequiredExp":100,"RequiredItem":{"$type":"ref","Value":0}}],"Id":"HERO002"}'
+  references:
+  - {fileID: 8757290401692025903, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
+--- !u!114 &7143358573701240944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: HERO001
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Name":"Warrior","Strength":100,"Inteligence":80,"Vitality":140,"Arr":[{"StatMultiplier":1.0,"RequiredExp":0,"RequiredItem":null},{"StatMultiplier":1.2,"RequiredExp":10,"RequiredItem":null},{"StatMultiplier":1.4,"RequiredExp":20,"RequiredItem":null},{"StatMultiplier":1.6,"RequiredExp":40,"RequiredItem":null},{"StatMultiplier":2.0,"RequiredExp":100,"RequiredItem":{"$type":"ref","Value":0}}],"Id":"HERO001"}'
+  references:
+  - {fileID: -1791245553295392676, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}

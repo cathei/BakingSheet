@@ -1,0 +1,21 @@
+{
+    "name": "BakingSheet.Samples.Scriptable.Editor",
+    "rootNamespace": "",
+    "references": [
+        "BakingSheet",
+        "BakingSheet.Json",
+        "BakingSheet.ScriptableObject",
+        "BakingSheet.Samples"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

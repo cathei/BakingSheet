@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Cathei.BakingSheet.Unity;
 using UnityEditor;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -12,7 +13,7 @@ namespace Cathei.BakingSheet.Examples
         {
             public class Row : SheetRow
             {
-                [Resource] public string ResourcePath { get; set; }
+                 public ResourcePath ResourcePath { get; set; }
             }
         }
 
@@ -34,17 +35,17 @@ namespace Cathei.BakingSheet.Examples
                 new VerificationSheet.Row
                 {
                     Id = "Row1",
-                    ResourcePath = "SamplePrefab1"
+                    ResourcePath = new ResourcePath("SamplePrefab1")
                 },
                 new VerificationSheet.Row
                 {
                     Id = "Row2",
-                    ResourcePath = "SamplePrefab2"
+                    ResourcePath = new ResourcePath("SamplePrefab2")
                 },
                 new VerificationSheet.Row
                 {
                     Id = "Row3",
-                    ResourcePath = "SamplePrefab3"
+                    ResourcePath = new ResourcePath("SamplePrefab3")
                 },
             };
 
@@ -53,7 +54,7 @@ namespace Cathei.BakingSheet.Examples
             sheetContainer.PostLoad();
 
             // call SheetVerifier instances you want to process
-            sheetContainer.Verify(new ResourceAssetVerifier());
+            sheetContainer.Verify(new ResourcePathVerifier());
 
             Debug.Log("End of sheet verification");
         }

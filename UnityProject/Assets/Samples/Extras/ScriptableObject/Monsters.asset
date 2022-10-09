@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6726713019636638802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: MONSTER001
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Name":"Slime","Damage":0,"DropGold":40,"SpawnEventStart":null,"SpawnEventEnd":null,"Arr":[],"Id":"MONSTER001"}'
+  references: []
+--- !u!114 &-1922703050843039608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: MONSTER004
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Name":"Gargoyle","Damage":0,"DropGold":2000,"SpawnEventStart":null,"SpawnEventEnd":null,"Arr":[{"DropItem":{"$type":"ref","Value":0},"DropItemProb":0.5},{"DropItem":{"$type":"ref","Value":1},"DropItemProb":0.5}],"Id":"MONSTER004"}'
+  references:
+  - {fileID: 4233915278454756689, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
+  - {fileID: 5453112154380986827, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
+--- !u!114 &-1889792796856742001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: MONSTER002
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Name":"Skeleton","Damage":0,"DropGold":200,"SpawnEventStart":null,"SpawnEventEnd":null,"Arr":[],"Id":"MONSTER002"}'
+  references: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c9f16a815c438f9dbeaa7d721117d9, type: 3}
+  m_Name: Monsters
+  m_EditorClassIdentifier: 
+  rows:
+  - {fileID: -6726713019636638802}
+  - {fileID: -1889792796856742001}
+  - {fileID: 5414325024743753120}
+  - {fileID: -1922703050843039608}
+  - {fileID: 764015655230227419}
+  typeInfo: Cathei.BakingSheet.Examples.MonsterSheet+Row
+--- !u!114 &764015655230227419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: MONSTER005
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Name":"Dragon","Damage":0,"DropGold":10000,"SpawnEventStart":"2020-10-01T00:00:00Z","SpawnEventEnd":"2020-10-31T23:59:59Z","Arr":[{"DropItem":{"$type":"ref","Value":0},"DropItemProb":0.1},{"DropItem":{"$type":"ref","Value":1},"DropItemProb":0.1},{"DropItem":{"$type":"ref","Value":2},"DropItemProb":0.1}],"Id":"MONSTER005"}'
+  references:
+  - {fileID: -1791245553295392676, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
+  - {fileID: 8757290401692025903, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
+  - {fileID: 6378575936028295508, guid: 2b4bb08db72ef422883f91820c8e50ad, type: 2}
+--- !u!114 &5414325024743753120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: MONSTER003
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Name":"Orc","Damage":0,"DropGold":800,"SpawnEventStart":null,"SpawnEventEnd":null,"Arr":[],"Id":"MONSTER003"}'
+  references: []

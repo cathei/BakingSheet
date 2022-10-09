@@ -1,13 +1,17 @@
-﻿using System;
+﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Cathei.BakingSheet
+namespace Cathei.BakingSheet.Unity
 {
     public class UnityLogger : ILogger
     {
+        public static readonly UnityLogger Default = new UnityLogger();
+
         private IExternalScopeProvider scopeProvider = new LoggerExternalScopeProvider();
 
         private IList<object> scopes = new List<object>();
@@ -48,6 +52,6 @@ namespace Cathei.BakingSheet
                     Debug.LogError(message);
                     break;
             }
-        } 
+        }
     }
 }

@@ -1,16 +1,16 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
 {
+    /// <summary>
+    /// Single page of a Spreadsheet workbook for importing.
+    /// </summary>
     public interface IRawSheetImporterPage
     {
         string GetCell(int col, int row);
@@ -24,7 +24,7 @@ namespace Cathei.BakingSheet.Raw
         }
 
         /// <summary>
-        /// If the row has no value in all valid column it count as empty row
+        /// If the row has no value in all valid column it count as empty row.
         /// </summary>
         public static bool IsEmptyRow(this IRawSheetImporterPage page, int row)
         {
@@ -38,7 +38,7 @@ namespace Cathei.BakingSheet.Raw
         }
 
         /// <summary>
-        /// If the column has any value until current row, it count as valid column
+        /// If the column has any value until current row, it count as valid column.
         /// </summary>
         private static bool IsValidColumn(IRawSheetImporterPage page, int col, int row)
         {
@@ -51,7 +51,8 @@ namespace Cathei.BakingSheet.Raw
             return false;
         }
 
-        public static void Import(this IRawSheetImporterPage page, RawSheetImporter importer, SheetConvertingContext context, ISheet sheet)
+        public static void Import(this IRawSheetImporterPage page,
+            RawSheetImporter importer, SheetConvertingContext context, ISheet sheet)
         {
             var idColumnName = page.GetCell(0, 0);
 
@@ -86,7 +87,7 @@ namespace Cathei.BakingSheet.Raw
                 columnNames.Add(string.Join(Config.Delimiter, headerRows.Take(lastValidRow + 1)));
             }
 
-            PropertyMap propertyMap = new PropertyMap(context, sheet.GetType(), importer.IsConvertableNode);
+            PropertyMap propertyMap = sheet.GetPropertyMap(context);
 
             ISheetRow sheetRow = null;
             string rowId = null;
@@ -155,12 +156,15 @@ namespace Cathei.BakingSheet.Raw
                 using (context.Logger.BeginScope(columnValue))
                 {
                     string cellValue = page.GetCell(pageColumn, pageRow);
+
+                    // if cell is empty, value should not be set
+                    // Property will keep it's default value
                     if (string.IsNullOrEmpty(cellValue))
                         continue;
 
                     try
                     {
-                        propertyMap.SetValue(sheetRow, vindex, columnValue, cellValue, importer.StringToValue);
+                        propertyMap.SetValue(sheetRow, vindex, columnValue, cellValue, importer);
                     }
                     catch (Exception ex)
                     {

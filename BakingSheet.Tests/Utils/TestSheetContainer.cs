@@ -62,6 +62,7 @@ namespace Cathei.BakingSheet.Tests
             public decimal DecimalColumn { get; set; }
             public DateTime DateTimeColumn { get; set; }
             public TimeSpan TimeSpanColumn { get; set; }
+            public TestEnum? EnumColumn { get; set; }
         }
     }
 

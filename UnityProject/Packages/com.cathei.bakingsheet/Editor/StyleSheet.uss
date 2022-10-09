@@ -1,0 +1,18 @@
+VisualElement { }
+
+Label {
+    min-width: 130px;
+}
+
+TextField.readonly TextInput {
+    color: dimgray;
+}
+
+ObjectField.readonly ObjectFieldDisplay > Label {
+    color: dimgray;
+}
+
+ObjectField.readonly ObjectFieldSelector {
+    display: none;
+}
+

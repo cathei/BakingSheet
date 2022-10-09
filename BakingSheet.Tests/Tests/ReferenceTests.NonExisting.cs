@@ -1,10 +1,7 @@
 // BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 using Xunit;
 
 namespace Cathei.BakingSheet.Tests
@@ -61,7 +58,7 @@ namespace Cathei.BakingSheet.Tests
 
             _container.PostLoad();
 
-            _logger.VerifyLog(LogLevel.Error, "Failed to find sheet for Cathei.BakingSheet.Sheet`2+Reference[System.String,Cathei.BakingSheet.Tests.ReferenceTests_NonExisting+NonExistingSheet+Row]");
+            _logger.VerifyLog(LogLevel.Error, "Failed to find sheet for Cathei.BakingSheet.Tests.ReferenceTests_NonExisting+NonExistingSheet+Row reference");
         }
     }
 }

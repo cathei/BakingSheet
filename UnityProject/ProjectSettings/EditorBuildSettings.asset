@@ -8,4 +8,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Samples/005 - Runtime Usage/SampleScene.unity
     guid: 31207cfdd9e6e6847bc88306d9124cc4
-  m_configObjects: {}
+  - enabled: 1
+    path: Assets/Samples/007 - Using ScriptableObject/Scene/Reference.unity
+    guid: 8ef8db8aacd5948e786793a83a0320df
+  - enabled: 1
+    path: Assets/Samples/007 - Using ScriptableObject/Scene/Import.unity
+    guid: d3891dda9221149bea631ff1f37cca79
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: b764ea260cb0b4346bbe5dbf6a4480d4, type: 2}

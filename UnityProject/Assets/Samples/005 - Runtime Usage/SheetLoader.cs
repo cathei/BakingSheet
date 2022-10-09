@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using Cathei.BakingSheet.Unity;
 using UnityEngine;
 
 namespace Cathei.BakingSheet.Examples
@@ -12,13 +9,19 @@ namespace Cathei.BakingSheet.Examples
 
         private async void Start()
         {
-            Debug.Log("Scene loaded.");
+#if BAKINGSHEET_BETTERSTREAMINGASSETS
+            Debug.Log("Scene loaded. (BetterStreamingAssets)");
 
             // If you're using StreamingAssets from Android, StreamingAssetsFileSystem must be used
             // Path is relative to StreamingAssets folder
             var jsonConverter = new JsonSheetConverter("Excel", new StreamingAssetsFileSystem());
+#else
+            Debug.Log("Scene loaded.");
 
-            Sheet = new SheetContainer(new UnityLogger());
+            var jsonConverter = new JsonSheetConverter($"{Application.streamingAssetsPath}/Excel");
+#endif
+
+            Sheet = new SheetContainer();
             await Sheet.Bake(jsonConverter);
 
             Debug.Log(Sheet.Constants.Count);

@@ -4,9 +4,6 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 using Xunit;
 
 namespace Cathei.BakingSheet.Tests
@@ -41,7 +38,8 @@ namespace Cathei.BakingSheet.Tests
                 FloatColumn = 123456.7891011f,
                 DecimalColumn = 163025412.32m,
                 DateTimeColumn = new DateTime(1994, 8, 22, 22, 34, 12),
-                TimeSpanColumn = new TimeSpan(13, 05, 10)
+                TimeSpanColumn = new TimeSpan(13, 05, 10),
+                EnumColumn = TestEnum.Charlie
             };
 
             _container.Types.Add(row1);
@@ -55,9 +53,8 @@ namespace Cathei.BakingSheet.Tests
 
             _logger.VerifyNoError();
 
-            _fileSystem.VerifyTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn,FloatColumn,DecimalColumn,DateTimeColumn,TimeSpanColumn\nAlpha,876543210,\"123456,79\",\"163025412,32\",22/08/1994 22:34:12,13:05:10\n");
+            _fileSystem.VerifyTestData(Path.Combine("testdata", "Types.csv"), "Id,IntColumn,FloatColumn,DecimalColumn,DateTimeColumn,TimeSpanColumn,EnumColumn\nAlpha,876543210,\"123456,79\",\"163025412,32\",22/08/1994 22:34:12,13:05:10,Charlie\n");
         }
-
 
         [Fact]
         public async Task TestImportCultureInfoCsv()

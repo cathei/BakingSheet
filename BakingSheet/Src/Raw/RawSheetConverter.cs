@@ -1,12 +1,14 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
 {
+    /// <summary>
+    /// Generic sheet converter for cell-based Spreadsheet sources.
+    /// </summary>
     public abstract class RawSheetConverter : RawSheetImporter, ISheetConverter
     {
         public bool SplitHeader { get; set; }
@@ -22,11 +24,11 @@ namespace Cathei.BakingSheet.Raw
 
         public async Task<bool> Export(SheetConvertingContext context)
         {
-            foreach (var prop in context.Container.GetSheetProperties())
+            foreach (var pair in context.Container.GetSheetProperties())
             {
-                using (context.Logger.BeginScope(prop.Name))
+                using (context.Logger.BeginScope(pair.Key))
                 {
-                    var sheet = prop.GetValue(context.Container) as ISheet;
+                    var sheet = pair.Value.GetValue(context.Container) as ISheet;
                     if (sheet == null)
                         continue;
 
@@ -44,26 +46,6 @@ namespace Cathei.BakingSheet.Raw
             }
 
             return true;
-        }
-
-        public virtual string ValueToString(Type type, object value)
-        {
-            if (value == null)
-                return null;
-
-            if (value is ISheetReference)
-            {
-                var reference = value as ISheetReference;
-                return ValueToString(reference.IdType, reference.Id);
-            }
-
-            if (value is DateTime dt)
-            {
-                var local = TimeZoneInfo.ConvertTimeFromUtc(dt, TimeZoneInfo);
-                return local.ToString(FormatProvider);
-            }
-
-            return Convert.ToString(value, FormatProvider);
         }
     }
 }

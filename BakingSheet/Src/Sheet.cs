@@ -1,19 +1,27 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
+    /// <summary>
+    /// Represents a single page of Sheet.
+    /// </summary>
+    /// <typeparam name="TKey">Type of Id column.</typeparam>
+    /// <typeparam name="TValue">Type of Row.</typeparam>
     public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet<TKey, TValue>
         where TValue : SheetRow<TKey>, new()
     {
         [Preserve]
         public string Name { get; set; }
+
+        private PropertyMap _propertyMap;
 
         public Type RowType => typeof(TValue);
 
@@ -32,21 +40,30 @@ namespace Cathei.BakingSheet
         bool ISheet.Contains(object key) => Contains((TKey)key);
         void ISheet.Add(object value) => Add((TValue)value);
 
+        public new Enumerator GetEnumerator() => new Enumerator(this);
+        IEnumerator<ISheetRow> ISheet.GetEnumerator() => GetEnumerator();
+
         protected override TKey GetKeyForItem(TValue item)
         {
             return item.Id;
         }
 
-        private static bool IsReferenceNode(PropertyMap.Node node)
+        private PropertyMap GetPropertyMap(SheetConvertingContext context)
         {
-            return typeof(ISheetReference).IsAssignableFrom(node.ValueType);
+            if (_propertyMap != null)
+                return _propertyMap;
+
+            _propertyMap = new PropertyMap(context, GetType());
+            return _propertyMap;
         }
 
-        public virtual void PostLoad(SheetConvertingContext context)
+        PropertyMap ISheet.GetPropertyMap(SheetConvertingContext context) => GetPropertyMap(context);
+
+        void ISheet.MapReferences(SheetConvertingContext context, Dictionary<Type, ISheet> rowTypeToSheet)
         {
             using (context.Logger.BeginScope(Name))
             {
-                var propertyMap = new PropertyMap(context, GetType(), IsReferenceNode);
+                var propertyMap = GetPropertyMap(context);
 
                 propertyMap.UpdateIndex(this);
 
@@ -55,41 +72,44 @@ namespace Cathei.BakingSheet
                     if (!typeof(ISheetReference).IsAssignableFrom(node.ValueType))
                         continue;
 
-                    var referenceSheetType = node.ValueType.DeclaringType
-                        .MakeGenericType(node.ValueType.GenericTypeArguments);
+                    var referenceRowType = node.ValueType.GenericTypeArguments[1];
 
-                    var sheet = context.Container.GetSheetProperties()
-                        .Where(p => p.PropertyType.IsSubclassOf(referenceSheetType))
-                        .Select(p => p.GetValue(context.Container) as ISheet)
-                        .FirstOrDefault();
-
-                    if (sheet == null)
+                    if (!rowTypeToSheet.TryGetValue(referenceRowType, out var sheet))
                     {
-                        context.Logger.LogError("Failed to find sheet for {ReferenceType}", node.ValueType);
+                        context.Logger.LogError("Failed to find sheet for {ReferenceType} reference", referenceRowType);
                         continue;
                     }
 
                     foreach (var row in Items)
                     {
+                        string fullPath = string.Format(node.FullPath, indexes.ToArray());
                         int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
 
                         using (context.Logger.BeginScope(row.Id))
-                        using (context.Logger.BeginScope(node.FullPath, indexes))
+                        using (context.Logger.BeginScope(fullPath))
                         {
                             for (int vindex = 0; vindex < verticalCount; ++vindex)
                             {
-                                var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
+                                // only proceed when path is valid
+                                if (!node.TryGetValue(row, vindex, indexes.GetEnumerator(), out var obj))
+                                    continue;
 
                                 if (obj is ISheetReference refer)
                                 {
                                     refer.Map(context, sheet);
-                                    node.SetValue(row, vindex, indexes.GetEnumerator(), refer);
+                                    node.SetValue(row, vindex, indexes.GetEnumerator(), obj);
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
 
+        public virtual void PostLoad(SheetConvertingContext context)
+        {
+            using (context.Logger.BeginScope(Name))
+            {
                 foreach (var row in Items)
                 {
                     using (context.Logger.BeginScope(row.Id))
@@ -100,21 +120,11 @@ namespace Cathei.BakingSheet
             }
         }
 
-        private static bool IsVerifiableNode(PropertyMap.Node node)
-        {
-            // prevent recursive call
-            if (IsReferenceNode(node))
-                return true;
-
-            return node is PropertyMap.NodeObject &&
-                node.AttributesGetter(typeof(SheetAssetAttribute)).Any();
-        }
-
         public virtual void VerifyAssets(SheetConvertingContext context)
         {
             using (context.Logger.BeginScope(Name))
             {
-                var propertyMap = new PropertyMap(context, GetType(), IsVerifiableNode);
+                var propertyMap = GetPropertyMap(context);
 
                 propertyMap.UpdateIndex(this);
 
@@ -122,28 +132,25 @@ namespace Cathei.BakingSheet
                 {
                     foreach (var verifier in context.Verifiers)
                     {
-                        if (!verifier.TargetType.IsAssignableFrom(node.ValueType))
+                        if (!verifier.CanVerify(node.PropertyInfo, node.ValueType))
                             continue;
-
-                        var attributes = node.AttributesGetter(verifier.TargetAttribute);
 
                         foreach (var row in Items)
                         {
+                            string fullPath = string.Format(node.FullPath, indexes.ToArray());
+
                             using (context.Logger.BeginScope(row.Id))
-                            using (context.Logger.BeginScope(node.FullPath, indexes))
+                            using (context.Logger.BeginScope(fullPath))
                             {
                                 int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
 
                                 for (int vindex = 0; vindex < verticalCount; ++vindex)
                                 {
                                     var obj = node.GetValue(row, vindex, indexes.GetEnumerator());
+                                    var err = verifier.Verify(node.PropertyInfo, obj);
 
-                                    foreach (var att in attributes)
-                                    {
-                                        var err = verifier.Verify(att, obj);
-                                        if (err != null)
-                                            context.Logger.LogError("Verification: {Error}", err);
-                                    }
+                                    if (err != null)
+                                        context.Logger.LogError("Verification: {Error}", err);
                                 }
                             }
                         }
@@ -159,9 +166,36 @@ namespace Cathei.BakingSheet
                 }
             }
         }
+
+        /// <summary>
+        /// Struct enumerator for Sheet.
+        /// </summary>
+        public struct Enumerator : IEnumerator<TValue>
+        {
+            private readonly Sheet<TKey, TValue> _sheet;
+            private int _index;
+
+            public Enumerator(Sheet<TKey, TValue> sheet)
+            {
+                _sheet = sheet;
+                _index = -1;
+            }
+
+            public bool MoveNext() => ++_index < _sheet.Count;
+            public TValue Current => _sheet[_index];
+
+            object IEnumerator.Current => Current;
+            void IEnumerator.Reset() => _index = -1;
+
+            public void Dispose() { }
+        }
     }
 
-    // Convenient shorthand
+    /// <summary>
+    /// Represents a single page of Sheet, with string Id.
+    /// For other type of Id, use generic version.
+    /// </summary>
+    /// <typeparam name="T">Type of Row.</typeparam>
     public abstract class Sheet<T> : Sheet<string, T>
         where T : SheetRow<string>, new() {}
 }

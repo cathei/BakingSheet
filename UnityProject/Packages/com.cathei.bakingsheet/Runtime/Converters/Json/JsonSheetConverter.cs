@@ -1,17 +1,12 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Cathei.BakingSheet
 {
@@ -28,30 +23,28 @@ namespace Cathei.BakingSheet
             _fileSystem = fileSystem ?? new FileSystem();
         }
 
+        public static void ErrorHandler(ILogger logError, ErrorEventArgs err)
+        {
+            if (err.ErrorContext.Member?.ToString() == nameof(ISheetRow.Id) &&
+                err.ErrorContext.OriginalObject is ISheetRow &&
+                !(err.CurrentObject is ISheet))
+            {
+                // if Id has error, the error must be handled on the sheet level
+                return;
+            }
+
+            using (logError.BeginScope(err.ErrorContext.Path))
+                logError.LogError(err.ErrorContext.Error, err.ErrorContext.Error.Message);
+
+            err.ErrorContext.Handled = true;
+        }
+
         public virtual JsonSerializerSettings GetSettings(ILogger logError)
         {
             var settings = new JsonSerializerSettings();
 
-            settings.Error = (sender, err) =>
-            {
-                if (err.ErrorContext.Member?.ToString() == nameof(ISheetRow.Id) &&
-                    err.ErrorContext.OriginalObject is ISheetRow &&
-                    !(err.CurrentObject is ISheet))
-                {
-                    // if Id has error, the error must be handled on the sheet level
-                    return;
-                }
-
-                using (logError.BeginScope(err.ErrorContext.Path))
-                    logError.LogError(err.ErrorContext.Error, err.ErrorContext.Error.Message);
-
-                err.ErrorContext.Handled = true;
-            };
-
-            settings.ContractResolver = new JsonSheetContractResolver();
-
-            settings.Converters.Add(new StringEnumConverter());
-            settings.Converters.Add(new SheetReferenceConverter());
+            settings.Error = (_, err) => ErrorHandler(logError, err);
+            settings.ContractResolver = JsonSheetContractResolver.Instance;
 
             return settings;
         }
@@ -70,11 +63,11 @@ namespace Cathei.BakingSheet
         {
             var sheetProps = context.Container.GetSheetProperties();
 
-            foreach (var prop in sheetProps)
+            foreach (var pair in sheetProps)
             {
-                using (context.Logger.BeginScope(prop.Name))
+                using (context.Logger.BeginScope(pair.Key))
                 {
-                    var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
+                    var path = Path.Combine(_loadPath, $"{pair.Key}.{Extension}");
 
                     if (!_fileSystem.Exists(path))
                         continue;
@@ -85,8 +78,8 @@ namespace Cathei.BakingSheet
                     using (var reader = new StreamReader(stream))
                         data = await reader.ReadToEndAsync();
 
-                    var sheet = Deserialize(data, prop.PropertyType, context.Logger) as ISheet;
-                    prop.SetValue(context.Container, sheet);
+                    var sheet = Deserialize(data, pair.Value.PropertyType, context.Logger) as ISheet;
+                    pair.Value.SetValue(context.Container, sheet);
                 }
             }
 
@@ -99,14 +92,14 @@ namespace Cathei.BakingSheet
 
             _fileSystem.CreateDirectory(_loadPath);
 
-            foreach (var prop in sheetProps)
+            foreach (var pair in sheetProps)
             {
-                using (context.Logger.BeginScope(prop.Name))
+                using (context.Logger.BeginScope(pair.Key))
                 {
-                    var sheet = prop.GetValue(context.Container);
-                    var data = Serialize(sheet, prop.PropertyType, context.Logger);
+                    var sheet = pair.Value.GetValue(context.Container);
+                    var data = Serialize(sheet, pair.Value.PropertyType, context.Logger);
 
-                    var path = Path.Combine(_loadPath, $"{prop.Name}.{Extension}");
+                    var path = Path.Combine(_loadPath, $"{pair.Key}.{Extension}");
 
                     using (var stream = _fileSystem.OpenWrite(path))
                     using (var writer = new StreamWriter(stream))
@@ -115,23 +108,6 @@ namespace Cathei.BakingSheet
             }
 
             return true;
-        }
-
-        internal class SheetReferenceConverter : JsonConverter<ISheetReference>
-        {
-            public override ISheetReference ReadJson(JsonReader reader, Type objectType, ISheetReference existingValue, bool hasExistingValue, JsonSerializer serializer)
-            {
-                if (existingValue == null)
-                    existingValue = Activator.CreateInstance(objectType) as ISheetReference;
-
-                existingValue.Id = serializer.Deserialize(reader, existingValue.IdType);
-                return existingValue;
-            }
-
-            public override void WriteJson(JsonWriter writer, ISheetReference value, JsonSerializer serializer)
-            {
-                serializer.Serialize(writer, value.Id);
-            }
         }
     }
 }

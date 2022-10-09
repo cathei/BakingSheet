@@ -1,6 +1,5 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,7 +9,12 @@ namespace Cathei.BakingSheet
 
     public interface IVerticalList<T> : IVerticalList, IList<T>, IReadOnlyList<T> { }
 
-    // same as List<T> but works vertical, like SheetRowArray
+    /// <summary>
+    /// Usage is same as generic List.
+    /// When converting from/to sheet, index is vertical.
+    /// SheetRowArray internally uses VerticalList.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the list.</typeparam>
     public class VerticalList<T> : List<T>, IVerticalList<T>
     {
         public VerticalList() { }

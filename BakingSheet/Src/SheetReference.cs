@@ -1,40 +1,75 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
-using System.Linq;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
 {
+    public interface ISheetReference
+    {
+        void Map(SheetConvertingContext context, ISheet sheet);
+
+        object Id { get; set; }
+        Type IdType { get; }
+
+        ISheetRow Ref { get; }
+        bool IsValid();
+    }
+
     public partial class Sheet<TKey, TValue>
     {
-        public struct Reference : ISheetReference
+        /// <summary>
+        /// Cross-sheet reference column to this Sheet.
+        /// </summary>
+        public partial struct Reference : ISheetReference
         {
             [Preserve]
             public TKey Id { get; private set; }
+
             [Preserve]
-            public TValue Ref { get; private set; }
+            private TValue reference;
+
+            [Preserve]
+            public TValue Ref
+            {
+                get
+                {
+                    EnsureLoadReference();
+                    return reference;
+                }
+                private set => reference = value;
+            }
 
             object ISheetReference.Id
             {
-                get { return Id; }
-                set { Id = (TKey)value; }
+                get => Id;
+                set => Id = (TKey)value;
             }
 
             public Type IdType => typeof(TKey);
 
-            public Reference(TKey id)
+            ISheetRow ISheetReference.Ref => Ref;
+
+            public Reference(TKey id) : this()
             {
                 Id = id;
-                Ref = default(TValue);
             }
 
             void ISheetReference.Map(SheetConvertingContext context, ISheet sheet)
             {
+                EnsureLoadReference();
+
                 if (sheet is ISheet<TKey, TValue> referSheet)
                 {
-                    Ref = referSheet[Id];
+                    if (Ref == null)
+                    {
+                        Ref = referSheet[Id];
+                    }
+                    else if (Ref != referSheet[Id])
+                    {
+                        context.Logger.LogError("Found different reference than originally set for \"{ReferenceId}\"", Id);
+                    }
                 }
 
                 if (Id != null && Ref == null)
@@ -50,7 +85,13 @@ namespace Cathei.BakingSheet
 
             public override bool Equals(object obj)
             {
-                return obj is Reference refer && this == refer;
+                if (!(obj is Reference other))
+                    return false;
+
+                if (Id == null)
+                    return other.Id == null;
+
+                return Id.Equals(other.Id);
             }
 
             public override int GetHashCode()
@@ -63,21 +104,15 @@ namespace Cathei.BakingSheet
                 return Id == null ? "(null)" : Id.ToString();
             }
 
-            public static bool operator ==(Reference x, Reference y)
+            public bool IsValid()
             {
-                if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
-                    return ReferenceEquals(x, null) && ReferenceEquals(y, null);
-
-                if (x.Id == null || y.Id == null)
-                    return x.Id == null && y.Id == null;
-
-                return x.GetType() == y.GetType() && x.Id.Equals(y.Id);
+                return Ref != null;
             }
 
-            public static bool operator !=(Reference x, Reference y)
-            {
-                return !(x == y);
-            }
+            /// <summary>
+            /// Each Engine counterpart implements this
+            /// </summary>
+            partial void EnsureLoadReference();
         }
     }
 }

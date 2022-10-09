@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8884627598532081271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: ASSET003
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Direct":{"$type":"direct","RawValue":"Samples/Extras/AssetPath/Direct/Image01.png[Image01_3]","Asset":{"$type":"ref","Value":0}},"Resource":{"$type":"resource","RawValue":"Image01[Image01_3]","FullPath":"Image01","SubAssetName":"Image01_3"},"Addressable":{"$type":"addressable","RawValue":"Direct/Image01.png[Image01_3]","FullPath":"Direct/Image01.png[Image01_3]","SubAssetName":"Image01_3"},"Id":"ASSET003"}'
+  references:
+  - {fileID: 210319215923685606, guid: 264dfcc539b594c7887b7e5e0d9a79fd, type: 3}
+--- !u!114 &-7018200202357136219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: ASSET001
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Direct":{"$type":"direct","RawValue":"Samples/Extras/AssetPath/Direct/Prefab01.prefab","Asset":{"$type":"ref","Value":0}},"Resource":{"$type":"resource","RawValue":"Prefab01","FullPath":"Prefab01","SubAssetName":""},"Addressable":{"$type":"addressable","RawValue":"Direct/Prefab01.prefab","FullPath":"Direct/Prefab01.prefab","SubAssetName":""},"Id":"ASSET001"}'
+  references:
+  - {fileID: 8631279083784711242, guid: d50829d8b61344eea87f30a41bd3c29b, type: 3}
+--- !u!114 &-5530578862390125190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: EMPTY
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Direct":{"$type":"direct","RawValue":null},"Resource":{"$type":"resource","RawValue":null},"Addressable":{"$type":"addressable","RawValue":null},"Id":"EMPTY"}'
+  references: []
+--- !u!114 &-972266106665333038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cef8d0045424afb8f94c1e6798e096, type: 3}
+  m_Name: ASSET002
+  m_EditorClassIdentifier: 
+  serializedRow: '{"Direct":{"$type":"direct","RawValue":"Samples/Extras/AssetPath/Direct/Image01.png[Image01]","Asset":{"$type":"ref","Value":0}},"Resource":{"$type":"resource","RawValue":"Image01[Image01]","FullPath":"Image01","SubAssetName":"Image01"},"Addressable":{"$type":"addressable","RawValue":"Direct/Image01.png[Image01]","FullPath":"Direct/Image01.png[Image01]","SubAssetName":"Image01"},"Id":"ASSET002"}'
+  references:
+  - {fileID: -6955944311479669981, guid: 264dfcc539b594c7887b7e5e0d9a79fd, type: 3}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c9f16a815c438f9dbeaa7d721117d9, type: 3}
+  m_Name: Assets
+  m_EditorClassIdentifier: 
+  rows:
+  - {fileID: -7018200202357136219}
+  - {fileID: -972266106665333038}
+  - {fileID: -8884627598532081271}
+  - {fileID: -5530578862390125190}
+  typeInfo: Cathei.BakingSheet.Examples.AssetSheet+Row

@@ -3,6 +3,11 @@
 # BakingSheet 🍞
 Easy datasheet management for C# and Unity. Supports Excel, Google Sheet, JSON and CSV format. It has been used for several mobile games that released on Google Play and AppStore.
 
+## BakingSheet 4.0 is here!
+With BakingSheet 4.0, you can [export and import with Unity's ScriptableObject](docs/scriptable-object.md).
+Also, major support for [AssetPath](docs/asset-path.md) and customizable [ValueConverter](docs/value-converter.md) has been added!
+Note that .unitypackage will not be provided anymore. Please [add git package from Package manager, or install via OpenUPM](#install).
+
 ## Concept
 Throughout all stage of game development, you'll need to deal with various data. Characters, stats, stages, currencies and so on! If you're using Unity, scriptable object and inspector is not good enough for mass edition and lacks powerful features like functions or fill up. With BakingSheet your designers can use existing spreadsheet editor, while you, the programmer, can directly use C# object without messy parsing logics or code generations.
 
@@ -17,7 +22,7 @@ BakingSheet's basic workflow is like this:
 2. Designers fill up the Datasheet, using any powerful functions and features of spreadsheet.
 3. Edit-time script converts Datasheet to JSON (or any custom format) with your C# schema and validates data.
 4. Runtime script reads from JSON (or any custom format) with your C# schema.
-5. Your business logic directly uses C# instace of your schema.
+5. Your business logic directly uses C# instance of your schema.
 6. Profit!
 
 Don't trust me that it's better than using ScriptableObject? You might change your mind if you see how famous SuperCell ships their games with CSV, like [Clash Royale](https://github.com/smlbiobot/cr-csv/tree/master/assets/csv_logic) or [Brawl Stars](https://github.com/weeco/brawlstars-assets/tree/master/7.278.1/csv_logic). Though of course, their games aren't made with Unity, still a very good example to show how you can utilize spreadsheet!
@@ -32,15 +37,24 @@ Don't trust me that it's better than using ScriptableObject? You might change yo
 * Supports exporting to CSV and JSON.
 * Supports .NET platforms and all Unity platforms.
 * Powerful Cross-sheet reference feature.
-* Customizable value verification - like checking prefab pathes.
+* Referencing Asset data with [AssetPath](docs/asset-path.md)
+* [Customizable value converter](docs/value-converter.md)
+* [Customizable data verification](docs/data-verification.md)
 
 ## Install
-Download with [NuGet](https://www.nuget.org/packages?q=BakingSheet) or download [.unitypackage release](https://github.com/cathei/BakingSheet/releases)
+For C# projects or server, download with [NuGet](https://www.nuget.org/packages?q=BakingSheet).
 
-You can also install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/)
+For Unity projects, add git package from Package Manager.
+```
+https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet#v4.0.0
+```
+
+Or install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/).
 ```
 openupm add com.cathei.bakingsheet
 ```
+
+If you are planning to use StreamingAssets folder on Android, install [BetterStreamingAssets](docs/streaming-assets.md) as well.
 
 ### Need help?
 Before you start, we want to mention that if you have problem or need help, you can always ask directly on [Discord Channel](https://discord.gg/wXjxjfrDQa)!
@@ -93,7 +107,7 @@ public class SheetContainer : SheetContainerBase
     public ItemSheet Items { get; private set; }
 
     // add other sheets as you extend your project
-    // public CharacterSheet Characters { get; private set; }
+    public CharacterSheet Characters { get; private set; }
 }
 ```
 You can add as many sheets you want as properties of your `SheetContainer`. This class is designed to be "fat", means single `SheetContainer` should contain all your sheets unless there is specific reason to partition your sheets. For example when you want to deploy some `Sheet` only exclusive to server program, you might want to partition `ServerSheetContainer` and `ClientSheetContainer`.
@@ -108,6 +122,7 @@ You can add as many sheets you want as properties of your `SheetContainer`. This
 * Nullable for any other supported value type (for example `int?`)
 * `List<>` and `Dictionary<,>`
 * Custom `struct` and `class` as [nested column](#using-nested-type-column)
+* Custom type converted with [ValueConverter](docs/value-converter.md)
 
 > **Note**  
 > When using `JsonConverter`, `enum` is serialized as `string` by default so you won't have issue when reordering them.
@@ -116,13 +131,15 @@ You can add as many sheets you want as properties of your `SheetContainer`. This
 Converters are simple implementation import/export records from datasheet sources. These come as separated library, as it's user's decision to select datasheet source.
 User can have converting process, to convert datasheet to other format ahead of time and not include heavy converters in production applications.
 
-BakingSheet supports four basic converters. They're included in .unitypackage as well.
-| Package Name                  | Format                       | Supports Import | Supports Export |
-|-------------------------------|------------------------------|-----------------|-----------------|
-| [BakingSheet.Converters.Excel](https://www.nuget.org/packages/BakingSheet.Converters.Excel/)  | Microsoft Excel              | O               | X               |
+BakingSheet supports four basic converters. They're included in Unity package as well.
+
+| Package Name                                                                                   | Format                       | Supports Import | Supports Export |
+|------------------------------------------------------------------------------------------------|------------------------------|-----------------|-----------------|
+| [BakingSheet.Converters.Excel](https://www.nuget.org/packages/BakingSheet.Converters.Excel/)   | Microsoft Excel              | O               | X               |
 | [BakingSheet.Converters.Google](https://www.nuget.org/packages/BakingSheet.Converters.Google/) | Google Sheet                 | O               | X               |
-| [BakingSheet.Converters.Csv](https://www.nuget.org/packages/BakingSheet.Converters.Csv/)    | Comma-Separated Values (CSV) | O               | O               |
-| [BakingSheet.Converters.Json](https://www.nuget.org/packages/BakingSheet.Converters.Json/)   | JSON                         | O               | O               |
+| [BakingSheet.Converters.Csv](https://www.nuget.org/packages/BakingSheet.Converters.Csv/)       | Comma-Separated Values (CSV) | O               | O               |
+| [BakingSheet.Converters.Json](https://www.nuget.org/packages/BakingSheet.Converters.Json/)     | JSON                         | O               | O               |
+| [ScriptableObject Converter](docs/scriptable-object.md) (Unity only)                           | ScriptableObject             | O               | O (Read-only)   |
 
 Below code shows how to convert `.xlsx` files from `Excel/Files/Path` directory.
 ```csharp
@@ -139,7 +156,7 @@ var excelConverter = new ExcelSheetConverter("Excel/Files/Path");
 await sheetContainer.Bake(excelConverter);
 ```
 
-For Google Sheet, first create your service account through Google API Console. Then add it to your sheet with `Viewer` permission. Use Google credential for that service account to create converter. For detailed information about how to create service account and link to your sheet, see [Google Sheet Converter's README](./BakingSheet.Converters.Google/README.md).
+For Google Sheet, first create your service account through Google API Console. Then add it to your sheet with `Viewer` permission. Use Google credential for that service account to create converter. For detailed information about how to create service account and link to your sheet, see [How to import from Google Sheet](./docs/google-sheet-import.md).
 
 ```csharp
 // replace with your Google sheet identifier
@@ -186,10 +203,10 @@ await sheetContainer.Bake(jsonConverter);
 You can extend `JsonSheetConverter` to customize serialization process. For example encrypting data or prettifying JSON.
 
 > **Note**  
-> For AOT platforms (iOS, Android), read about [AOT Code Stripping](#about-aot-code-stripping).
+> For AOT platforms (iOS, Android), read about [AOT Code Stripping](#about-aot-code-stripping-unity).
 
 > **Note**  
-> If you are using `StreamingAssets` on Android, also see [Reading From StreamingAssets](#reading-from-streamingassets).
+> If you are using `StreamingAssets` on Android, also see [Reading From StreamingAssets](docs/streaming-assets.md).
 
 ## Accessing Row
 Now you have `SheetContainer` loaded from your data, accessing to the row is fairly simple. Below code shows how to access specific `ItemSheet.Row`.
@@ -535,62 +552,6 @@ public class ConstantSheet : Sheet<GameConstant, ConstantSheet.Row>
 > **Note**  
 > Properties without setter are not serialized. Alternatively you can use `[NonSerialized]` attribute.
 
-## Custom Converters
-User can create and customize their own converter by implementing `ISheetImporter` and `ISheetExporter`. Or you can inherit `JsonSheetConverter` and override methods like `GetSettings()` to customize serialization process.
-
-## Custom Verifiers
-You can verify datasheet sanity with custom verifiers. For example, you can define `ResourceAttribute` to mark columns that should reference path inside of Unity's Resources folder.
-
-```csharp
-public class ResourceAttribute : SheetAssetAttribute
-{
-    public ResourceAttribute() { }
-}
-
-public class PrefabSheet : Sheet<PrefabSheet.Row>
-{
-    public class Row : SheetRow
-    {
-        [Resource] public string Path { get; private set; }
-    }
-}
-
-// this is the part depends on Unity
-public class ResourceVerifier : SheetVerifier<ResourceAttribute, string>
-{
-    // any string column with ResourceAttribute will be passed through the verify process
-    // return value is the error string
-    public override string Verify(ResourceAttribute attribute, string path)
-    {
-        if (string.IsNullOrEmpty(path))
-            return null;
-
-        var obj = Resources.Load(path);
-        if (obj != null)
-            return null;
-
-        return $"Resource {path} not found!";
-    }
-}
-```
-
-Then, you can call `SheetContainerBase.Verify` after loading your sheet.
-```csharp
-sheetContainer.Verify(new ResourceVerifier() /*, new OtherVerifier()... */);
-```
-
-## Reading from StreamingAssets
-If you are using `StreamingAssets` folder on Android platform, it is required to implement own `IFileSystem` for runtime to read files from compressed `jar`. BakingSheet includes `StreamingAssetsFileSystem` to support this. It is based on [Package version](https://github.com/cathei/BetterStreamingAssets-Package) of [BetterStreamingAssets](https://github.com/gwiazdorrr/BetterStreamingAssets).
-
-Below is example of using `StreamingAssetsFileSystem` with `JsonSheetConverter` at runtime. Keep in mind that path is relative from `Assets/StreamingAssets`.
-```csharp
-// create json converter from path
-var jsonConverter = new JsonSheetConverter("Relative/Json/Path", new StreamingAssetsFileSystem());
-
-// load from json
-await sheetContainer.Bake(jsonConverter);
-```
-
 ## Using AssetPostProcessor to Automate Converting
 For Excel and CSV, you could set up `AssetPostProcessor` to automate converting process. Recommended practice is keeping both source `.xlsx` and `.csv` files alongside with destination `.json` files in your version control system. For Google Sheet, it is instead recommended to use custom `MenuItem` to convert into destination `.json` files that keeped in your version control.
 
@@ -634,7 +595,7 @@ public class ExcelPostprocessor : AssetPostprocessor
 }
 ```
 
-## About AOT Code Stripping
+## About AOT Code Stripping (Unity)
 If you are working on AOT (IL2CPP) environment, you would have option called `Managed Stripping Level` in your Player Settings. Since BakingSheet uses reflection, if you set stripping level `Medium` or `High`, the stripper might remove the code piece that required. Especially some property setters.
 
 You can prevent this by either using `Low` stripping level, or adding own `link.xml` to preserve your sheet classes. The below is simplest example of `link.xml`. If you want to know more about it, see [Unity's Documentation](https://docs.unity3d.com/Manual/ManagedCodeStripping.html#LinkXMLAnnotation).
@@ -642,8 +603,16 @@ You can prevent this by either using `Low` stripping level, or adding own `link.
 <?xml version="1.0" encoding="utf-8" ?>
 <linker>
   <!--
-    Replace `BakingSheet.Samples` to your assembly to prevent Unity code stripping
+    Replace `MyCompany.MyGame.Sheet` to your assembly to prevent Unity code stripping
   -->
-  <assembly fullname="BakingSheet.Samples" ignoreIfMissing="1" preserve="all"/>
+  <assembly fullname="MyCompany.MyGame.Sheet" preserve="all"/>
 </linker>
 ```
+
+## Optional Script Defining Symbols (Unity)
+There is few optional symbols that can be defined for runtime usage. By default only JSON and ScriptableObject converters will be included to the build.
+
+| Symbol                              | Effect                                                                                                                                                   |
+|-------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| BAKINGSHEET_RUNTIME_GOOGLECONVERTER | Include Google Converter to your build.<br/>See also: [Google Sheet Converter](docs/google-sheet-import.md#how-to-use-google-sheet-converter-on-runtime) |
+| BAKINGSHEET_RUNTIME_CSVCONVERTER    | Include CSV Converter to your build.                                                                                                                     |

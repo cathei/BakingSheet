@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Cathei.BakingSheet.Unity;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -7,7 +8,7 @@ namespace Cathei.BakingSheet.Examples
 {
     public class SheetContainer : SheetContainerBase
     {
-        public SheetContainer(ILogger logger) : base(logger) {}
+        public SheetContainer() : base(UnityLogger.Default) {}
 
         // use name of each matching sheet name from source
         public ConstantSheet Constants { get; private set; }
@@ -16,5 +17,6 @@ namespace Cathei.BakingSheet.Examples
         public MonsterSheet Monsters { get; private set; }
         public DungeonSheet Dungeons { get; private set; }
         public NpcSheet Npcs { get; private set; }
+        public AssetSheet Assets { get; private set; }
     }
 }

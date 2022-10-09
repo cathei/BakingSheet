@@ -10,8 +10,8 @@ namespace Cathei.BakingSheet.Editor
     public static class PackageGenerationTools
     {
         const string PackagePath = "Packages/com.cathei.bakingsheet";
-        const string BsaPath = "Packages/com.cathei.betterstreamingassets";
         const string SamplePath = "Assets/Samples";
+        const string BsaPath = "Packages/com.cathei.betterstreamingassets";
 
         [MenuItem("BakingSheet/Generate Package")]
         public static void GeneratePackage()
@@ -25,17 +25,25 @@ namespace Cathei.BakingSheet.Editor
             if (githubVersion != null && info.version != githubVersion)
                 throw new InvalidOperationException("Package version does not match GitHub ref");
 
-            string savePath = GetPackagePath("BakingSheet", info.version);
-
-            AssetDatabase.ExportPackage(
-                new[] { PackagePath, BsaPath }, savePath, ExportPackageOptions.Recurse);
+            // string savePath = GetPackagePath("BakingSheet", info.version);
+            //
+            // AssetDatabase.ExportPackage(
+            //     new[] { PackagePath }, savePath, ExportPackageOptions.Recurse);
 
             string sampleSavePath = GetPackagePath("BakingSheet.Samples", info.version);
 
             AssetDatabase.ExportPackage(
                 new[] { SamplePath }, sampleSavePath, ExportPackageOptions.Recurse);
 
-            Debug.Log($"Generating Unity Package Completed: {savePath} {sampleSavePath}");
+            // var bsaInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(BsaPath);
+            //
+            // string bsaSavePath = GetPackagePath("BetterStreamingAssets", bsaInfo.version);
+            //
+            // AssetDatabase.ExportPackage(
+            //     new[] { BsaPath }, bsaSavePath, ExportPackageOptions.Recurse);
+
+            // Debug.Log($"Generating Unity Package Completed: {savePath} {sampleSavePath} {bsaSavePath}");
+            Debug.Log($"Generating Unity Package Completed: {sampleSavePath}");
         }
 
         [MenuItem("BakingSheet/Generate Package (AssetStore)")]
@@ -46,7 +54,7 @@ namespace Cathei.BakingSheet.Editor
             string savePath = GetPackagePath("BakingSheet.AssetStore", info.version);
 
             AssetDatabase.ExportPackage(
-                new[] { PackagePath, BsaPath, SamplePath }, savePath, ExportPackageOptions.Recurse);
+                new[] { PackagePath, SamplePath }, savePath, ExportPackageOptions.Recurse);
 
             Debug.Log($"Generating Unity Package Completed: {savePath}");
         }

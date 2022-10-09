@@ -17,6 +17,10 @@ namespace Cathei.BakingSheet
         bool Contains(object key);
         void Add(object value);
 
+        new IEnumerator<ISheetRow> GetEnumerator();
+        PropertyMap GetPropertyMap(SheetConvertingContext context);
+
+        void MapReferences(SheetConvertingContext context, Dictionary<Type, ISheet> rowTypeToSheet);
         void PostLoad(SheetConvertingContext context);
         void VerifyAssets(SheetConvertingContext context);
     }
@@ -25,7 +29,7 @@ namespace Cathei.BakingSheet
         where TRow : ISheetRow
     { }
 
-    public interface ISheet<TKey, out TRow> : ISheet<TRow>
+    public interface ISheet<in TKey, out TRow> : ISheet<TRow>
         where TRow : ISheetRow
     {
         TRow this[TKey key] { get; }
@@ -40,7 +44,7 @@ namespace Cathei.BakingSheet
         object Id { get; }
     }
 
-    public interface ISheetRow<TKey> : ISheetRow
+    public interface ISheetRow<out TKey> : ISheetRow
     {
         new TKey Id { get; }
     }
@@ -56,18 +60,15 @@ namespace Cathei.BakingSheet
         Type ElemType { get; }
     }
 
-    public interface ISheetRowArray<out TElem> : ISheetRowArray, IReadOnlyList<TElem>
-        where TElem : ISheetRowElem
+    public interface ISheetRowArray<out TElem> : ISheetRowArray, IReadOnlyList<TElem> where TElem : ISheetRowElem
     {
         new IReadOnlyList<TElem> Arr { get; }
     }
 
-    public interface ISheetReference
+    public interface ISheetFormatter
     {
-        void Map(SheetConvertingContext context, ISheet sheet);
-
-        object Id { get; set; }
-        Type IdType { get; }
+        TimeZoneInfo TimeZoneInfo { get; }
+        IFormatProvider FormatProvider { get; }
     }
 
     public interface ISheetImporter

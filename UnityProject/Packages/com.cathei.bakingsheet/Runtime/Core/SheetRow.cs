@@ -7,6 +7,10 @@ using Cathei.BakingSheet.Internal;
 
 namespace Cathei.BakingSheet
 {
+    /// <summary>
+    /// Represents a Row of a Sheet.
+    /// </summary>
+    /// <typeparam name="TKey">Type of Id column.</typeparam>
     public abstract class SheetRow<TKey> : ISheetRow<TKey>
     {
         [Preserve]
@@ -18,6 +22,9 @@ namespace Cathei.BakingSheet
         public virtual void VerifyAssets(SheetConvertingContext context) { }
     }
 
+    /// <summary>
+    /// Represents an Element of Row Array.
+    /// </summary>
     public abstract class SheetRowElem : ISheetRowElem
     {
         [NonSerialized]
@@ -27,6 +34,11 @@ namespace Cathei.BakingSheet
         public virtual void VerifyAssets(SheetConvertingContext context) { }
     }
 
+    /// <summary>
+    /// Represents a Row of a Sheet, that vertically having multiple Elements.
+    /// </summary>
+    /// <typeparam name="TKey">Type of Id column.</typeparam>
+    /// <typeparam name="TElem">Type of Element.</typeparam>
     public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, ISheetRowArray<TElem>
         where TElem : SheetRowElem, new()
     {
@@ -42,7 +54,8 @@ namespace Cathei.BakingSheet
         public TElem this[int idx] => Arr[idx];
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        public IEnumerator<TElem> GetEnumerator() => Arr.GetEnumerator();
+        IEnumerator<TElem> IEnumerable<TElem>.GetEnumerator() => GetEnumerator();
+        public Enumerator GetEnumerator() => new Enumerator(Arr.GetEnumerator());
 
         public override void PostLoad(SheetConvertingContext context)
         {
@@ -70,12 +83,39 @@ namespace Cathei.BakingSheet
                 }
             }
         }
+
+        /// <summary>
+        /// Struct enumerator for SheetRowArray.
+        /// </summary>
+        public struct Enumerator : IEnumerator<TElem>
+        {
+            private List<TElem>.Enumerator _enumerator;
+
+            public Enumerator(List<TElem>.Enumerator enumerator)
+            {
+                _enumerator = enumerator;
+            }
+
+            public bool MoveNext() => _enumerator.MoveNext();
+            public TElem Current => _enumerator.Current;
+
+            void IEnumerator.Reset() => ((IEnumerator)_enumerator).Reset();
+            object IEnumerator.Current => Current;
+
+            public void Dispose() => _enumerator.Dispose();
+        }
     }
 
-    // Convenient shorthand
+    /// <summary>
+    /// Represent a Row of a Sheet with string Id.
+    /// For other type of Id, use generic version.
+    /// </summary>
     public abstract class SheetRow : SheetRow<string> {}
 
-    // Convenient shorthand
+    /// <summary>
+    /// Represents a Row of a Sheet, that vertically having multiple Elements, with string Id.
+    /// For other type of Id, use generic version.
+    /// </summary>
     public abstract class SheetRowArray<TElem> : SheetRowArray<string, TElem>
         where TElem : SheetRowElem, new() {}
 }
