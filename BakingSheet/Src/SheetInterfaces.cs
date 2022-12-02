@@ -1,8 +1,11 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
 
@@ -33,10 +36,10 @@ namespace Cathei.BakingSheet
     }
 
     public interface ISheet<in TKey, out TRow> : ISheet<TRow>
-        where TRow : ISheetRow
+        where TRow : class, ISheetRow
     {
         TRow this[TKey key] { get; }
-        TRow Find(TKey key);
+        TRow? Find(TKey key);
 
         bool Contains(TKey key);
         bool Remove(TKey key);

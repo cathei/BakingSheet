@@ -1,5 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -11,11 +13,11 @@ namespace Cathei.BakingSheet.Internal
     {
         public class NodeObject : Node
         {
-            private Dictionary<string, Node> _children;
+            private Dictionary<string, Node>? _children;
 
             public override bool IsLeaf => _children == null;
 
-            public override Node GetChild(string subpath) => _children?[subpath];
+            public override Node? GetChild(string subpath) => _children?[subpath];
 
             public override bool HasSubpath(string subpath) => _children?.ContainsKey(subpath) ?? false;
 

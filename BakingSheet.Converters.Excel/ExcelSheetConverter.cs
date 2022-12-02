@@ -29,6 +29,8 @@ namespace Cathei.BakingSheet
         {
             private DataTable _table;
 
+            public IRawSheetImporterPage Next => null;
+
             public Page(DataTable table)
             {
                 _table = table;

@@ -1,5 +1,7 @@
 // BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +16,8 @@ namespace Cathei.BakingSheet
     /// </summary>
     public abstract class SheetContainerBase
     {
-        private ILogger _logger;
-        private Dictionary<string, PropertyInfo> _sheetProperties;
+        private readonly ILogger _logger;
+        private Dictionary<string, PropertyInfo>? _sheetProperties;
 
         public virtual ISheetContractResolver ContractResolver => SheetContractResolver.Instance;
 
@@ -37,7 +39,7 @@ namespace Cathei.BakingSheet
             return _sheetProperties;
         }
 
-        public ISheet Find(string name)
+        public ISheet? Find(string name)
         {
             var props = GetSheetProperties();
 
@@ -47,18 +49,14 @@ namespace Cathei.BakingSheet
             return null;
         }
 
-        public T Find<T>(string name) where T : class, ISheet
+        public T? Find<T>(string name) where T : class, ISheet
         {
             return Find(name) as T;
         }
 
         public async Task<bool> Bake(params ISheetImporter[] importers)
         {
-            var context = new SheetConvertingContext
-            {
-                Container = this,
-                Logger = _logger,
-            };
+            var context = new SheetConvertingContext(this, _logger);
 
             foreach (var importer in importers)
             {
@@ -75,11 +73,7 @@ namespace Cathei.BakingSheet
 
         public async Task<bool> Store(ISheetExporter exporter)
         {
-            var context = new SheetConvertingContext
-            {
-                Container = this,
-                Logger = _logger,
-            };
+            var context = new SheetConvertingContext(this, _logger);
 
             var success = await exporter.Export(context);
             return success;
@@ -87,11 +81,7 @@ namespace Cathei.BakingSheet
 
         public virtual void PostLoad()
         {
-            var context = new SheetConvertingContext
-            {
-                Container = this,
-                Logger = _logger,
-            };
+            var context = new SheetConvertingContext(this, _logger);
 
             var properties = GetSheetProperties();
 
@@ -129,12 +119,7 @@ namespace Cathei.BakingSheet
 
         public virtual void Verify(params SheetVerifier[] verifiers)
         {
-            var context = new SheetConvertingContext
-            {
-                Container = this,
-                Logger = _logger,
-                Verifiers = verifiers
-            };
+            var context = new SheetConvertingContext(this, _logger, verifiers);
 
             foreach (var pair in GetSheetProperties())
             {

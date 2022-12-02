@@ -1,9 +1,13 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
@@ -16,27 +20,29 @@ namespace Cathei.BakingSheet
     /// <typeparam name="TKey">Type of Id column.</typeparam>
     /// <typeparam name="TValue">Type of Row.</typeparam>
     public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet<TKey, TValue>
+        where TKey : notnull
         where TValue : SheetRow<TKey>, new()
     {
-        [Preserve]
-        public string Name { get; set; }
+        [Preserve] public string Name { get; set; }
+        [Preserve] public string HashCode { get; private set; }
 
-        private PropertyMap _propertyMap;
+        private PropertyMap? _propertyMap;
 
         public Type RowType => typeof(TValue);
 
-        public new TValue this[TKey id]
+        public ICollection<TKey> Keys => Dictionary?.Keys ?? Array.Empty<TKey>();
+
+        [Pure]
+        public TValue? Find(TKey id)
         {
-            get
-            {
-                if (id == null || !Contains(id))
-                    return default(TValue);
-                return base[id];
-            }
+            TryGetValue(id, out var value);
+            return value;
         }
 
-        public ICollection<TKey> Keys => Dictionary.Keys;
-        public TValue Find(TKey id) => this[id];
+        public bool TryGetValue(TKey id, [MaybeNullWhen(false)] out TValue value)
+        {
+            return Dictionary.TryGetValue(id, out value);
+        }
 
         bool ISheet.Contains(object key) => Contains((TKey)key);
         void ISheet.Add(object value) => Add((TValue)value);
@@ -191,7 +197,9 @@ namespace Cathei.BakingSheet
             object IEnumerator.Current => Current;
             void IEnumerator.Reset() => _index = -1;
 
-            public void Dispose() { }
+            public void Dispose()
+            {
+            }
         }
     }
 

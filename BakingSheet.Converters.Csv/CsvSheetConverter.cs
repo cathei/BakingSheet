@@ -39,6 +39,8 @@ namespace Cathei.BakingSheet
         {
             private CsvTable _table;
 
+            public IRawSheetImporterPage Next => null;
+
             public Page(CsvTable table)
             {
                 _table = table;
@@ -48,7 +50,7 @@ namespace Cathei.BakingSheet
             {
                 if (row >= _table.Count)
                     return null;
-                
+
                 if (col >= _table[row].Count)
                     return null;
 
@@ -59,10 +61,10 @@ namespace Cathei.BakingSheet
             {
                 for (int i = _table.Count; i <= row; ++i)
                     _table.AddRow();
- 
+
                 for (int i = _table[row].Count; i <= col; ++i)
                     _table[row].Add(null);
- 
+
                 _table[row][col] = data;
             }
         }

@@ -1,5 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using Cathei.BakingSheet.Internal;
@@ -33,7 +35,7 @@ namespace Cathei.BakingSheet.Raw
 
             var valueContext = new SheetValueConvertingContext(exporter, resolver);
 
-            List<string> headerRows = new List<string>();
+            List<string?> headerRows = new List<string?>();
             object[] arguments = new object[propertyMap.MaxDepth];
 
             foreach (var (node, indexes) in leafs)

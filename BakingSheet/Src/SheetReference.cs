@@ -1,6 +1,9 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
@@ -10,10 +13,14 @@ namespace Cathei.BakingSheet
     {
         void Map(SheetConvertingContext context, ISheet sheet);
 
-        object Id { get; set; }
+        object? Id { get; set; }
         Type IdType { get; }
 
-        ISheetRow Ref { get; }
+        ISheetRow? Ref { get; }
+
+        #if !NETSTANDARD2_0
+        [MemberNotNullWhen(true, nameof(Id), nameof(Ref))]
+        #endif
         bool IsValid();
     }
 
@@ -24,30 +31,30 @@ namespace Cathei.BakingSheet
         /// </summary>
         public partial struct Reference : ISheetReference
         {
-            [Preserve] public TKey Id { get; private set; }
+            [Preserve, AllowNull] public TKey Id { get; private set; }
 
-            [Preserve] private TValue reference;
+            [Preserve] private TValue? _reference;
 
             [Preserve]
-            public TValue Ref
+            public TValue? Ref
             {
                 get
                 {
                     EnsureLoadReference();
-                    return reference;
+                    return _reference;
                 }
-                private set => reference = value;
+                private set => _reference = value;
             }
 
-            object ISheetReference.Id
+            object? ISheetReference.Id
             {
                 get => Id;
-                set => Id = (TKey)value;
+                set => Id = value == null ? default : (TKey)value;
             }
 
             public Type IdType => typeof(TKey);
 
-            ISheetRow ISheetReference.Ref => Ref;
+            ISheetRow? ISheetReference.Ref => Ref;
 
             public Reference(TKey id) : this()
             {
@@ -104,6 +111,9 @@ namespace Cathei.BakingSheet
                 return Id == null ? "(null)" : Id.ToString();
             }
 
+            #if !NETSTANDARD2_0
+            [MemberNotNullWhen(true, nameof(Id), nameof(Ref))]
+            #endif
             public bool IsValid()
             {
                 return Ref != null;

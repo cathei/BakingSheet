@@ -61,6 +61,8 @@ namespace Cathei.BakingSheet
         {
             private GridData _grid;
 
+            public IRawSheetImporterPage Next => null;
+
             public Page(GSheet gsheet)
             {
                 _grid = gsheet.Data.First();

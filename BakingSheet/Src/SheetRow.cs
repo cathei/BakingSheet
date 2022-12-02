@@ -1,5 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,9 +13,9 @@ namespace Cathei.BakingSheet
     /// Represents a Row of a Sheet.
     /// </summary>
     /// <typeparam name="TKey">Type of Id column.</typeparam>
-    public abstract class SheetRow<TKey> : ISheetRow<TKey>
+    public abstract class SheetRow<TKey> : ISheetRow<TKey> where TKey : notnull
     {
-        [Preserve] public TKey Id { get; set; }
+        [Preserve] public TKey Id { get; set; } = default!;
         [NonSerialized] public int Index { get; internal set; }
 
         object ISheetRow.Id => Id;
@@ -44,11 +46,11 @@ namespace Cathei.BakingSheet
     /// <typeparam name="TKey">Type of Id column.</typeparam>
     /// <typeparam name="TElem">Type of Element.</typeparam>
     public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, ISheetRowArray<TElem>
+        where TKey : notnull
         where TElem : SheetRowElem, new()
     {
-        [Preserve]
         // setter is necessary for reflection
-        public VerticalList<TElem> Arr { get; private set; } = new VerticalList<TElem>();
+        [Preserve] public VerticalList<TElem> Arr { get; private set; } = new VerticalList<TElem>();
 
         IReadOnlyList<object> ISheetRowArray.Arr => Arr;
         public Type ElemType => typeof(TElem);

@@ -1,5 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -29,7 +31,7 @@ namespace Cathei.BakingSheet.Internal
 
             public virtual bool IsLeaf => false;
             public virtual bool IsVertical => false;
-            public abstract Node GetChild(string subpath);
+            public abstract Node? GetChild(string subpath);
             public virtual bool HasSubpath(string subpath) => false;
 
             // can be used when parent and child shares same column name
