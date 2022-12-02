@@ -13,8 +13,8 @@ namespace Cathei.BakingSheet
     /// <typeparam name="TKey">Type of Id column.</typeparam>
     public abstract class SheetRow<TKey> : ISheetRow<TKey>
     {
-        [Preserve]
-        public TKey Id { get; set; }
+        [Preserve] public TKey Id { get; set; }
+        [NonSerialized] public int Index { get; internal set; }
 
         object ISheetRow.Id => Id;
 
@@ -27,11 +27,15 @@ namespace Cathei.BakingSheet
     /// </summary>
     public abstract class SheetRowElem : ISheetRowElem
     {
-        [NonSerialized]
-        public int Index { get; internal set; }
+        [NonSerialized] public int Index { get; internal set; }
 
-        public virtual void PostLoad(SheetConvertingContext context) { }
-        public virtual void VerifyAssets(SheetConvertingContext context) { }
+        public virtual void PostLoad(SheetConvertingContext context)
+        {
+        }
+
+        public virtual void VerifyAssets(SheetConvertingContext context)
+        {
+        }
     }
 
     /// <summary>
@@ -61,12 +65,14 @@ namespace Cathei.BakingSheet
         {
             base.PostLoad(context);
 
-            for (int idx = 0; idx < Arr.Count; ++idx)
+            int index = -1;
+
+            foreach (var elem in Arr)
             {
-                using (context.Logger.BeginScope(idx))
+                using (context.Logger.BeginScope(++index))
                 {
-                    Arr[idx].Index = idx;
-                    Arr[idx].PostLoad(context);
+                    elem.Index = index;
+                    elem.PostLoad(context);
                 }
             }
         }
@@ -75,11 +81,13 @@ namespace Cathei.BakingSheet
         {
             base.VerifyAssets(context);
 
-            for (int idx = 0; idx < Arr.Count; ++idx)
+            int index = -1;
+
+            foreach (var elem in Arr)
             {
-                using (context.Logger.BeginScope(idx))
+                using (context.Logger.BeginScope(++index))
                 {
-                    Arr[idx].VerifyAssets(context);
+                    elem.VerifyAssets(context);
                 }
             }
         }

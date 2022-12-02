@@ -35,6 +35,7 @@ namespace Cathei.BakingSheet
             }
         }
 
+        public ICollection<TKey> Keys => Dictionary.Keys;
         public TValue Find(TKey id) => this[id];
 
         bool ISheet.Contains(object key) => Contains((TKey)key);
@@ -110,10 +111,13 @@ namespace Cathei.BakingSheet
         {
             using (context.Logger.BeginScope(Name))
             {
+                int index = -1;
+
                 foreach (var row in Items)
                 {
                     using (context.Logger.BeginScope(row.Id))
                     {
+                        row.Index = ++index;
                         row.PostLoad(context);
                     }
                 }

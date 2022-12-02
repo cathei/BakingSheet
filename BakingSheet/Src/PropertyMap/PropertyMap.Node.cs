@@ -89,11 +89,9 @@ namespace Cathei.BakingSheet.Internal
 
             public void ModifyValue(ISheetRow row, int vindex, IEnumerator<object> indexer, ModifyDelegate modifier)
             {
-                object obj = null;
-
                 if (Parent == null)
                 {
-                    Getter(this, row, null, out obj);
+                    Getter(this, row, null, out var obj);
                     modifier(obj);
 
                     // there would be no setter for root node
@@ -106,7 +104,7 @@ namespace Cathei.BakingSheet.Internal
                         return null;
 
                     object index = Parent?.GetChildIndex(vindex, indexer);
-                    Getter(this, parentObj, index, out obj);
+                    Getter(this, parentObj, index, out var obj);
 
                     // for leaf nodes there might be no default constructor available
                     if (obj == null && !IsLeaf)

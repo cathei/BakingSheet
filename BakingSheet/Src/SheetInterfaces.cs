@@ -27,7 +27,10 @@ namespace Cathei.BakingSheet
 
     public interface ISheet<out TRow> : ISheet, IReadOnlyList<TRow>
         where TRow : ISheetRow
-    { }
+    {
+        new int Count { get; }
+        new IEnumerator<TRow> GetEnumerator();
+    }
 
     public interface ISheet<in TKey, out TRow> : ISheet<TRow>
         where TRow : ISheetRow
@@ -42,6 +45,7 @@ namespace Cathei.BakingSheet
     public interface ISheetRow
     {
         object Id { get; }
+        int Index { get; }
     }
 
     public interface ISheetRow<out TKey> : ISheetRow

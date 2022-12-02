@@ -37,6 +37,21 @@ namespace Cathei.BakingSheet
             return _sheetProperties;
         }
 
+        public ISheet Find(string name)
+        {
+            var props = GetSheetProperties();
+
+            if (props.TryGetValue(name, out var sheet))
+                return sheet.GetValue(this) as ISheet;
+
+            return null;
+        }
+
+        public T Find<T>(string name) where T : class, ISheet
+        {
+            return Find(name) as T;
+        }
+
         public async Task<bool> Bake(params ISheetImporter[] importers)
         {
             var context = new SheetConvertingContext
