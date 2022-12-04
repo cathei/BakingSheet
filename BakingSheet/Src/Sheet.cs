@@ -172,7 +172,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-#if NETSTANDARD2_0
+#if NET_STANDARD_2_0
         public bool TryGetValue(TKey id, [MaybeNullWhen(false)] out TValue value)
         {
             return Dictionary.TryGetValue(id, out value);

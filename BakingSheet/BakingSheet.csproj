@@ -13,7 +13,9 @@
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <!-- Unity 2020 support -->
     <LangVersion>8</LangVersion>
+    <DefineConstants>NET_STANDARD_2_0</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,5 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -20,7 +22,7 @@ namespace Cathei.BakingSheet.Raw
 
         private bool _isLoaded;
 
-        public RawSheetImporter(TimeZoneInfo timeZoneInfo, IFormatProvider formatProvider)
+        public RawSheetImporter(TimeZoneInfo? timeZoneInfo, IFormatProvider? formatProvider)
         {
             TimeZoneInfo = timeZoneInfo ?? TimeZoneInfo.Utc;
             FormatProvider = formatProvider ?? CultureInfo.InvariantCulture;
@@ -51,11 +53,13 @@ namespace Cathei.BakingSheet.Raw
                 using (context.Logger.BeginScope(pair.Key))
                 {
                     var page = GetPage(pair.Key);
-
-                    if (page == null)
-                        continue;
-
                     var sheet = Activator.CreateInstance(pair.Value.PropertyType) as ISheet;
+
+                    if (sheet == null)
+                    {
+                        context.Logger.LogError("Failed to create sheet of type {SheetType}", pair.Value.PropertyType);
+                        continue;
+                    }
 
                     page.Import(this, context, sheet);
                     pair.Value.SetValue(context.Container, sheet);

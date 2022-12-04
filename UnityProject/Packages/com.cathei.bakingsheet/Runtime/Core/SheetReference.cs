@@ -1,6 +1,9 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
@@ -10,10 +13,14 @@ namespace Cathei.BakingSheet
     {
         void Map(SheetConvertingContext context, ISheet sheet);
 
-        object Id { get; set; }
+        object? Id { get; set; }
         Type IdType { get; }
 
-        ISheetRow Ref { get; }
+        ISheetRow? Ref { get; }
+
+#if !NET_STANDARD_2_0
+        [MemberNotNullWhen(true, nameof(Id), nameof(Ref))]
+#endif
         bool IsValid();
     }
 
@@ -24,14 +31,12 @@ namespace Cathei.BakingSheet
         /// </summary>
         public partial struct Reference : ISheetReference
         {
-            [Preserve]
-            public TKey Id { get; private set; }
+            [Preserve, AllowNull, MaybeNull] public TKey Id { get; private set; }
+
+            [Preserve] private TValue? reference;
 
             [Preserve]
-            private TValue reference;
-
-            [Preserve]
-            public TValue Ref
+            public TValue? Ref
             {
                 get
                 {
@@ -41,15 +46,15 @@ namespace Cathei.BakingSheet
                 private set => reference = value;
             }
 
-            object ISheetReference.Id
+            object? ISheetReference.Id
             {
                 get => Id;
-                set => Id = (TKey)value;
+                set => Id = value == null ? default : (TKey)value;
             }
 
             public Type IdType => typeof(TKey);
 
-            ISheetRow ISheetReference.Ref => Ref;
+            ISheetRow? ISheetReference.Ref => Ref;
 
             public Reference(TKey id) : this()
             {
@@ -60,30 +65,38 @@ namespace Cathei.BakingSheet
             {
                 EnsureLoadReference();
 
+                if (Id == null)
+                    return;
+
                 if (sheet is ISheet<TKey, TValue> referSheet)
                 {
+                    var referValue = referSheet.Find(Id);
+
                     if (Ref == null)
                     {
-                        Ref = referSheet[Id];
+                        Ref = referValue;
                     }
-                    else if (Ref != referSheet[Id])
+                    else if (Ref != referValue)
                     {
-                        context.Logger.LogError("Found different reference than originally set for \"{ReferenceId}\"", Id);
+                        context.Logger.LogError("Found different reference than originally set for \"{ReferenceId}\"",
+                            Id);
                     }
                 }
 
                 if (Id != null && Ref == null)
                 {
-                    context.Logger.LogError("Failed to find reference \"{ReferenceId}\" on {SheetName}", Id, sheet.Name);
+                    context.Logger.LogError("Failed to find reference \"{ReferenceId}\" on {SheetName}", Id,
+                        sheet.Name);
                 }
             }
 
+            [return: MaybeNull]
             public static implicit operator TKey(Reference origin)
             {
                 return origin.Id;
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (!(obj is Reference other))
                     return false;
@@ -99,11 +112,14 @@ namespace Cathei.BakingSheet
                 return Id == null ? 0 : Id.GetHashCode();
             }
 
-            public override string ToString()
+            public override string? ToString()
             {
                 return Id == null ? "(null)" : Id.ToString();
             }
 
+#if !NET_STANDARD_2_0
+            [MemberNotNullWhen(true, nameof(Id), nameof(Ref))]
+#endif
             public bool IsValid()
             {
                 return Ref != null;

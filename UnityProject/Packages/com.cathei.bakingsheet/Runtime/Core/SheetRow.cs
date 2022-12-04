@@ -1,5 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,15 +13,15 @@ namespace Cathei.BakingSheet
     /// Represents a Row of a Sheet.
     /// </summary>
     /// <typeparam name="TKey">Type of Id column.</typeparam>
-    public abstract class SheetRow<TKey> : ISheetRow<TKey>
+    public abstract class SheetRow<TKey> : ISheetRow<TKey> where TKey : notnull
     {
-        [Preserve]
-        public TKey Id { get; set; }
+        [Preserve] public TKey Id { get; set; } = default!;
+        [NonSerialized] public int Index { get; internal set; }
 
         object ISheetRow.Id => Id;
 
         public virtual void PostLoad(SheetConvertingContext context) { }
-        public virtual void VerifyAssets(SheetConvertingContext context) { }
+        public virtual void VerifyAssets(SheetVerifyingContext context) { }
     }
 
     /// <summary>
@@ -27,11 +29,15 @@ namespace Cathei.BakingSheet
     /// </summary>
     public abstract class SheetRowElem : ISheetRowElem
     {
-        [NonSerialized]
-        public int Index { get; internal set; }
+        [NonSerialized] public int Index { get; internal set; }
 
-        public virtual void PostLoad(SheetConvertingContext context) { }
-        public virtual void VerifyAssets(SheetConvertingContext context) { }
+        public virtual void PostLoad(SheetConvertingContext context)
+        {
+        }
+
+        public virtual void VerifyAssets(SheetConvertingContext context)
+        {
+        }
     }
 
     /// <summary>
@@ -40,11 +46,11 @@ namespace Cathei.BakingSheet
     /// <typeparam name="TKey">Type of Id column.</typeparam>
     /// <typeparam name="TElem">Type of Element.</typeparam>
     public abstract class SheetRowArray<TKey, TElem> : SheetRow<TKey>, ISheetRowArray<TElem>
+        where TKey : notnull
         where TElem : SheetRowElem, new()
     {
-        [Preserve]
         // setter is necessary for reflection
-        public VerticalList<TElem> Arr { get; private set; } = new VerticalList<TElem>();
+        [Preserve] public VerticalList<TElem> Arr { get; private set; } = new VerticalList<TElem>();
 
         IReadOnlyList<object> ISheetRowArray.Arr => Arr;
         public Type ElemType => typeof(TElem);
@@ -61,25 +67,29 @@ namespace Cathei.BakingSheet
         {
             base.PostLoad(context);
 
-            for (int idx = 0; idx < Arr.Count; ++idx)
+            int index = -1;
+
+            foreach (var elem in Arr)
             {
-                using (context.Logger.BeginScope(idx))
+                using (context.Logger.BeginScope(++index))
                 {
-                    Arr[idx].Index = idx;
-                    Arr[idx].PostLoad(context);
+                    elem.Index = index;
+                    elem.PostLoad(context);
                 }
             }
         }
 
-        public override void VerifyAssets(SheetConvertingContext context)
+        public override void VerifyAssets(SheetVerifyingContext context)
         {
             base.VerifyAssets(context);
 
-            for (int idx = 0; idx < Arr.Count; ++idx)
+            int index = -1;
+
+            foreach (var elem in Arr)
             {
-                using (context.Logger.BeginScope(idx))
+                using (context.Logger.BeginScope(++index))
                 {
-                    Arr[idx].VerifyAssets(context);
+                    elem.VerifyAssets(context);
                 }
             }
         }
@@ -97,7 +107,7 @@ namespace Cathei.BakingSheet
             }
 
             public bool MoveNext() => _enumerator.MoveNext();
-            public TElem Current => _enumerator.Current;
+            public TElem Current => _enumerator.Current!;
 
             void IEnumerator.Reset() => ((IEnumerator)_enumerator).Reset();
             object IEnumerator.Current => Current;

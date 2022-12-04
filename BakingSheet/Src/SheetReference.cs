@@ -18,7 +18,7 @@ namespace Cathei.BakingSheet
 
         ISheetRow? Ref { get; }
 
-#if !NETSTANDARD2_0
+#if !NET_STANDARD_2_0
         [MemberNotNullWhen(true, nameof(Id), nameof(Ref))]
 #endif
         bool IsValid();
@@ -117,7 +117,7 @@ namespace Cathei.BakingSheet
                 return Id == null ? "(null)" : Id.ToString();
             }
 
-#if !NETSTANDARD2_0
+#if !NET_STANDARD_2_0
             [MemberNotNullWhen(true, nameof(Id), nameof(Ref))]
 #endif
             public bool IsValid()

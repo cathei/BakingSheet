@@ -1,9 +1,13 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
@@ -16,26 +20,24 @@ namespace Cathei.BakingSheet
     /// <typeparam name="TKey">Type of Id column.</typeparam>
     /// <typeparam name="TValue">Type of Row.</typeparam>
     public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet<TKey, TValue>
+        where TKey : notnull
         where TValue : SheetRow<TKey>, new()
     {
-        [Preserve]
-        public string Name { get; set; }
+        [Preserve] public string Name { get; set; } = string.Empty;
+        [Preserve] public string HashCode { get; private set; } = string.Empty;
 
-        private PropertyMap _propertyMap;
+        private PropertyMap? _propertyMap;
 
         public Type RowType => typeof(TValue);
 
-        public new TValue this[TKey id]
-        {
-            get
-            {
-                if (id == null || !Contains(id))
-                    return default(TValue);
-                return base[id];
-            }
-        }
+        public ICollection<TKey> Keys => Dictionary?.Keys ?? Array.Empty<TKey>();
 
-        public TValue Find(TKey id) => this[id];
+        [Pure]
+        public TValue? Find(TKey id)
+        {
+            TryGetValue(id, out var value);
+            return value;
+        }
 
         bool ISheet.Contains(object key) => Contains((TKey)key);
         void ISheet.Add(object value) => Add((TValue)value);
@@ -82,7 +84,7 @@ namespace Cathei.BakingSheet
 
                     foreach (var row in Items)
                     {
-                        string fullPath = string.Format(node.FullPath, indexes.ToArray());
+                        string fullPath = string.Format(node.FullPath ?? "", indexes.ToArray());
                         int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
 
                         using (context.Logger.BeginScope(row.Id))
@@ -110,17 +112,20 @@ namespace Cathei.BakingSheet
         {
             using (context.Logger.BeginScope(Name))
             {
+                int index = -1;
+
                 foreach (var row in Items)
                 {
                     using (context.Logger.BeginScope(row.Id))
                     {
+                        row.Index = ++index;
                         row.PostLoad(context);
                     }
                 }
             }
         }
 
-        public virtual void VerifyAssets(SheetConvertingContext context)
+        public virtual void VerifyAssets(SheetVerifyingContext context)
         {
             using (context.Logger.BeginScope(Name))
             {
@@ -137,7 +142,7 @@ namespace Cathei.BakingSheet
 
                         foreach (var row in Items)
                         {
-                            string fullPath = string.Format(node.FullPath, indexes.ToArray());
+                            string fullPath = string.Format(node.FullPath ?? "", indexes.ToArray());
 
                             using (context.Logger.BeginScope(row.Id))
                             using (context.Logger.BeginScope(fullPath))
@@ -167,6 +172,13 @@ namespace Cathei.BakingSheet
             }
         }
 
+#if NET_STANDARD_2_0
+        public bool TryGetValue(TKey id, [MaybeNullWhen(false)] out TValue value)
+        {
+            return Dictionary.TryGetValue(id, out value);
+        }
+#endif
+
         /// <summary>
         /// Struct enumerator for Sheet.
         /// </summary>
@@ -187,7 +199,9 @@ namespace Cathei.BakingSheet
             object IEnumerator.Current => Current;
             void IEnumerator.Reset() => _index = -1;
 
-            public void Dispose() { }
+            public void Dispose()
+            {
+            }
         }
     }
 

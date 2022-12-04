@@ -1,5 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,14 @@ namespace Cathei.BakingSheet.Raw
     /// </summary>
     public interface IRawSheetImporterPage
     {
+        /// <summary>
+        /// Linked list for partial sheet import.
+        /// </summary>
+        IRawSheetImporterPage Next { get; }
+
+        /// <summary>
+        /// Get string evaluation of a cell.
+        /// </summary>
         string GetCell(int col, int row);
     }
 
@@ -63,7 +73,7 @@ namespace Cathei.BakingSheet.Raw
             }
 
             var columnNames = new List<string>();
-            var headerRows = new List<string>();
+            var headerRows = new List<string?>();
 
             for (int pageRow = 0; pageRow == 0 || (page.IsEmptyCell(0, pageRow) && !page.IsEmptyRow(pageRow)); ++pageRow)
                 headerRows.Add(null);
@@ -89,10 +99,9 @@ namespace Cathei.BakingSheet.Raw
 
             PropertyMap propertyMap = sheet.GetPropertyMap(context);
 
-            ISheetRow sheetRow = null;
-            string rowId = null;
+            ISheetRow? sheetRow = null;
+            string? rowId = null;
             int vindex = 0;
-            bool skipRow = false;
 
             for (int pageRow = headerRows.Count; !page.IsEmptyRow(pageRow); ++pageRow)
             {
@@ -107,7 +116,8 @@ namespace Cathei.BakingSheet.Raw
                     sheetRow = Activator.CreateInstance(sheet.RowType) as ISheetRow;
                     vindex = 0;
                 }
-                else if (skipRow)
+
+                if (sheetRow == null)
                 {
                     // skipping this row
                     continue;
@@ -122,7 +132,7 @@ namespace Cathei.BakingSheet.Raw
                     catch
                     {
                         // failed to convert, skip this row
-                        skipRow = true;
+                        sheetRow = null;
                         continue;
                     }
 

@@ -1,5 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -16,7 +18,7 @@ namespace Cathei.BakingSheet.Raw
         protected abstract Task<bool> SaveData();
         protected abstract IRawSheetExporterPage CreatePage(string sheetName);
 
-        protected RawSheetConverter(TimeZoneInfo timeZoneInfo, IFormatProvider formatProvider, bool splitHeader = false)
+        protected RawSheetConverter(TimeZoneInfo? timeZoneInfo, IFormatProvider? formatProvider, bool splitHeader = false)
             : base(timeZoneInfo, formatProvider)
         {
             SplitHeader = splitHeader;
