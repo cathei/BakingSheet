@@ -119,7 +119,7 @@ namespace Cathei.BakingSheet
 
         public virtual void Verify(params SheetVerifier[] verifiers)
         {
-            var context = new SheetConvertingContext(this, _logger, verifiers);
+            var context = new SheetVerifyingContext(this, _logger, verifiers);
 
             foreach (var pair in GetSheetProperties())
             {

@@ -3,7 +3,9 @@
 #nullable enable
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 
@@ -14,14 +16,14 @@ namespace Cathei.BakingSheet.Internal
     /// </summary>
     public partial class PropertyMap
     {
-        private NodeObject Root { get; }
-        private NodeList Arr { get; }
+        private PropertyNodeObject Root { get; }
+        private PropertyNodeList? Arr { get; }
 
         private readonly SheetConvertingContext _context;
 
-        private List<object> _indexes = new List<object>();
+        private readonly List<object> _indexes = new List<object>();
 
-        private HashSet<string> _warned = null;
+        private HashSet<string>? _warned = null;
 
         private int _maxDepth;
 
@@ -43,18 +45,7 @@ namespace Cathei.BakingSheet.Internal
             yield return path.Substring(idx);
         }
 
-        private static bool ShouldInclude(PropertyInfo propertyInfo)
-        {
-            if (propertyInfo.IsDefined(typeof(NonSerializedAttribute)))
-                return false;
-
-            if (propertyInfo.SetMethod == null)
-                return false;
-
-            return true;
-        }
-
-        private static Type[] GetGenericArgument(Type type, Type baseType)
+        internal static Type[] GetGenericArgument(Type type, Type baseType)
         {
             if (baseType.IsInterface)
             {
@@ -67,18 +58,20 @@ namespace Cathei.BakingSheet.Internal
             }
             else
             {
-                while (type != null)
+                Type? current = type;
+
+                while (current != null)
                 {
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == baseType)
-                        return type.GetGenericArguments();
-                    type = type.BaseType;
+                    if (current.IsGenericType && current.GetGenericTypeDefinition() == baseType)
+                        return current.GetGenericArguments();
+                    current = current.BaseType;
                 }
             }
 
-            return null;
+            throw new InvalidOperationException($"Type {type} does not implement {baseType}");
         }
 
-        private static bool RootGetter(Node child, object obj, object key, out object value)
+        private static bool RootGetter(PropertyNode child, object obj, object? key, out object value)
         {
             value = obj;
             return true;
@@ -89,37 +82,18 @@ namespace Cathei.BakingSheet.Internal
             _context = context;
 
             var resolver = context.Container.ContractResolver;
+            var rowType = GetGenericArgument(sheetType, typeof(Sheet<,>))[1];
 
-            Type rowType = GetGenericArgument(sheetType, typeof(Sheet<,>))[1];
-
-            Root = new NodeObject
-            {
-                FullPath = null,
-                ValueType = rowType,
-                Getter = RootGetter,
-                Setter = null,
-                PropertyInfo = null,
-            };
-
-            Root.GenerateChildren(resolver, 0);
+            Root = new PropertyNodeObject(null, null, rowType, RootGetter, null, null, resolver, 0);
 
             _maxDepth = Root.CalculateDepth();
 
             if (typeof(ISheetRowArray).IsAssignableFrom(rowType))
             {
-                Type arrElementType = GetGenericArgument(rowType, typeof(SheetRowArray<,>))[1];
-                PropertyInfo arrPropertyInfo = rowType.GetProperty(nameof(ISheetRowArray.Arr));
+                var arrPropertyInfo = rowType.GetProperty(nameof(ISheetRowArray.Arr))!;
 
-                Arr = new NodeList(true)
-                {
-                    FullPath = null,
-                    ValueType = arrPropertyInfo.PropertyType,
-                    Getter = NodeObject.ValueGetter,
-                    Setter = null,
-                    PropertyInfo = arrPropertyInfo,
-                };
-
-                Arr.GenerateChildren(resolver, 0);
+                Arr = new PropertyNodeList(null, null, arrPropertyInfo.PropertyType,
+                    PropertyNodeObject.ValueGetter, null, arrPropertyInfo, resolver, 0, true);
 
                 _maxDepth = Math.Max(_maxDepth, Arr.CalculateDepth());
             }
@@ -135,9 +109,10 @@ namespace Cathei.BakingSheet.Internal
         /// <param name="formatter">Format provider to convert value to object.</param>
         public void SetValue(ISheetRow row, int vindex, string path, string value, ISheetFormatter formatter)
         {
-            Node node = null;
+            PropertyNode? node = null;
 
-            var context = new SheetValueConvertingContext(formatter, _context.Container.ContractResolver);
+            var resolver = _context.Container.ContractResolver;
+            var context = new SheetValueConvertingContext(formatter, resolver);
 
             _indexes.Clear();
 
@@ -177,7 +152,9 @@ namespace Cathei.BakingSheet.Internal
 
                 node = node.GetChild(subpath);
 
-                if (node.IsVertical)
+                Debug.Assert(node != null);
+
+                if (node!.IsVertical)
                 {
                     if (isVertical)
                     {
@@ -197,8 +174,18 @@ namespace Cathei.BakingSheet.Internal
                 return;
             }
 
+            Debug.Assert(node != null);
+
+            var converter = node!.ValueConverter;
+
+            if (converter == null)
+            {
+                _context.Logger.LogError("No converter registered for type {NodeType}", node.ValueType);
+                return;
+            }
+
             node.SetValue(row, vindex, _indexes.GetEnumerator(),
-                node.ValueConverter.StringToValue(node.ValueType, value, context));
+                converter.StringToValue(node.ValueType, value, context));
         }
 
         /// <summary>
@@ -212,7 +199,7 @@ namespace Cathei.BakingSheet.Internal
                 Root.UpdateIndex(row);
 
                 if (row is ISheetRowArray rowArray)
-                    Arr.UpdateIndex(rowArray.Arr);
+                    Arr!.UpdateIndex(rowArray.Arr);
             }
         }
 
@@ -221,7 +208,7 @@ namespace Cathei.BakingSheet.Internal
         /// Calling UpdateCount first is required to get correct result
         /// index list are returned just to feed back, only valid on enumeration loop
         /// </summary>
-        public IEnumerable<(Node, IReadOnlyList<object>)> TraverseLeaf()
+        public IEnumerable<(PropertyNode, IReadOnlyList<object>)> TraverseLeaf()
         {
             _indexes.Clear();
 

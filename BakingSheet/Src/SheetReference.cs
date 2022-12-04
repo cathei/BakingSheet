@@ -18,9 +18,9 @@ namespace Cathei.BakingSheet
 
         ISheetRow? Ref { get; }
 
-        #if !NETSTANDARD2_0
+#if !NETSTANDARD2_0
         [MemberNotNullWhen(true, nameof(Id), nameof(Ref))]
-        #endif
+#endif
         bool IsValid();
     }
 
@@ -31,9 +31,9 @@ namespace Cathei.BakingSheet
         /// </summary>
         public partial struct Reference : ISheetReference
         {
-            [Preserve, AllowNull] public TKey Id { get; private set; }
+            [Preserve, AllowNull, MaybeNull] public TKey Id { get; private set; }
 
-            [Preserve] private TValue? _reference;
+            [Preserve] private TValue? reference;
 
             [Preserve]
             public TValue? Ref
@@ -41,9 +41,9 @@ namespace Cathei.BakingSheet
                 get
                 {
                     EnsureLoadReference();
-                    return _reference;
+                    return reference;
                 }
-                private set => _reference = value;
+                private set => reference = value;
             }
 
             object? ISheetReference.Id
@@ -65,13 +65,18 @@ namespace Cathei.BakingSheet
             {
                 EnsureLoadReference();
 
+                if (Id == null)
+                    return;
+
                 if (sheet is ISheet<TKey, TValue> referSheet)
                 {
+                    var referValue = referSheet.Find(Id);
+
                     if (Ref == null)
                     {
-                        Ref = referSheet[Id];
+                        Ref = referValue;
                     }
-                    else if (Ref != referSheet[Id])
+                    else if (Ref != referValue)
                     {
                         context.Logger.LogError("Found different reference than originally set for \"{ReferenceId}\"",
                             Id);
@@ -85,12 +90,13 @@ namespace Cathei.BakingSheet
                 }
             }
 
+            [return: MaybeNull]
             public static implicit operator TKey(Reference origin)
             {
                 return origin.Id;
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (!(obj is Reference other))
                     return false;
@@ -106,14 +112,14 @@ namespace Cathei.BakingSheet
                 return Id == null ? 0 : Id.GetHashCode();
             }
 
-            public override string ToString()
+            public override string? ToString()
             {
                 return Id == null ? "(null)" : Id.ToString();
             }
 
-            #if !NETSTANDARD2_0
+#if !NETSTANDARD2_0
             [MemberNotNullWhen(true, nameof(Id), nameof(Ref))]
-            #endif
+#endif
             public bool IsValid()
             {
                 return Ref != null;

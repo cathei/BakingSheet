@@ -36,6 +36,10 @@
 // SOFTWARE.
 #endregion
 
+#if !NETSTANDARD2_0
+#define NULLABLE_ATTRIBUTES_DISABLE
+#endif
+
 #if !NULLABLE_ATTRIBUTES_DISABLE
 #nullable enable
 #pragma warning disable
@@ -46,26 +50,37 @@ namespace System.Diagnostics.CodeAnalysis
 
 #if DEBUG
     /// <summary>
-    ///     Specifies that an output is not <see langword="null"/> even if the
-    ///     corresponding type allows it.
+    ///     Specifies that when a method returns <see cref="ReturnValue"/>, 
+    ///     the parameter may be <see langword="null"/> even if the corresponding type disallows it.
     /// </summary>
 #endif
-    [AttributeUsage(
-        AttributeTargets.Field | AttributeTargets.Parameter |
-        AttributeTargets.Property | AttributeTargets.ReturnValue,
-        Inherited = false
-    )]
+    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
 #if !NULLABLE_ATTRIBUTES_INCLUDE_IN_CODE_COVERAGE
     [ExcludeFromCodeCoverage, DebuggerNonUserCode]
 #endif
-    internal sealed class NotNullAttribute : Attribute
+    internal sealed class MaybeNullWhenAttribute : Attribute
     {
 #if DEBUG
         /// <summary>
-        ///     Initializes a new instance of the <see cref="NotNullAttribute"/> class.
+        ///     Gets the return value condition.
+        ///     If the method returns this value, the associated parameter may be <see langword="null"/>.
         /// </summary>
 #endif
-        public NotNullAttribute() { }
+        public bool ReturnValue { get; }
+
+#if DEBUG
+        /// <summary>
+        ///      Initializes the attribute with the specified return value condition.
+        /// </summary>
+        /// <param name="returnValue">
+        ///     The return value condition.
+        ///     If the method returns this value, the associated parameter may be <see langword="null"/>.
+        /// </param>
+#endif
+        public MaybeNullWhenAttribute(bool returnValue)
+        {
+            ReturnValue = returnValue;
+        }
     }
 }
 

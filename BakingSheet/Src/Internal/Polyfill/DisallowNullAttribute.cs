@@ -36,6 +36,10 @@
 // SOFTWARE.
 #endregion
 
+#if !NETSTANDARD2_0
+#define NULLABLE_ATTRIBUTES_DISABLE
+#endif
+
 #if !NULLABLE_ATTRIBUTES_DISABLE
 #nullable enable
 #pragma warning disable
@@ -46,40 +50,25 @@ namespace System.Diagnostics.CodeAnalysis
 
 #if DEBUG
     /// <summary>
-    ///     Specifies that the method will not return if the associated <see cref="Boolean"/>
-    ///     parameter is passed the specified value.
+    ///     Specifies that <see langword="null"/> is disallowed as an input even if the
+    ///     corresponding type allows it.
     /// </summary>
 #endif
-    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
+    [AttributeUsage(
+        AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property,
+        Inherited = false
+    )]
 #if !NULLABLE_ATTRIBUTES_INCLUDE_IN_CODE_COVERAGE
     [ExcludeFromCodeCoverage, DebuggerNonUserCode]
 #endif
-    internal sealed class DoesNotReturnIfAttribute : Attribute
+    internal sealed class DisallowNullAttribute : Attribute
     {
 #if DEBUG
         /// <summary>
-        ///     Gets the condition parameter value.
-        ///     Code after the method is considered unreachable by diagnostics if the argument
-        ///     to the associated parameter matches this value.
+        ///     Initializes a new instance of the <see cref="DisallowNullAttribute"/> class.
         /// </summary>
 #endif
-        public bool ParameterValue { get; }
-
-#if DEBUG
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="DoesNotReturnIfAttribute"/>
-        ///     class with the specified parameter value.
-        /// </summary>
-        /// <param name="parameterValue">
-        ///     The condition parameter value.
-        ///     Code after the method is considered unreachable by diagnostics if the argument
-        ///     to the associated parameter matches this value.
-        /// </param>
-#endif
-        public DoesNotReturnIfAttribute(bool parameterValue)
-        {
-            ParameterValue = parameterValue;
-        }
+        public DisallowNullAttribute() { }
     }
 }
 

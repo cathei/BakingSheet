@@ -36,6 +36,10 @@
 // SOFTWARE.
 #endregion
 
+#if !NETSTANDARD2_0
+#define NULLABLE_ATTRIBUTES_DISABLE
+#endif
+
 #if !NULLABLE_ATTRIBUTES_DISABLE
 #nullable enable
 #pragma warning disable
@@ -46,25 +50,40 @@ namespace System.Diagnostics.CodeAnalysis
 
 #if DEBUG
     /// <summary>
-    ///     Specifies that <see langword="null"/> is allowed as an input even if the
-    ///     corresponding type disallows it.
+    ///     Specifies that the method will not return if the associated <see cref="Boolean"/>
+    ///     parameter is passed the specified value.
     /// </summary>
 #endif
-    [AttributeUsage(
-        AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property,
-        Inherited = false
-    )]
+    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
 #if !NULLABLE_ATTRIBUTES_INCLUDE_IN_CODE_COVERAGE
     [ExcludeFromCodeCoverage, DebuggerNonUserCode]
 #endif
-    internal sealed class AllowNullAttribute : Attribute
+    internal sealed class DoesNotReturnIfAttribute : Attribute
     {
 #if DEBUG
         /// <summary>
-        ///     Initializes a new instance of the <see cref="AllowNullAttribute"/> class.
+        ///     Gets the condition parameter value.
+        ///     Code after the method is considered unreachable by diagnostics if the argument
+        ///     to the associated parameter matches this value.
         /// </summary>
 #endif
-        public AllowNullAttribute() { }
+        public bool ParameterValue { get; }
+
+#if DEBUG
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DoesNotReturnIfAttribute"/>
+        ///     class with the specified parameter value.
+        /// </summary>
+        /// <param name="parameterValue">
+        ///     The condition parameter value.
+        ///     Code after the method is considered unreachable by diagnostics if the argument
+        ///     to the associated parameter matches this value.
+        /// </param>
+#endif
+        public DoesNotReturnIfAttribute(bool parameterValue)
+        {
+            ParameterValue = parameterValue;
+        }
     }
 }
 

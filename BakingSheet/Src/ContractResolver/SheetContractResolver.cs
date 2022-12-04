@@ -1,7 +1,10 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using Cathei.BakingSheet.Internal;
@@ -21,8 +24,8 @@ namespace Cathei.BakingSheet
 
         private class ConverterCache
         {
-            public readonly Dictionary<Type, ISheetValueConverter> FromAttribute = new Dictionary<Type, ISheetValueConverter>();
-            public readonly Dictionary<Type, ISheetValueConverter> FromTargetType = new Dictionary<Type, ISheetValueConverter>();
+            public readonly Dictionary<Type, ISheetValueConverter?> FromAttribute = new Dictionary<Type, ISheetValueConverter?>();
+            public readonly Dictionary<Type, ISheetValueConverter?> FromTargetType = new Dictionary<Type, ISheetValueConverter?>();
         }
 
         /// <summary>
@@ -32,26 +35,24 @@ namespace Cathei.BakingSheet
         /// <param name="converters">Additional value converters.</param>
         public SheetContractResolver(params ISheetValueConverter[] converters)
         {
-            var list = new List<ISheetValueConverter>();
-
-            if (converters != null)
-                list.AddRange(converters);
-
-            // add default converters
-            list.Add(new NullableValueConverter());
-            list.Add(new EnumValueConverter());
-            list.Add(new PrimitiveValueConverter());
-            list.Add(new DateTimeValueConverter());
-            list.Add(new TimeSpanValueConverter());
-            list.Add(new SheetReferenceValueConverter());
-            list.Add(new AssetPathValueConverter());
+            var list = new List<ISheetValueConverter>(converters)
+            {
+                // add default converters
+                new NullableValueConverter(),
+                new EnumValueConverter(),
+                new PrimitiveValueConverter(),
+                new DateTimeValueConverter(),
+                new TimeSpanValueConverter(),
+                new SheetReferenceValueConverter(),
+                new AssetPathValueConverter()
+            };
 
             _converters = list;
         }
 
-        public virtual ISheetValueConverter GetValueConverter(Type type)
+        public virtual ISheetValueConverter? GetValueConverter(Type type)
         {
-            var cache = _cache.Value;
+            var cache = _cache.Value!;
 
             if (cache.FromTargetType.TryGetValue(type, out var cached))
                 return cached;
@@ -59,7 +60,7 @@ namespace Cathei.BakingSheet
             // type-level converter
             if (type.IsDefined(typeof(SheetValueConverterAttribute)))
             {
-                var attr = type.GetCustomAttribute<SheetValueConverterAttribute>();
+                var attr = type.GetCustomAttribute<SheetValueConverterAttribute>()!;
                 var converter = GetConverterFromAttribute(attr);
 
                 cache.FromTargetType.Add(type, converter);
@@ -81,7 +82,7 @@ namespace Cathei.BakingSheet
             return null;
         }
 
-        public virtual ISheetValueConverter GetValueConverter(PropertyInfo propertyInfo)
+        public virtual ISheetValueConverter? GetValueConverter(PropertyInfo? propertyInfo)
         {
             if (propertyInfo == null)
                 return null;
@@ -90,20 +91,20 @@ namespace Cathei.BakingSheet
                 return null;
 
             // property-level converter
-            var attr = propertyInfo.GetCustomAttribute<SheetValueConverterAttribute>();
+            var attr = propertyInfo.GetCustomAttribute<SheetValueConverterAttribute>()!;
             var converter = GetConverterFromAttribute(attr);
 
             return converter;
         }
 
-        private ISheetValueConverter GetConverterFromAttribute(SheetValueConverterAttribute attr)
+        private ISheetValueConverter? GetConverterFromAttribute(SheetValueConverterAttribute attr)
         {
-            var cache = _cache.Value;
+            var cache = _cache.Value!;
 
             if (cache.FromAttribute.TryGetValue(attr.ConverterType, out var converter))
                 return converter;
 
-            converter = (ISheetValueConverter)Activator.CreateInstance(attr.ConverterType);
+            converter = (ISheetValueConverter?)Activator.CreateInstance(attr.ConverterType);
             cache.FromAttribute.Add(attr.ConverterType, converter);
             return converter;
         }

@@ -14,19 +14,19 @@
 
 #region License
 // MIT License
-//
+// 
 // Copyright (c) Manuel Römer
-//
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,6 +35,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 #endregion
+
+#if !NETSTANDARD2_0
+#define NULLABLE_ATTRIBUTES_DISABLE
+#endif
 
 #if !NULLABLE_ATTRIBUTES_DISABLE
 #nullable enable
@@ -46,26 +50,43 @@ namespace System.Diagnostics.CodeAnalysis
 
 #if DEBUG
     /// <summary>
-    ///     Specifies that an output may be <see langword="null"/> even if the
-    ///     corresponding type disallows it.
+    ///     Specifies that the output will be non-<see langword="null"/> if the
+    ///     named parameter is non-<see langword="null"/>.
     /// </summary>
 #endif
     [AttributeUsage(
-        AttributeTargets.Field | AttributeTargets.Parameter |
-        AttributeTargets.Property | AttributeTargets.ReturnValue,
+        AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue,
+        AllowMultiple = true,
         Inherited = false
     )]
 #if !NULLABLE_ATTRIBUTES_INCLUDE_IN_CODE_COVERAGE
     [ExcludeFromCodeCoverage, DebuggerNonUserCode]
 #endif
-    internal sealed class MaybeNullAttribute : Attribute
+    internal sealed class NotNullIfNotNullAttribute : Attribute
     {
 #if DEBUG
         /// <summary>
-        ///     Initializes a new instance of the <see cref="MaybeNullAttribute"/> class.
+        ///     Gets the associated parameter name.
+        ///     The output will be non-<see langword="null"/> if the argument to the
+        ///     parameter specified is non-<see langword="null"/>.
         /// </summary>
 #endif
-        public MaybeNullAttribute() { }
+        public string ParameterName { get; }
+
+#if DEBUG
+        /// <summary>
+        ///     Initializes the attribute with the associated parameter name.
+        /// </summary>
+        /// <param name="parameterName">
+        ///     The associated parameter name.
+        ///     The output will be non-<see langword="null"/> if the argument to the
+        ///     parameter specified is non-<see langword="null"/>.
+        /// </param>
+#endif
+        public NotNullIfNotNullAttribute(string parameterName)
+        {
+            ParameterName = parameterName;
+        }
     }
 }
 

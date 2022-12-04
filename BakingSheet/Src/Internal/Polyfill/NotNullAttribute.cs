@@ -36,6 +36,10 @@
 // SOFTWARE.
 #endregion
 
+#if !NETSTANDARD2_0
+#define NULLABLE_ATTRIBUTES_DISABLE
+#endif
+
 #if !NULLABLE_ATTRIBUTES_DISABLE
 #nullable enable
 #pragma warning disable
@@ -46,22 +50,26 @@ namespace System.Diagnostics.CodeAnalysis
 
 #if DEBUG
     /// <summary>
-    ///     Specifies that a method that will never return under any circumstance.
+    ///     Specifies that an output is not <see langword="null"/> even if the
+    ///     corresponding type allows it.
     /// </summary>
 #endif
-    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    [AttributeUsage(
+        AttributeTargets.Field | AttributeTargets.Parameter |
+        AttributeTargets.Property | AttributeTargets.ReturnValue,
+        Inherited = false
+    )]
 #if !NULLABLE_ATTRIBUTES_INCLUDE_IN_CODE_COVERAGE
     [ExcludeFromCodeCoverage, DebuggerNonUserCode]
 #endif
-    internal sealed class DoesNotReturnAttribute : Attribute
+    internal sealed class NotNullAttribute : Attribute
     {
 #if DEBUG
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DoesNotReturnAttribute"/> class.
+        ///     Initializes a new instance of the <see cref="NotNullAttribute"/> class.
         /// </summary>
-        ///
 #endif
-        public DoesNotReturnAttribute() { }
+        public NotNullAttribute() { }
     }
 }
 

@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
 
@@ -25,7 +26,7 @@ namespace Cathei.BakingSheet
 
         void MapReferences(SheetConvertingContext context, Dictionary<Type, ISheet> rowTypeToSheet);
         void PostLoad(SheetConvertingContext context);
-        void VerifyAssets(SheetConvertingContext context);
+        void VerifyAssets(SheetVerifyingContext context);
     }
 
     public interface ISheet<out TRow> : ISheet, IReadOnlyList<TRow>
@@ -38,10 +39,10 @@ namespace Cathei.BakingSheet
     public interface ISheet<in TKey, out TRow> : ISheet<TRow>
         where TRow : class, ISheetRow
     {
-        TRow this[TKey key] { get; }
-        TRow? Find(TKey key);
+        [Pure] TRow this[TKey key] { get; }
+        [Pure] TRow? Find(TKey key);
 
-        bool Contains(TKey key);
+        [Pure] bool Contains(TKey key);
         bool Remove(TKey key);
     }
 

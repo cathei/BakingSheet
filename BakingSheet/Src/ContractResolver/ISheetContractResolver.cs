@@ -1,5 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+#nullable enable
+
 using System;
 using System.Reflection;
 
@@ -10,7 +12,7 @@ namespace Cathei.BakingSheet
     /// </summary>
     public interface ISheetContractResolver
     {
-        ISheetValueConverter GetValueConverter(Type type);
-        ISheetValueConverter GetValueConverter(PropertyInfo propertyInfo);
+        ISheetValueConverter? GetValueConverter(Type type);
+        ISheetValueConverter? GetValueConverter(PropertyInfo? propertyInfo);
     }
 }

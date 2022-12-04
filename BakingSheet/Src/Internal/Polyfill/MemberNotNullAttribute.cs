@@ -36,6 +36,10 @@
 // SOFTWARE.
 #endregion
 
+#if !NETSTANDARD2_0
+#define NULLABLE_ATTRIBUTES_DISABLE
+#endif
+
 #if !NULLABLE_ATTRIBUTES_DISABLE
 #nullable enable
 #pragma warning disable
@@ -46,42 +50,47 @@ namespace System.Diagnostics.CodeAnalysis
 
 #if DEBUG
     /// <summary>
-    ///     Specifies that the output will be non-<see langword="null"/> if the
-    ///     named parameter is non-<see langword="null"/>.
+    ///     Specifies that the method or property will ensure that the listed field and property members have
+    ///     not-<see langword="null"/> values.
     /// </summary>
 #endif
-    [AttributeUsage(
-        AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue,
-        AllowMultiple = true,
-        Inherited = false
-    )]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
 #if !NULLABLE_ATTRIBUTES_INCLUDE_IN_CODE_COVERAGE
     [ExcludeFromCodeCoverage, DebuggerNonUserCode]
 #endif
-    internal sealed class NotNullIfNotNullAttribute : Attribute
+    internal sealed class MemberNotNullAttribute : Attribute
     {
 #if DEBUG
         /// <summary>
-        ///     Gets the associated parameter name.
-        ///     The output will be non-<see langword="null"/> if the argument to the
-        ///     parameter specified is non-<see langword="null"/>.
+        ///     Gets field or property member names.
         /// </summary>
 #endif
-        public string ParameterName { get; }
+        public string[] Members { get; }
 
 #if DEBUG
         /// <summary>
-        ///     Initializes the attribute with the associated parameter name.
+        ///     Initializes the attribute with a field or property member.
         /// </summary>
-        /// <param name="parameterName">
-        ///     The associated parameter name.
-        ///     The output will be non-<see langword="null"/> if the argument to the
-        ///     parameter specified is non-<see langword="null"/>.
+        /// <param name="member">
+        ///     The field or property member that is promised to be not-null.
         /// </param>
 #endif
-        public NotNullIfNotNullAttribute(string parameterName)
+        public MemberNotNullAttribute(string member)
         {
-            ParameterName = parameterName;
+            Members = new[] { member };
+        }
+
+#if DEBUG
+        /// <summary>
+        ///     Initializes the attribute with the list of field and property members.
+        /// </summary>
+        /// <param name="members">
+        ///     The list of field and property members that are promised to be not-null.
+        /// </param>
+#endif
+        public MemberNotNullAttribute(params string[] members)
+        {
+            Members = members;
         }
     }
 }

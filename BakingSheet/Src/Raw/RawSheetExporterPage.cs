@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Cathei.BakingSheet.Internal;
 
 namespace Cathei.BakingSheet.Raw
@@ -48,7 +49,7 @@ namespace Cathei.BakingSheet.Raw
                     arguments[i++] = arg;
                 }
 
-                var columnName = string.Format(node.FullPath, arguments);
+                var columnName = string.Format(node.FullPath ?? "", arguments);
 
                 if (exporter.SplitHeader)
                 {
@@ -90,8 +91,11 @@ namespace Cathei.BakingSheet.Raw
 
                     for (int vindex = 0; vindex < verticalCount; ++vindex)
                     {
+                        // leaf node always has converter
+                        Debug.Assert(node.ValueConverter != null);
+
                         var value = node.GetValue(sheetRow, vindex, indexes.GetEnumerator());
-                        var valueString = node.ValueConverter.ValueToString(node.ValueType, value, valueContext);
+                        var valueString = node.ValueConverter!.ValueToString(node.ValueType, value, valueContext);
                         page.SetCell(pageColumn, pageRow + vindex, valueString);
                     }
 

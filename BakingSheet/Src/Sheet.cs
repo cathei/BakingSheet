@@ -23,8 +23,8 @@ namespace Cathei.BakingSheet
         where TKey : notnull
         where TValue : SheetRow<TKey>, new()
     {
-        [Preserve] public string Name { get; set; }
-        [Preserve] public string HashCode { get; private set; }
+        [Preserve] public string Name { get; set; } = string.Empty;
+        [Preserve] public string HashCode { get; private set; } = string.Empty;
 
         private PropertyMap? _propertyMap;
 
@@ -37,11 +37,6 @@ namespace Cathei.BakingSheet
         {
             TryGetValue(id, out var value);
             return value;
-        }
-
-        public bool TryGetValue(TKey id, [MaybeNullWhen(false)] out TValue value)
-        {
-            return Dictionary.TryGetValue(id, out value);
         }
 
         bool ISheet.Contains(object key) => Contains((TKey)key);
@@ -89,7 +84,7 @@ namespace Cathei.BakingSheet
 
                     foreach (var row in Items)
                     {
-                        string fullPath = string.Format(node.FullPath, indexes.ToArray());
+                        string fullPath = string.Format(node.FullPath ?? "", indexes.ToArray());
                         int verticalCount = node.GetVerticalCount(row, indexes.GetEnumerator());
 
                         using (context.Logger.BeginScope(row.Id))
@@ -130,7 +125,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public virtual void VerifyAssets(SheetConvertingContext context)
+        public virtual void VerifyAssets(SheetVerifyingContext context)
         {
             using (context.Logger.BeginScope(Name))
             {
@@ -147,7 +142,7 @@ namespace Cathei.BakingSheet
 
                         foreach (var row in Items)
                         {
-                            string fullPath = string.Format(node.FullPath, indexes.ToArray());
+                            string fullPath = string.Format(node.FullPath ?? "", indexes.ToArray());
 
                             using (context.Logger.BeginScope(row.Id))
                             using (context.Logger.BeginScope(fullPath))
@@ -176,6 +171,13 @@ namespace Cathei.BakingSheet
                 }
             }
         }
+
+#if NETSTANDARD2_0
+        public bool TryGetValue(TKey id, [MaybeNullWhen(false)] out TValue value)
+        {
+            return Dictionary.TryGetValue(id, out value);
+        }
+#endif
 
         /// <summary>
         /// Struct enumerator for Sheet.

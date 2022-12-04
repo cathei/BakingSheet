@@ -21,7 +21,7 @@ namespace Cathei.BakingSheet
         object ISheetRow.Id => Id;
 
         public virtual void PostLoad(SheetConvertingContext context) { }
-        public virtual void VerifyAssets(SheetConvertingContext context) { }
+        public virtual void VerifyAssets(SheetVerifyingContext context) { }
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ namespace Cathei.BakingSheet
             }
         }
 
-        public override void VerifyAssets(SheetConvertingContext context)
+        public override void VerifyAssets(SheetVerifyingContext context)
         {
             base.VerifyAssets(context);
 
@@ -107,7 +107,7 @@ namespace Cathei.BakingSheet
             }
 
             public bool MoveNext() => _enumerator.MoveNext();
-            public TElem Current => _enumerator.Current;
+            public TElem Current => _enumerator.Current!;
 
             void IEnumerator.Reset() => ((IEnumerator)_enumerator).Reset();
             object IEnumerator.Current => Current;
