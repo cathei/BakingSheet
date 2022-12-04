@@ -18,8 +18,8 @@ namespace Cathei.BakingSheet.Examples
             foreach (var dungeon in container.Dungeons)
             {
                 Debug.Log(dungeon.Name);
-                Debug.Log(dungeon.Monsters[0].Ref.Name);
-                Debug.Log(dungeon.Items[0].Ref.Name);
+                Debug.Log(dungeon.Monsters[0].Ref!.Name);
+                Debug.Log(dungeon.Items[0].Ref!.Name);
             }
 
             foreach (var asset in container.Assets)

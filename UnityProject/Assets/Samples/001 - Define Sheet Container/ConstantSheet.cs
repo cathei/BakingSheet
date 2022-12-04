@@ -34,17 +34,17 @@ namespace Cathei.BakingSheet.Examples
 
         public string GetString(GameConstant key)
         {
-            return Find(key).Value;
+            return this[key].Value;
         }
 
         public int GetInt(GameConstant key)
         {
-            return Find(key).ValueInt;
+            return this[key].ValueInt;
         }
 
         public float GetFloat(GameConstant key)
         {
-            return Find(key).ValueFloat;
+            return this[key].ValueFloat;
         }
     }
 }

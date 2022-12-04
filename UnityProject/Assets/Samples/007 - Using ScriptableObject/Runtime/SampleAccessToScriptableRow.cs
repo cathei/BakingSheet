@@ -18,13 +18,13 @@ namespace Cathei.BakingSheet.Examples
 
         public void Awake()
         {
-            Debug.Log(hero.Ref.Name);
-            Debug.Log(constant.Ref.ValueInt);
+            Debug.Log(hero.Ref!.Name);
+            Debug.Log(constant.Ref!.ValueInt);
 
             foreach (var dungeon in dungeons)
             {
-                foreach (var item in dungeon.Ref.Items)
-                    Debug.Log(item.Ref.Name);
+                foreach (var item in dungeon.Ref!.Items)
+                    Debug.Log(item.Ref!.Name);
             }
         }
     }

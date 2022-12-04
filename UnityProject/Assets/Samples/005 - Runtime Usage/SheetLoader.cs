@@ -26,7 +26,7 @@ namespace Cathei.BakingSheet.Examples
 
             Debug.Log(Sheet.Constants.Count);
             Debug.Log(Sheet.Heroes["HERO001"].Count);
-            Debug.Log(Sheet.Heroes["HERO001"].GetLevel(5).RequiredItem.Ref.Name);
+            Debug.Log(Sheet.Heroes["HERO001"].GetLevel(5).RequiredItem.Ref!.Name);
             Debug.Log(Sheet.Items["ITEM_POTION001"].Name);
         }
     }
