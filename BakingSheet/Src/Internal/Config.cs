@@ -60,7 +60,7 @@ namespace Cathei.BakingSheet.Internal
         {
             while (type != null)
             {
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(SheetRowArray<>))
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(SheetRowArray<,>))
                 {
                     return type.GetProperty(nameof(ISheetRowArray.Arr));
                 }
