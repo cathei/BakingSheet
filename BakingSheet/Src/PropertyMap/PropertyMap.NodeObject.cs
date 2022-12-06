@@ -24,7 +24,7 @@ namespace Cathei.BakingSheet.Internal
                 if (FullPath == null)
                     return subpath;
 
-                return $"{FullPath}{Config.Delimiter}{subpath}";
+                return $"{FullPath}{Config.IndexDelimiter}{subpath}";
             }
 
             public override void UpdateIndex(object obj)

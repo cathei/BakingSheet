@@ -28,14 +28,14 @@ namespace Cathei.BakingSheet.Internal
         private static IEnumerable<string> ParseFlattenPath(string path)
         {
             int idx = 0;
-            int next = path.IndexOf(Config.Delimiter, StringComparison.Ordinal);
+            int next = path.IndexOf(Config.IndexDelimiter, StringComparison.Ordinal);
 
             while (next != -1)
             {
                 yield return path.Substring(idx, next - idx);
 
                 idx = next + 1;
-                next = path.IndexOf(Config.Delimiter, idx, StringComparison.Ordinal);
+                next = path.IndexOf(Config.IndexDelimiter, idx, StringComparison.Ordinal);
             }
 
             yield return path.Substring(idx);

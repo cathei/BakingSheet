@@ -51,7 +51,7 @@ namespace Cathei.BakingSheet.Internal
 
             protected string AppendIndex(int depth)
             {
-                return $"{FullPath}{Config.Delimiter}{{{depth}}}";
+                return $"{FullPath}{Config.IndexDelimiter}{{{depth}}}";
             }
 
             public virtual int GetVerticalCount(ISheetRow row, IEnumerator<object> indexer)

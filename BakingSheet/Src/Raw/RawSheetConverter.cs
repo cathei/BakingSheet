@@ -1,7 +1,9 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet.Raw
@@ -33,7 +35,7 @@ namespace Cathei.BakingSheet.Raw
                         continue;
 
                     var page = CreatePage(sheet.Name);
-                    page.Export(this, context, sheet);
+                    ExportPage(page, context, sheet);
                 }
             }
 
@@ -46,6 +48,90 @@ namespace Cathei.BakingSheet.Raw
             }
 
             return true;
+        }
+
+
+        private void ExportPage(IRawSheetExporterPage page, SheetConvertingContext context, ISheet sheet)
+        {
+            var propertyMap = sheet.GetPropertyMap(context);
+            var resolver = context.Container.ContractResolver;
+
+            propertyMap.UpdateIndex(sheet);
+
+            var leafs = propertyMap.TraverseLeaf();
+
+            int pageColumn = 0;
+
+            var valueContext = new SheetValueConvertingContext(this, resolver);
+
+            List<string> headerRows = new List<string>();
+            object[] arguments = new object[propertyMap.MaxDepth];
+
+            foreach (var (node, indexes) in leafs)
+            {
+                int i = 0;
+
+                foreach (var index in indexes)
+                {
+                    var arg = valueContext.ValueToString(index.GetType(), index);
+                    arguments[i++] = arg;
+                }
+
+                var columnName = string.Format(node.FullPath, arguments);
+
+                if (SplitHeader)
+                {
+                    int tempRow = 0;
+
+                    foreach (var path in columnName.Split(Config.IndexDelimiterArray, StringSplitOptions.None))
+                    {
+                        while (headerRows.Count <= tempRow)
+                            headerRows.Add(null);
+
+                        if (headerRows[tempRow] != path)
+                        {
+                            headerRows[tempRow] = path;
+                            page.SetCell(pageColumn, tempRow, path);
+                        }
+
+                        tempRow++;
+                    }
+                }
+                else
+                {
+                    page.SetCell(pageColumn, 0, columnName);
+                }
+
+                pageColumn++;
+            }
+
+            int pageRow = SplitHeader ? headerRows.Count : 1;
+
+            foreach (ISheetRow sheetRow in sheet)
+            {
+                int maxVerticalCount = 1;
+
+                pageColumn = 0;
+
+                foreach (var (node, indexes) in leafs)
+                {
+                    int verticalCount = node.GetVerticalCount(sheetRow, indexes.GetEnumerator());
+
+                    for (int vindex = 0; vindex < verticalCount; ++vindex)
+                    {
+                        var value = node.GetValue(sheetRow, vindex, indexes.GetEnumerator());
+                        var valueString = node.ValueConverter.ValueToString(node.ValueType, value, valueContext);
+                        page.SetCell(pageColumn, pageRow + vindex, valueString);
+                    }
+
+                    if (maxVerticalCount < verticalCount)
+                        maxVerticalCount = verticalCount;
+
+                    pageColumn++;
+                }
+
+                pageRow += maxVerticalCount;
+            }
         }
     }
 }
