@@ -25,14 +25,7 @@ namespace Cathei.BakingSheet
         void VerifyAssets(SheetConvertingContext context);
     }
 
-    public interface ISheet<out TRow> : ISheet, IReadOnlyList<TRow>
-        where TRow : ISheetRow
-    {
-        new int Count { get; }
-        new IEnumerator<TRow> GetEnumerator();
-    }
-
-    public interface ISheet<in TKey, out TRow> : ISheet<TRow>
+    public interface ISheet<in TKey, out TRow> : ISheet, IReadOnlyList<TRow>
         where TRow : ISheetRow
     {
         TRow this[TKey key] { get; }
@@ -40,7 +33,14 @@ namespace Cathei.BakingSheet
 
         bool Contains(TKey key);
         bool Remove(TKey key);
+
+        new int Count { get; }
+        new IEnumerator<TRow> GetEnumerator();
     }
+
+    public interface ISheet<out TRow> : ISheet<string, TRow>
+        where TRow : ISheetRow
+    { }
 
     public interface ISheetRow
     {

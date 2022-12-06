@@ -18,8 +18,8 @@ namespace Cathei.BakingSheet
     public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet<TKey, TValue>
         where TValue : SheetRow<TKey>, new()
     {
-        [Preserve]
-        public string Name { get; set; }
+        [Preserve] public string Name { get; set; }
+        [Preserve] public string HashCode { get; set; }
 
         private PropertyMap _propertyMap;
 
@@ -200,6 +200,6 @@ namespace Cathei.BakingSheet
     /// For other type of Id, use generic version.
     /// </summary>
     /// <typeparam name="T">Type of Row.</typeparam>
-    public abstract class Sheet<T> : Sheet<string, T>
+    public abstract class Sheet<T> : Sheet<string, T>, ISheet<T>
         where T : SheetRow<string>, new() {}
 }
