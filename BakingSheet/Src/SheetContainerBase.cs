@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
@@ -14,7 +15,7 @@ namespace Cathei.BakingSheet
     /// </summary>
     public abstract class SheetContainerBase
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
         private Dictionary<string, PropertyInfo> _sheetProperties;
 
         public virtual ISheetContractResolver ContractResolver => SheetContractResolver.Instance;
@@ -28,8 +29,7 @@ namespace Cathei.BakingSheet
         {
             if (_sheetProperties == null)
             {
-                _sheetProperties = GetType()
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                _sheetProperties = Config.GetEligibleProperties(GetType())
                     .Where(p => typeof(ISheet).IsAssignableFrom(p.PropertyType))
                     .ToDictionary(x => x.Name);
             }

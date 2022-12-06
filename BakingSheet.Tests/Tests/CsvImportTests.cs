@@ -196,7 +196,7 @@ namespace Cathei.BakingSheet.Tests
 
             _logger.VerifyNoError();
 
-            Assert.Equal(1, _container.Inherited.Count);
+            Assert.Single(_container.Inherited);
             Assert.Equal(10, _container.Inherited["Test"].Value);
         }
     }
