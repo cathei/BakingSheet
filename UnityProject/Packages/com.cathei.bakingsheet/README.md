@@ -8,6 +8,29 @@ With BakingSheet 4.0, you can [export and import with Unity's ScriptableObject](
 Also, major support for [AssetPath](docs/asset-path.md) and customizable [ValueConverter](docs/value-converter.md) has been added!
 Note that .unitypackage will not be provided anymore. Please [add git package from Package manager, or install via OpenUPM](#install).
 
+## Table of Contents
+* [Concept](#concept)
+* [Features](#features)
+* [Install](#install)
+    + [Need help?](#need-help-)
+* [Contribution](#contribution)
+* Usages
+    * [First Step](#first-step)
+    * [Supported Column Type](#supported-column-type)
+    * [Converters](#converters)
+    * [Save and Load Converted Datasheet](#save-and-load-converted-datasheet)
+    * [Accessing Row](#accessing-row)
+    * [Using List Column](#using-list-column)
+    * [Using Dictionary Column](#using-dictionary-column)
+    * [Using Nested Type Column](#using-nested-type-column)
+    * [Using Row Array](#using-row-array)
+    * [Using Cross-Sheet Reference](#using-cross-sheet-reference)
+    * [Using Non-String Column as Id](#using-non-string-column-as-id)
+    * [Using Post Load Hook](#using-post-load-hook)
+    * [Using AssetPostProcessor to Automate Converting](#using-assetpostprocessor-to-automate-converting)
+    * [About AOT Code Stripping (Unity)](#about-aot-code-stripping--unity-)
+    * [Optional Script Defining Symbols (Unity)](#optional-script-defining-symbols--unity-)
+
 ## Concept
 Throughout all stage of game development, you'll need to deal with various data. Characters, stats, stages, currencies and so on! If you're using Unity, scriptable object and inspector is not good enough for mass edition and lacks powerful features like functions or fill up. With BakingSheet your designers can use existing spreadsheet editor, while you, the programmer, can directly use C# object without messy parsing logics or code generations.
 
@@ -37,16 +60,17 @@ Don't trust me that it's better than using ScriptableObject? You might change yo
 * Supports exporting to CSV and JSON.
 * Supports .NET platforms and all Unity platforms.
 * Powerful Cross-sheet reference feature.
-* Referencing Asset data with [AssetPath](docs/asset-path.md)
-* [Customizable value converter](docs/value-converter.md)
-* [Customizable data verification](docs/data-verification.md)
+* Referencing Asset data with [AssetPath](docs/asset-path.md).
+* [Customizable value converter](docs/value-converter.md).
+* [Customizable data verification](docs/data-verification.md).
+* [Partial sheet import](https://github.com/cathei/BakingSheet/issues/22).
 
 ## Install
 For C# projects or server, download with [NuGet](https://www.nuget.org/packages?q=BakingSheet).
 
 For Unity projects, add git package from Package Manager.
 ```
-https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet#v4.0.0
+https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet#v4.1.0
 ```
 
 Or install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/).
