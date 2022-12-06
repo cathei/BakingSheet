@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
 using Cathei.BakingSheet.Raw;
@@ -15,7 +16,8 @@ namespace Cathei.BakingSheet
         private IFileSystem _fileSystem;
         private string _loadPath;
         private string _extension;
-        private Dictionary<string, Page> _pages = new Dictionary<string, Page>();
+
+        private readonly Dictionary<string, List<Page>> _pages = new Dictionary<string, List<Page>>();
 
         private class CsvTable : List<List<string>>
         {
@@ -39,13 +41,14 @@ namespace Cathei.BakingSheet
         {
             private CsvTable _table;
 
-            public string SubName => null;
+            public string SubName { get; }
 
             public CsvTable Table => _table;
 
-            public Page(CsvTable table)
+            public Page(CsvTable table, string subName)
             {
                 _table = table;
+                SubName = subName;
             }
 
             public string GetCell(int col, int row)
@@ -71,16 +74,24 @@ namespace Cathei.BakingSheet
             }
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+            _pages.Clear();
+        }
+
         protected override IEnumerable<IRawSheetImporterPage> GetPages(string sheetName)
         {
-            if (_pages.TryGetValue(sheetName, out var page))
-                yield return page;
+            if (_pages.TryGetValue(sheetName, out var pages))
+                return pages;
+            return Enumerable.Empty<IRawSheetImporterPage>();
         }
 
         protected override IRawSheetExporterPage CreatePage(string sheetName)
         {
-            var page = new Page(new CsvTable());
-            return _pages[sheetName] = page;
+            var page = new Page(new CsvTable(), null);
+            _pages[sheetName] = new List<Page> { page };
+            return page;
         }
 
         protected override Task<bool> LoadData()
@@ -104,7 +115,16 @@ namespace Cathei.BakingSheet
                             row.Add(csv[i]);
                     }
 
-                    _pages[Path.GetFileNameWithoutExtension(file)] = new Page(table);
+                    var fileName = Path.GetFileNameWithoutExtension(file);
+                    var (sheetName, subName) = Config.ParseSheetName(fileName);
+
+                    if (!_pages.TryGetValue(sheetName, out var sheetList))
+                    {
+                        sheetList = new List<Page>();
+                        _pages.Add(sheetName, sheetList);
+                    }
+
+                    sheetList.Add(new Page(table, subName));
                 }
             }
 
@@ -123,13 +143,15 @@ namespace Cathei.BakingSheet
                 using (var writer = new StreamWriter(stream))
                 {
                     var csv = new CsvWriter(writer);
-                    var page = pageItem.Value;
 
-                    foreach (var row in page.Table)
+                    foreach (var page in pageItem.Value)
                     {
-                        foreach (var cell in row)
-                            csv.WriteField(cell);
-                        csv.NextRecord();
+                        foreach (var row in page.Table)
+                        {
+                            foreach (var cell in row)
+                                csv.WriteField(cell);
+                            csv.NextRecord();
+                        }
                     }
                 }
             }

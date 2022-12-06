@@ -2,6 +2,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Cathei.BakingSheet.Tests
@@ -9,7 +10,7 @@ namespace Cathei.BakingSheet.Tests
     public class GoogleImportTests : IDisposable
     {
         private TestLogger _logger;
-        private TestSheetContainer _container;
+        private GoogleTestContainer _container;
 
         // unit test google account credential
         private static readonly string GoogleCredential = @"{
@@ -28,7 +29,7 @@ namespace Cathei.BakingSheet.Tests
         public GoogleImportTests()
         {
             _logger = new TestLogger();
-            _container = new TestSheetContainer(_logger);
+            _container = new GoogleTestContainer(_logger);
         }
 
         public void Dispose()
@@ -49,6 +50,29 @@ namespace Cathei.BakingSheet.Tests
 
             Assert.Equal("Hello, World!", _container.Tests["LiteralTest"].Content);
             Assert.Equal("30", _container.Tests["FunctionTest"].Content);
+
+            Assert.Equal(6, _container.Simple.Count);
+            Assert.Equal("Health Potion", _container.Simple["Potion001"].Name);
+            Assert.Equal("Blood Potion", _container.Simple["Potion003"].Name);
+        }
+
+        private class SimpleSheet : Sheet<SimpleSheet.Row>
+        {
+            public class Row : SheetRow
+            {
+                public string Name { get; set; }
+                public int Price { get; set; }
+            }
+        }
+
+        private class GoogleTestContainer : SheetContainerBase
+        {
+            public GoogleTestContainer(ILogger logger) : base(logger)
+            {
+            }
+
+            public TestSheet Tests { get; set; }
+            public SimpleSheet Simple { get; set; }
         }
     }
 }

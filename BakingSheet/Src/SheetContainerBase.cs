@@ -60,6 +60,12 @@ namespace Cathei.BakingSheet
                 Logger = _logger,
             };
 
+            foreach (var prop in GetSheetProperties().Values)
+            {
+                // clear currently assigned sheets
+                prop.SetValue(this, null);
+            }
+
             foreach (var importer in importers)
             {
                 var success = await importer.Import(context);

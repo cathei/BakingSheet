@@ -48,6 +48,12 @@ namespace Cathei.BakingSheet
             }
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+            _pages.Clear();
+        }
+
         protected override async Task<bool> LoadData()
         {
             using (var service = new SheetsService(new BaseClientService.Initializer() {

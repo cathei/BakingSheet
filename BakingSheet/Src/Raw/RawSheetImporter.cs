@@ -54,7 +54,14 @@ namespace Cathei.BakingSheet.Raw
                 using (context.Logger.BeginScope(pair.Key))
                 {
                     var pages = GetPages(pair.Key);
-                    var sheet = Activator.CreateInstance(pair.Value.PropertyType) as ISheet;
+                    var sheet = pair.Value.GetValue(context.Container) as ISheet;
+
+                    if (sheet == null)
+                    {
+                        // create new sheet
+                        sheet = Activator.CreateInstance(pair.Value.PropertyType) as ISheet;
+                        pair.Value.SetValue(context.Container, sheet);
+                    }
 
                     if (sheet == null)
                     {
@@ -64,8 +71,6 @@ namespace Cathei.BakingSheet.Raw
 
                     foreach (var page in pages.OrderBy(x => x.SubName))
                         ImportPage(page, context, sheet);
-
-                    pair.Value.SetValue(context.Container, sheet);
                 }
             }
 

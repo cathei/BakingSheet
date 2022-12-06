@@ -199,5 +199,24 @@ namespace Cathei.BakingSheet.Tests
             Assert.Single(_container.Inherited);
             Assert.Equal(10, _container.Inherited["Test"].Value);
         }
+
+        [Fact]
+        public async Task TestImportPartialSheet()
+        {
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.001.csv"), "Id,Content\nFirst,FirstContent\nSecond,SecondContent");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.002.csv"), "Id,Content");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.003.csv"), "Id,Content\nThird,ThirdContent\nForth,ForthContent");
+            _fileSystem.SetTestData(Path.Combine("testdata", "Tests.csv"), "Id,Content\nZero,ZeroContent");
+
+            var result = await _container.Bake(_converter);
+
+            _logger.VerifyNoError();
+
+            Assert.True(result);
+            Assert.Equal(5, _container.Tests.Count);
+            Assert.Equal("Zero", _container.Tests[0].Id);
+            Assert.Equal("First", _container.Tests[1].Id);
+            Assert.Equal("ForthContent", _container.Tests[4].Content);
+        }
     }
 }

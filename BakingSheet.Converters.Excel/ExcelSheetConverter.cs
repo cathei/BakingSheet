@@ -48,6 +48,12 @@ namespace Cathei.BakingSheet
             }
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+            _pages.Clear();
+        }
+
         protected override Task<bool> LoadData()
         {
             var files = _fileSystem.GetFiles(_loadPath, _extension);
