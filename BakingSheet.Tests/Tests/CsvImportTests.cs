@@ -186,5 +186,18 @@ namespace Cathei.BakingSheet.Tests
             Assert.Equal(5, _container.Vertical["Vertical2"].Levels[1][1]);
             Assert.Equal("Elem3", _container.Vertical["Vertical2"][2].Value);
         }
+
+        [Fact]
+        public async Task InheritedTest()
+        {
+            _fileSystem.SetTestData(Path.Combine("testdata", "Inherited.csv"), "Id,Value\nTest,10");
+
+            var result = await _container.Bake(_converter);
+
+            _logger.VerifyNoError();
+
+            Assert.Equal(1, _container.Inherited.Count);
+            Assert.Equal(10, _container.Inherited["Test"].Value);
+        }
     }
 }

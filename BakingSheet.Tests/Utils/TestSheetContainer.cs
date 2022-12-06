@@ -129,6 +129,19 @@ namespace Cathei.BakingSheet.Tests
         }
     }
 
+    public class InheritBaseRow : SheetRow
+    {
+        // checking if private setter works as intended
+        public int Value { get; private set; }
+    }
+
+    public class InheritedSheet : Sheet<InheritedSheet.Row>
+    {
+        public class Row : InheritBaseRow
+        {
+        }
+    }
+
     public class TestSheetContainer : SheetContainerBase
     {
         public TestSheetContainer(ILogger logger) : base(logger) { }
@@ -140,5 +153,6 @@ namespace Cathei.BakingSheet.Tests
         public TestNestedSheet Nested { get; set; }
         public TestDictSheet Dict { get; set; }
         public TestVerticalSheet Vertical { get; set; }
+        public InheritedSheet Inherited { get; set; }
     }
 }

@@ -39,6 +39,8 @@ namespace Cathei.BakingSheet
         {
             private CsvTable _table;
 
+            public string SubName => null;
+
             public CsvTable Table => _table;
 
             public Page(CsvTable table)
@@ -71,8 +73,8 @@ namespace Cathei.BakingSheet
 
         protected override IEnumerable<IRawSheetImporterPage> GetPages(string sheetName)
         {
-            if (_pages.TryGetValue(sheetName, out var table))
-                yield return new Page(table);
+            if (_pages.TryGetValue(sheetName, out var page))
+                yield return page;
         }
 
         protected override IRawSheetExporterPage CreatePage(string sheetName)
