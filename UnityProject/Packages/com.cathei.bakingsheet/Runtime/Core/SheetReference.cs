@@ -24,11 +24,9 @@ namespace Cathei.BakingSheet
         /// </summary>
         public partial struct Reference : ISheetReference
         {
-            [Preserve]
-            public TKey Id { get; private set; }
+            [Preserve] public TKey Id { get; private set; }
 
-            [Preserve]
-            private TValue reference;
+            [Preserve] private TValue reference;
 
             [Preserve]
             public TValue Ref
@@ -68,13 +66,15 @@ namespace Cathei.BakingSheet
                     }
                     else if (Ref != referSheet[Id])
                     {
-                        context.Logger.LogError("Found different reference than originally set for \"{ReferenceId}\"", Id);
+                        context.Logger.LogError("Found different reference than originally set for \"{ReferenceId}\"",
+                            Id);
                     }
                 }
 
                 if (Id != null && Ref == null)
                 {
-                    context.Logger.LogError("Failed to find reference \"{ReferenceId}\" on {SheetName}", Id, sheet.Name);
+                    context.Logger.LogError("Failed to find reference \"{ReferenceId}\" on {SheetName}", Id,
+                        sheet.Name);
                 }
             }
 

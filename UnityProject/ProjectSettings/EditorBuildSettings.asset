@@ -15,4 +15,4 @@ EditorBuildSettings:
     path: Assets/Samples/007 - Using ScriptableObject/Scene/Import.unity
     guid: d3891dda9221149bea631ff1f37cca79
   m_configObjects:
-    com.unity.addressableassets: {fileID: 11400000, guid: b764ea260cb0b4346bbe5dbf6a4480d4, type: 2}
+    com.unity.addressableassets: {fileID: 11400000, guid: 673176ad952a241128100895dbe1262f, type: 2}

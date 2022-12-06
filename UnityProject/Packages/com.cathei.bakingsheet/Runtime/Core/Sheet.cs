@@ -18,8 +18,8 @@ namespace Cathei.BakingSheet
     public abstract partial class Sheet<TKey, TValue> : KeyedCollection<TKey, TValue>, ISheet<TKey, TValue>
         where TValue : SheetRow<TKey>, new()
     {
-        [Preserve]
-        public string Name { get; set; }
+        [Preserve] public string Name { get; set; }
+        [Preserve] public string HashCode { get; set; }
 
         private PropertyMap _propertyMap;
 
@@ -35,6 +35,7 @@ namespace Cathei.BakingSheet
             }
         }
 
+        public ICollection<TKey> Keys => Dictionary.Keys;
         public TValue Find(TKey id) => this[id];
 
         bool ISheet.Contains(object key) => Contains((TKey)key);
@@ -110,10 +111,13 @@ namespace Cathei.BakingSheet
         {
             using (context.Logger.BeginScope(Name))
             {
+                int index = -1;
+
                 foreach (var row in Items)
                 {
                     using (context.Logger.BeginScope(row.Id))
                     {
+                        row.Index = ++index;
                         row.PostLoad(context);
                     }
                 }
@@ -196,6 +200,6 @@ namespace Cathei.BakingSheet
     /// For other type of Id, use generic version.
     /// </summary>
     /// <typeparam name="T">Type of Row.</typeparam>
-    public abstract class Sheet<T> : Sheet<string, T>
+    public abstract class Sheet<T> : Sheet<string, T>, ISheet<T>
         where T : SheetRow<string>, new() {}
 }

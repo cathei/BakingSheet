@@ -18,5 +18,15 @@
     "Name": "Water Material",
     "Price": 40,
     "Id": "Material002"
+  },
+  {
+    "Name": "Blood Potion",
+    "Price": 9999,
+    "Id": "Potion003"
+  },
+  {
+    "Name": "Dark Material",
+    "Price": 999999,
+    "Id": "Material003"
   }
 ]

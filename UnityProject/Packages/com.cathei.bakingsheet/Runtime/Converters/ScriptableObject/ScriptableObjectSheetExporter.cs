@@ -166,8 +166,8 @@ namespace Cathei.BakingSheet.Unity
             }
         }
 
-        private static void MapReferencesInSheet<TState>(SheetConvertingContext context, ISheet sheet,
-            PropertyMap.Node node, IEnumerable<object> indexes,
+        private static void MapReferencesInSheet<TState>(
+            SheetConvertingContext context, ISheet sheet, PropertyNode node, IEnumerable<object> indexes,
             Action<SheetConvertingContext, object, TState> mapper, TState state)
         {
             foreach (var row in sheet)

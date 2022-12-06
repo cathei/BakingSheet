@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Cathei.BakingSheet
@@ -14,7 +15,7 @@ namespace Cathei.BakingSheet
     /// </summary>
     public abstract class SheetContainerBase
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
         private Dictionary<string, PropertyInfo> _sheetProperties;
 
         public virtual ISheetContractResolver ContractResolver => SheetContractResolver.Instance;
@@ -28,13 +29,27 @@ namespace Cathei.BakingSheet
         {
             if (_sheetProperties == null)
             {
-                _sheetProperties = GetType()
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                _sheetProperties = Config.GetEligibleProperties(GetType())
                     .Where(p => typeof(ISheet).IsAssignableFrom(p.PropertyType))
                     .ToDictionary(x => x.Name);
             }
 
             return _sheetProperties;
+        }
+
+        public ISheet Find(string name)
+        {
+            var props = GetSheetProperties();
+
+            if (props.TryGetValue(name, out var sheet))
+                return sheet.GetValue(this) as ISheet;
+
+            return null;
+        }
+
+        public T Find<T>(string name) where T : class, ISheet
+        {
+            return Find(name) as T;
         }
 
         public async Task<bool> Bake(params ISheetImporter[] importers)
@@ -44,6 +59,12 @@ namespace Cathei.BakingSheet
                 Container = this,
                 Logger = _logger,
             };
+
+            foreach (var prop in GetSheetProperties().Values)
+            {
+                // clear currently assigned sheets
+                prop.SetValue(this, null);
+            }
 
             foreach (var importer in importers)
             {

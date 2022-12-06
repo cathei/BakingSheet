@@ -1,8 +1,10 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cathei.BakingSheet.Internal;
 using Cathei.BakingSheet.Raw;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
@@ -19,6 +21,7 @@ namespace Cathei.BakingSheet
         private string _gsheetAddress;
         private ICredential _credential;
         private Spreadsheet _spreadsheet;
+        private Dictionary<string, List<Page>> _pages;
 
         public GoogleSheetConverter(string gsheetAddress, string credential, TimeZoneInfo timeZoneInfo = null, IFormatProvider formatProvider = null)
             : base(timeZoneInfo, formatProvider)
@@ -27,6 +30,7 @@ namespace Cathei.BakingSheet
             _credential = GoogleCredential.
                 FromJson(credential).
                 CreateScoped(new[] { DriveService.Scope.DriveReadonly });
+            _pages = new Dictionary<string, List<Page>>();
         }
 
         public async Task<DateTime> FetchModifiedTime()
@@ -40,8 +44,14 @@ namespace Cathei.BakingSheet
                 fileReq.Fields = "modifiedTime";
 
                 var file = await fileReq.ExecuteAsync();
-                return file.ModifiedTime.Value;
+                return file.ModifiedTime ?? default;
             }
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            _pages.Clear();
         }
 
         protected override async Task<bool> LoadData()
@@ -53,17 +63,39 @@ namespace Cathei.BakingSheet
                 var sheetReq = service.Spreadsheets.Get(_gsheetAddress);
                 sheetReq.Fields = "properties,sheets(properties,data.rowData.values.formattedValue)";
                 _spreadsheet = await sheetReq.ExecuteAsync();
-                return true;
             }
+
+            _pages.Clear();
+
+            foreach (var gSheet in _spreadsheet.Sheets)
+            {
+                if (gSheet.Properties.Title.StartsWith(Config.Comment))
+                    continue;
+
+                var (sheetName, subName) = Config.ParseSheetName(gSheet.Properties.Title);
+
+                if (!_pages.TryGetValue(sheetName, out var sheetList))
+                {
+                    sheetList = new List<Page>();
+                    _pages.Add(sheetName, sheetList);
+                }
+
+                sheetList.Add(new Page(gSheet, subName));
+            }
+
+            return true;
         }
 
         private class Page : IRawSheetImporterPage
         {
-            private GridData _grid;
+            private readonly GridData _grid;
 
-            public Page(GSheet gsheet)
+            public string SubName { get; }
+
+            public Page(GSheet gSheet, string subName)
             {
-                _grid = gsheet.Data.First();
+                _grid = gSheet.Data.First();
+                SubName = subName;
             }
 
             public string GetCell(int col, int row)
@@ -77,13 +109,11 @@ namespace Cathei.BakingSheet
             }
         }
 
-        protected override IRawSheetImporterPage GetPage(string sheetName)
+        protected override IEnumerable<IRawSheetImporterPage> GetPages(string sheetName)
         {
-            var gsheet = _spreadsheet.Sheets.FirstOrDefault(x => x.Properties.Title == sheetName);
-            if (gsheet == null)
-                return null;
-
-            return new Page(gsheet);
+            if (_pages.TryGetValue(sheetName, out var pages))
+                return pages;
+            return Enumerable.Empty<IRawSheetImporterPage>();
         }
     }
 }

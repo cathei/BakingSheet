@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cathei.BakingSheet.Internal;
 using Cathei.BakingSheet.Raw;
@@ -15,7 +16,8 @@ namespace Cathei.BakingSheet
         private IFileSystem _fileSystem;
         private string _loadPath;
         private string _extension;
-        private Dictionary<string, CsvTable> _dataTables = new Dictionary<string, CsvTable>();
+
+        private readonly Dictionary<string, List<Page>> _pages = new Dictionary<string, List<Page>>();
 
         private class CsvTable : List<List<string>>
         {
@@ -39,16 +41,21 @@ namespace Cathei.BakingSheet
         {
             private CsvTable _table;
 
-            public Page(CsvTable table)
+            public string SubName { get; }
+
+            public CsvTable Table => _table;
+
+            public Page(CsvTable table, string subName)
             {
                 _table = table;
+                SubName = subName;
             }
 
             public string GetCell(int col, int row)
             {
                 if (row >= _table.Count)
                     return null;
-                
+
                 if (col >= _table[row].Count)
                     return null;
 
@@ -59,33 +66,39 @@ namespace Cathei.BakingSheet
             {
                 for (int i = _table.Count; i <= row; ++i)
                     _table.AddRow();
- 
+
                 for (int i = _table[row].Count; i <= col; ++i)
                     _table[row].Add(null);
- 
+
                 _table[row][col] = data;
             }
         }
 
-        protected override IRawSheetImporterPage GetPage(string sheetName)
+        public override void Reset()
         {
-            if (_dataTables.TryGetValue(sheetName, out var table))
-                return new Page(table);
-            return null;
+            base.Reset();
+            _pages.Clear();
+        }
+
+        protected override IEnumerable<IRawSheetImporterPage> GetPages(string sheetName)
+        {
+            if (_pages.TryGetValue(sheetName, out var pages))
+                return pages;
+            return Enumerable.Empty<IRawSheetImporterPage>();
         }
 
         protected override IRawSheetExporterPage CreatePage(string sheetName)
         {
-            var table = new CsvTable();
-            _dataTables[sheetName] = table;
-            return new Page(table);
+            var page = new Page(new CsvTable(), null);
+            _pages[sheetName] = new List<Page> { page };
+            return page;
         }
 
         protected override Task<bool> LoadData()
         {
             var files = _fileSystem.GetFiles(_loadPath, _extension);
 
-            _dataTables.Clear();
+            _pages.Clear();
 
             foreach (var file in files)
             {
@@ -102,7 +115,16 @@ namespace Cathei.BakingSheet
                             row.Add(csv[i]);
                     }
 
-                    _dataTables[Path.GetFileNameWithoutExtension(file)] = table;
+                    var fileName = Path.GetFileNameWithoutExtension(file);
+                    var (sheetName, subName) = Config.ParseSheetName(fileName);
+
+                    if (!_pages.TryGetValue(sheetName, out var sheetList))
+                    {
+                        sheetList = new List<Page>();
+                        _pages.Add(sheetName, sheetList);
+                    }
+
+                    sheetList.Add(new Page(table, subName));
                 }
             }
 
@@ -113,21 +135,23 @@ namespace Cathei.BakingSheet
         {
             _fileSystem.CreateDirectory(_loadPath);
 
-            foreach (var tableItem in _dataTables)
+            foreach (var pageItem in _pages)
             {
-                var file = Path.Combine(_loadPath, $"{tableItem.Key}.{_extension}");
+                var file = Path.Combine(_loadPath, $"{pageItem.Key}.{_extension}");
 
                 using (var stream = _fileSystem.OpenWrite(file))
                 using (var writer = new StreamWriter(stream))
                 {
                     var csv = new CsvWriter(writer);
-                    var table = tableItem.Value;
 
-                    foreach (var row in table)
+                    foreach (var page in pageItem.Value)
                     {
-                        foreach (var cell in row)
-                            csv.WriteField(cell);
-                        csv.NextRecord();
+                        foreach (var row in page.Table)
+                        {
+                            foreach (var cell in row)
+                                csv.WriteField(cell);
+                            csv.NextRecord();
+                        }
                     }
                 }
             }
