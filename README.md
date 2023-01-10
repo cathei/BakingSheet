@@ -3,11 +3,6 @@
 # BakingSheet 🍞
 Easy datasheet management for C# and Unity. Supports Excel, Google Sheet, JSON and CSV format. It has been used for several mobile games that released on Google Play and AppStore.
 
-## BakingSheet 4.0 is here!
-With BakingSheet 4.0, you can [export and import with Unity's ScriptableObject](docs/scriptable-object.md).
-Also, major support for [AssetPath](docs/asset-path.md) and customizable [ValueConverter](docs/value-converter.md) has been added!
-Note that .unitypackage will not be provided anymore. Please [add git package from Package manager, or install via OpenUPM](#install).
-
 ## Table of Contents
 * [Concept](#concept)
 * [Features](#features)
@@ -70,13 +65,15 @@ For C# projects or server, download with [NuGet](https://www.nuget.org/packages?
 
 For Unity projects, add git package from Package Manager.
 ```
-https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet#v4.1.0
+https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet#v4.1.1
 ```
 
 Or install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/).
 ```
 openupm add com.cathei.bakingsheet
 ```
+
+Sample `.unitypackage` is available in [releases](https://github.com/cathei/BakingSheet/releases). (Main package should be installed first.)
 
 If you are planning to use StreamingAssets folder on Android, install [BetterStreamingAssets](docs/streaming-assets.md) as well.
 

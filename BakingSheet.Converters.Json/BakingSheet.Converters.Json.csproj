@@ -14,7 +14,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 
     <!-- Assemblies already referenced by BakingSheet -->
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8">
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.32" >
       <IncludeAssets>compile</IncludeAssets>
     </PackageReference>
   </ItemGroup>
