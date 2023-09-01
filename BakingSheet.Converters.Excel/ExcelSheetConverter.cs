@@ -63,7 +63,7 @@ namespace Cathei.BakingSheet
 
             foreach (var file in files)
             {
-                if(Path.GetFileName(file).StartsWith("~$")) continue;
+                if (Path.GetFileName(file).StartsWith("~$")) continue;
                 using (var stream = _fileSystem.OpenRead(file))
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
