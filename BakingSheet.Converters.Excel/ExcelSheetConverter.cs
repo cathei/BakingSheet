@@ -1,6 +1,7 @@
 ﻿// BakingSheet, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -62,6 +63,7 @@ namespace Cathei.BakingSheet
 
             foreach (var file in files)
             {
+                if (Path.GetFileName(file).StartsWith("~$")) continue;
                 using (var stream = _fileSystem.OpenRead(file))
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
