@@ -84,25 +84,25 @@ Before you start, we want to mention that if you have problem or need help, you 
 We appreciate any contribution. Please create [issue](https://github.com/cathei/BakingSheet/issues) for bugs or feature requests. Any contribution to feature, test case, or documentation through [pull requests](https://github.com/cathei/BakingSheet/pulls) are welcome! Any blog posts, articles, shares about this project will be greatful!
 
 ## First Step
-BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Items.xlsx`. Also, any column starts with `$` will be considered as comment and ignored.
+BakingSheet manages datasheet schema as C# code. `Sheet` class represents a table and `SheetRow` class represents a record. Below is example content of file `Consumables` page in `MySheets.xlsx`. Also, any column starts with `$` will be considered as comment and ignored.
 
 ![Plain Sample](.github/images/sample_plain.png)
 
 <details>
 <summary>Markdown version</summary>
 
-| Id             | Name              | Price | $Comment   |
-|----------------|-------------------|-------|------------|
-| ITEM_LVUP001   | Warrior's Shield  | 10000 | Warrior Lv up material |
-| ITEM_LVUP002   | Mage's Staff      | 10000 | Mage Lv up material |
-| ITEM_LVUP003   | Assassin's Dagger | 10000 | Assassin Lv up material |
-| ITEM_POTION001 | Health Potion     | 30    | Heal 20 Hp |
-| ITEM_POTION002 | Mana Potion       | 50    | Heal 20 Mp |
+| Id         | Name              | Price | $Comment   |
+|------------|-------------------|-------|------------|
+| LVUP_001   | Warrior's Shield  | 10000 | Warrior Lv up material |
+| LVUP_002   | Mage's Staff      | 10000 | Mage Lv up material |
+| LVUP_003   | Assassin's Dagger | 10000 | Assassin Lv up material |
+| POTION_001 | Health Potion     | 30    | Heal 20 Hp |
+| POTION_002 | Mana Potion       | 50    | Heal 20 Mp |
 </details>
 
 Code below is corresponding BakingSheet class.
 ```csharp
-public class ItemSheet : Sheet<ItemSheet.Row>
+public class ConsumableSheet : Sheet<ConsumableSheet.Row>
 {
     public class Row : SheetRow
     {
@@ -112,7 +112,7 @@ public class ItemSheet : Sheet<ItemSheet.Row>
     }
 }
 ```
-You can see there are two classes, `ItemSheet` and `ItemSheet.Row`. Each represents a page of sheet and a single row. `ItemSheet` is surrounding `Row` class (It is not forced but recommended convention). Important part is they will inherit from `Sheet<TRow>` and `SheetRow`.
+You can see there are two classes, `ConsumableSheet` and `ConsumableSheet.Row`. Each represents a page of sheet and a single row. `ConsumableSheet` is surrounding `Row` class (It is not forced but recommended convention). Important part is they will inherit from `Sheet<TRow>` and `SheetRow`.
 
 `Id` column is mandatory, so it is already defined in base `SheetRow` class. `Id` is `string` by default, but you can change type. See [this section](#using-non-string-column-as-id) to use non-string type for `Id`.
 
@@ -123,9 +123,9 @@ public class SheetContainer : SheetContainerBase
     public SheetContainer(Microsoft.Extensions.Logging.ILogger logger) : base(logger) {}
 
     // property name matches with corresponding sheet name
-    // for .xlsx or google sheet, it is name of the sheet tab in the workbook
-    // for .csv or .json, it is name of the file
-    public ItemSheet Items { get; private set; }
+    // for .xlsx or google sheet, **property name matches with the name of sheet tab in workbook**
+    // for .csv or .json, **property name matches with the name of file**
+    public ConsumableSheet Consumables { get; private set; }
 
     // add other sheets as you extend your project
     public CharacterSheet Characters { get; private set; }
@@ -230,11 +230,11 @@ You can extend `JsonSheetConverter` to customize serialization process. For exam
 > If you are using `StreamingAssets` on Android, also see [Reading From StreamingAssets](docs/streaming-assets.md).
 
 ## Accessing Row
-Now you have `SheetContainer` loaded from your data, accessing to the row is fairly simple. Below code shows how to access specific `ItemSheet.Row`.
+Now you have `SheetContainer` loaded from your data, accessing to the row is fairly simple. Below code shows how to access specific `ConsumableSheet.Row`.
 ```csharp
-// same as sheetContainer.Items.Find("ITEM_LVUP003");
+// same as sheetContainer.Consumables.Find("LVUP_003");
 // returns null if no row found
-var row = sheetContainer.Items["ITEM_LVUP003"];
+var row = sheetContainer.Consumables["LVUP_003"];
 
 // print "Assassin's dagger"
 logger.LogInformation(row.Name);
@@ -243,12 +243,12 @@ logger.LogInformation(row.Name);
 `Sheet<T>` is `KeyedCollection`, you can loop through it and order is guaranteed to be as same as your spreadsheet. Plus of course you can use all benefits of `IEnumerable<T>`.
 ```csharp
 // loop through all rows and print their names
-foreach (var row in sheetContainer.Items)
+foreach (var row in sheetContainer.Consumables)
     logger.LogInformation(row.Name);
 
-// loop through item ids that price over 5000
-foreach (var itemId in sheetContainer.Items.Where(row => row.Price > 5000).Select(row => row.Id))
-    logger.LogInformation(itemId);
+// loop through consumable ids that price over 5000
+foreach (var consumableId in sheetContainer.Consumables.Where(row => row.Price > 5000).Select(row => row.Id))
+    logger.LogInformation(consumableId);
 ```
 
 ## Using List Column
@@ -259,22 +259,22 @@ List columns are used for simple array.
 <details>
 <summary>Flat header</summary>
 
-| Id         | Name          | Monsters:1 | Monsters:2 | Monsters:3 | Items:1        | Items:2      |
-| ---------- | ------------- | ---------- | ---------- | ---------- | -------------- | ------------ |
-| DUNGEON001 | Easy Field    | MONSTER001 |            |            | ITEM_POTION001 | ITEM_LVUP001 |
-| DUNGEON002 | Expert Zone   | MONSTER001 | MONSTER002 |            | ITEM_POTION002 | ITEM_LVUP002 |
-| DUNGEON003 | Dragon’s Nest | MONSTER003 | MONSTER004 | MONSTER005 | ITEM_LVUP003   |              |
+| Id         | Name          | Monsters:1 | Monsters:2 | Monsters:3 | Loots:1    | Loots:2  |
+| ---------- | ------------- | ---------- | ---------- | ---------- |------------|----------|
+| DUNGEON001 | Easy Field    | MONSTER001 |            |            | POTION_001 | LVUP_001 |
+| DUNGEON002 | Expert Zone   | MONSTER001 | MONSTER002 |            | POTION_002 | LVUP_002 |
+| DUNGEON003 | Dragon’s Nest | MONSTER003 | MONSTER004 | MONSTER005 | LVUP_003   |          |
 </details>
 
 <details>
 <summary>Split header</summary>
 
-| Id         | Name          | Monsters   |            |            | Items          |              |
-|------------|---------------|------------|------------|------------|----------------|--------------|
-|            |               | 1          | 2          | 3          | 1              | 2            |
-| DUNGEON001 | Easy Field    | MONSTER001 |            |            | ITEM_POTION001 | ITEM_LVUP001 |
-| DUNGEON002 | Expert Zone   | MONSTER001 | MONSTER002 |            | ITEM_POTION002 | ITEM_LVUP002 |
-| DUNGEON003 | Dragon’s Nest | MONSTER003 | MONSTER004 | MONSTER005 | ITEM_LVUP003   |              |
+| Id         | Name          | Monsters   |            |            | Loots      |          |
+|------------|---------------|------------|------------|------------|------------|----------|
+|            |               | 1          | 2          | 3          | 1          | 2        |
+| DUNGEON001 | Easy Field    | MONSTER001 |            |            | POTION_001 | LVUP_001 |
+| DUNGEON002 | Expert Zone   | MONSTER001 | MONSTER002 |            | POTION_002 | LVUP_002 |
+| DUNGEON003 | Dragon’s Nest | MONSTER003 | MONSTER004 | MONSTER005 | LVUP_003   |          |
 </details>
 
 ```csharp
@@ -287,7 +287,7 @@ public class DungeonSheet : Sheet<DungeonSheet.Row>
         // you can use any supported type as list
         // to know more about sheet reference types, see cross-sheet reference section
         public List<MonsterSheet.Reference> Monsters { get; private set; }
-        public List<ItemSheet.Reference> Items { get; private set; }
+        public List<ConsumableSheet.Reference> Loots { get; private set; }
     }
 }
 ```
@@ -395,23 +395,23 @@ Row arrays are used for 2-dimentional structure. Below is example content of fil
 <details>
 <summary>Markdown version</summary>
 
-| Id      | Name     | Strength | Inteligence | Vitality | StatMultiplier | RequiredExp | RequiredItem |
-|---------|----------|----------|-------------|----------|----------------|-------------|--------------|
-| HERO001 | Warrior  | 100      | 80          | 140      | 1              | 0           |              |
-|         |          |          |             |          | 1.2            | 10          |              |
-|         |          |          |             |          | 1.4            | 20          |              |
-|         |          |          |             |          | 1.6            | 40          |              |
-|         |          |          |             |          | 2              | 100         | ITEM_LVUP001 |
-| HERO002 | Mage     | 60       | 160         | 80       | 1              | 0           |              |
-|         |          |          |             |          | 1.2            | 10          |              |
-|         |          |          |             |          | 1.4            | 20          |              |
-|         |          |          |             |          | 1.6            | 40          |              |
-|         |          |          |             |          | 2              | 100         | ITEM_LVUP002 |
-| HERO003 | Assassin | 140      | 100         | 80       | 1              | 0           |              |
-|         |          |          |             |          | 1.2            | 10          |              |
-|         |          |          |             |          | 1.4            | 20          |              |
-|         |          |          |             |          | 1.6            | 40          |              |
-|         |          |          |             |          | 2              | 100         | ITEM_LVUP003 |
+| Id      | Name     | Strength | Inteligence | Vitality | StatMultiplier | RequiredExp | RequiredMaterial |
+|---------|----------|----------|-------------|----------|----------------|-------------|------------------|
+| HERO001 | Warrior  | 100      | 80          | 140      | 1              | 0           |                  |
+|         |          |          |             |          | 1.2            | 10          |                  |
+|         |          |          |             |          | 1.4            | 20          |                  |
+|         |          |          |             |          | 1.6            | 40          |                  |
+|         |          |          |             |          | 2              | 100         | LVUP_001         |
+| HERO002 | Mage     | 60       | 160         | 80       | 1              | 0           |                  |
+|         |          |          |             |          | 1.2            | 10          |                  |
+|         |          |          |             |          | 1.4            | 20          |                  |
+|         |          |          |             |          | 1.6            | 40          |                  |
+|         |          |          |             |          | 2              | 100         | LVUP_002         |
+| HERO003 | Assassin | 140      | 100         | 80       | 1              | 0           |                  |
+|         |          |          |             |          | 1.2            | 10          |                  |
+|         |          |          |             |          | 1.4            | 20          |                  |
+|         |          |          |             |          | 1.6            | 40          |                  |
+|         |          |          |             |          | 2              | 100         | LVUP_003         |
 </details>
 
 Rows without `Id` is considered as part of previous row. You can merge the non-array cells to make it visually intuitive. Below corresponding code shows how to define row arrays.
@@ -441,7 +441,7 @@ public class HeroSheet : Sheet<HeroSheet.Row>
     {
         public float StatMultiplier { get; private set; }
         public int RequiredExp { get; private set; }
-        public string RequiredItem { get; private set; }
+        public string RequiredMaterial { get; private set; }
     }
 }
 ```
@@ -451,7 +451,7 @@ public class HeroSheet : Sheet<HeroSheet.Row>
 > It is worth mention you can use `VerticalList<T>` to cover the case you want to vertically extend your `List<T>` without pairing them as `Elem`. Though we recommend to split the sheet in that case if possible.
 
 ## Using Cross-Sheet Reference
-Below code shows how to replace `string RequiredItem` to `ItemSheet.Reference RequiredItem` to add extra reliablity. `Sheet<TKey, TRow>.Reference` type is serialized as `TKey`, and verifies that row with same id exists in the sheet.
+Below code shows how to replace `string RequiredMaterial` to `ConsumableSheet.Reference RequiredMaterial` to add extra reliablity. `Sheet<TKey, TRow>.Reference` type is serialized as `TKey`, and verifies that row with same id exists in the sheet.
 
 ```csharp
 public class HeroSheet : Sheet<HeroSheet.Row>
@@ -465,7 +465,7 @@ public class HeroSheet : Sheet<HeroSheet.Row>
     {
         public float StatMultiplier { get; private set; }
         public int RequiredExp { get; private set; }
-        public ItemSheet.Reference RequiredItem { get; private set; }
+        public ConsumableSheet.Reference RequiredMaterial { get; private set; }
     }
 }
 ```
@@ -477,21 +477,21 @@ public class SheetContainer : SheetContainerBase
 
     // use name of each matching sheet name from source
     public HeroSheet Heroes { get; private set; }
-    public ItemSheet Items { get; private set; }
+    public ConsumableSheet Consumables { get; private set; }
 }
 ```
-Both `ItemSheet` and `HeroSheet` must be the properties on same `SheetContainer` class to reference each other's row.
+Both `ConsumableSheet` and `HeroSheet` must be the properties on same `SheetContainer` class to reference each other's row.
 
-Now, not only error message will pop up when `RequiredItem` doesn't exist in `SheetContainer.Items`, you can access `ItemSheet.Row` directly through it.
+Now, not only error message will pop up when `RequiredMaterial` doesn't exist in `SheetContainer.Consumables`, you can access `ConsumableSheet.Row` directly through it.
 
 ```csharp
 var heroRow = sheetContainer.Heroes["HERO001"];
 
-// ITEM_LVUP001 from Items sheet
-var itemRow = heroRow.GetLevel(5).RequiredItem.Ref;
+// LVUP_001 from Consumables sheet
+var consumableRow = heroRow.GetLevel(5).RequiredMaterial.Ref;
 
 // print "Warrior's Shield"
-logger.LogInformation(itemRow.Name);
+logger.LogInformation(consumableRow.Name);
 ```
 
 ## Using Non-String Column as Id
