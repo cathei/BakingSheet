@@ -637,3 +637,4 @@ There is few optional symbols that can be defined for runtime usage. By default 
 |-------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | BAKINGSHEET_RUNTIME_GOOGLECONVERTER | Include Google Converter to your build.<br/>See also: [Google Sheet Converter](docs/google-sheet-import.md#how-to-use-google-sheet-converter-on-runtime) |
 | BAKINGSHEET_RUNTIME_CSVCONVERTER    | Include CSV Converter to your build.                                                                                                                     |
+| BAKINGSHEET_EXTERNAL_LOGGING_DLL    | Use external `Microsoft.Extensions.Logging.Abstractions.dll`. Useful if you already have same dll in your project for different dependency.              |
