@@ -65,7 +65,7 @@ For C# projects or server, download with [NuGet](https://www.nuget.org/packages?
 
 For Unity projects, add git package from Package Manager.
 ```
-https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet#v4.1.1
+https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet#v4.1.2
 ```
 
 Or install it via [OpenUPM](https://openupm.com/packages/com.cathei.bakingsheet/).
