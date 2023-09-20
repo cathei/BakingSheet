@@ -20,6 +20,7 @@ namespace Cathei.BakingSheet.Raw
 
         /// <summary>
         /// Get string evaluation of a cell.
+        /// Returns null if cell does not exist or out of bounds.
         /// </summary>
         string GetCell(int col, int row);
     }
