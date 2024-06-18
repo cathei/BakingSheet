@@ -11,7 +11,7 @@ namespace Cathei.BakingSheet.Examples
             public string Name { get; private set; }
 
             public int Strength { get; private set; }
-            public int Inteligence { get; private set; }
+            public int Intelligence { get; private set; }
             public int Vitality { get; private set; }
 
             public Elem GetLevel(int level)
