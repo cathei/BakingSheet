@@ -26,6 +26,11 @@ namespace Cathei.BakingSheet
             _extension = extension;
             _fileSystem = fileSystem ?? new FileSystem();
             _pages = new Dictionary<string, List<Page>>();
+
+#if NET5_0_OR_GREATER
+            // https://github.com/ExcelDataReader/ExcelDataReader?tab=readme-ov-file#important-note-on-net-core
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
         }
 
         private class Page : IRawSheetImporterPage
