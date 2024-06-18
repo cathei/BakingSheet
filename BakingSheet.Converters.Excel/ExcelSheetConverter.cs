@@ -36,12 +36,14 @@ namespace Cathei.BakingSheet
         private class Page : IRawSheetImporterPage
         {
             private DataTable _table;
+            private IFormatProvider _formatProvider;
 
             public string SubName { get; }
 
-            public Page(DataTable table, string subName)
+            public Page(DataTable table, string subName, IFormatProvider formatProvider)
             {
                 _table = table;
+                _formatProvider = formatProvider;
                 SubName = subName;
             }
 
@@ -50,7 +52,7 @@ namespace Cathei.BakingSheet
                 if (col >= _table.Columns.Count || row >= _table.Rows.Count)
                     return null;
 
-                return _table.Rows[row][col].ToString();
+                return Convert.ToString(_table.Rows[row][col], _formatProvider);
             }
         }
 
@@ -95,7 +97,7 @@ namespace Cathei.BakingSheet
                             _pages.Add(sheetName, sheetList);
                         }
 
-                        sheetList.Add(new Page(table, subName));
+                        sheetList.Add(new Page(table, subName, FormatProvider));
                     }
                 }
             }
