@@ -17,13 +17,13 @@ namespace Cathei.BakingSheet.Editor
         public static void GeneratePackage()
         {
             // GITHUB_REF = refs/heads/v1.X.X
-            // string githubRef = Environment.GetEnvironmentVariable("GITHUB_REF");
-            // string githubVersion = githubRef?.Substring(11);
+            string githubRef = Environment.GetEnvironmentVariable("GITHUB_REF");
+            string githubVersion = githubRef?.Substring(11);
 
             var info = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(PackagePath);
 
-            // if (githubVersion != null && info.version != githubVersion)
-            //     throw new InvalidOperationException("Package version does not match GitHub ref");
+            if (githubVersion != null && info.version != githubVersion)
+                throw new InvalidOperationException("Package version does not match GitHub ref");
 
             // string savePath = GetPackagePath("BakingSheet", info.version);
             //
