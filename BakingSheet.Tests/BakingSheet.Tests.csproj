@@ -22,4 +22,11 @@
     <ProjectReference Include="..\BakingSheet.Converters.Google\BakingSheet.Converters.Google.csproj" />
   </ItemGroup>
 
+  <Target Name="Copy Test Data" AfterTargets="CoreBuild">
+    <ItemGroup>
+      <TestData Include="Data/**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)\Data\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>
