@@ -15,6 +15,7 @@ namespace Cathei.BakingSheet.Unity
         public string SubAssetName { get; }
 
         public virtual string BasePath => string.Empty;
+        public virtual string DirectorySeparator => "/";
 
         public ResourcePath(string rawValue)
         {
@@ -31,7 +32,7 @@ namespace Cathei.BakingSheet.Unity
             var filePath = match.Groups[1].Value;
             var subAssetName = match.Groups[2].Value;
 
-            FullPath = Path.Combine(BasePath, filePath);
+            FullPath = AssetPath.CombinePath(BasePath, filePath, DirectorySeparator);
             SubAssetName = subAssetName;
         }
     }

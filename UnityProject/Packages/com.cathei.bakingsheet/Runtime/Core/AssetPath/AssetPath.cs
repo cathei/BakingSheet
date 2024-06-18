@@ -15,6 +15,7 @@ namespace Cathei.BakingSheet
 
         public virtual string BasePath => string.Empty;
         public virtual string Extension => string.Empty;
+        public virtual string DirectorySeparator => "/";
 
         [Preserve]
         public AssetPath(string rawValue)
@@ -29,7 +30,19 @@ namespace Cathei.BakingSheet
             if (!string.IsNullOrEmpty(Extension))
                 filePath = $"{filePath}.{Extension}";
 
-            FullPath = Path.Combine(BasePath, filePath);
+            FullPath = CombinePath(BasePath, filePath, DirectorySeparator);
+        }
+
+        // Defining our own, since Path.Combine or similar methods does not support custom separator,
+        public static string CombinePath(string basePath, string filePath, string separator)
+        {
+            if (string.IsNullOrEmpty(basePath))
+                return filePath;
+
+            if (basePath.EndsWith(separator))
+                return $"{basePath}{filePath}";
+
+            return $"{basePath}{separator}{filePath}";
         }
     }
 

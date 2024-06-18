@@ -16,6 +16,7 @@ namespace Cathei.BakingSheet.Unity
 
         public virtual string BasePath => string.Empty;
         public virtual string Extension => string.Empty;
+        public virtual string DirectorySeparator => "/";
 
         public AddressablePath(string rawValue)
         {
@@ -35,7 +36,7 @@ namespace Cathei.BakingSheet.Unity
             if (!string.IsNullOrEmpty(Extension))
                 filePath = $"{filePath}.{Extension}";
 
-            FullPath = Path.Combine(BasePath, filePath);
+            FullPath = AssetPath.CombinePath(BasePath, filePath, DirectorySeparator);
             SubAssetName = subAssetName;
 
             if (!string.IsNullOrEmpty(SubAssetName))

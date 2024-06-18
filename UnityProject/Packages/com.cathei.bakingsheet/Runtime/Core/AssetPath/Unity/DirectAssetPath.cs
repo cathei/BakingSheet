@@ -20,6 +20,7 @@ namespace Cathei.BakingSheet.Unity
 
         public virtual string BasePath => "Assets";
         public virtual string Extension => string.Empty;
+        public virtual string DirectorySeparator => "/";
 
         public DirectAssetPath(string rawValue)
         {
@@ -39,7 +40,7 @@ namespace Cathei.BakingSheet.Unity
             if (!string.IsNullOrEmpty(Extension))
                 filePath = $"{filePath}.{Extension}";
 
-            FullPath = Path.Combine(BasePath, filePath);
+            FullPath = AssetPath.CombinePath(BasePath, filePath, DirectorySeparator);
             SubAssetName = subAssetName;
         }
     }
