@@ -4,6 +4,7 @@ on:
   push:
     tags: # v1.0, v1.1, etc..
       - v*
+  workflow_dispatch:
 
 jobs:
   generate-pacakge:
