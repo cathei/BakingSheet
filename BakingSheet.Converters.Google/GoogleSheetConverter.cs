@@ -61,7 +61,7 @@ namespace Cathei.BakingSheet
             }))
             {
                 var sheetReq = service.Spreadsheets.Get(_gsheetAddress);
-                sheetReq.Fields = "properties,sheets(properties,data.rowData.values.formattedValue)";
+                sheetReq.Fields = "sheets(properties.title,data.rowData.values.formattedValue)";
                 _spreadsheet = await sheetReq.ExecuteAsync();
             }
 
